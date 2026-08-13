@@ -1,0 +1,64 @@
+# SPDX-License-Identifier: Apache-2.0
+name: Similarity screening validation
+
+on:
+  pull_request:
+    paths:
+      - "AGENTS.md"
+      - "AGENTS.schema.json"
+      - "src/crucible_core/duplicate.py"
+      - "src/crucible_core/duplicate_memory.py"
+      - "src/crucible_core/__init__.py"
+      - "research/duplicate_detector_contract.json"
+      - "research/ns_duplicate_detector_adapter.json"
+      - "research/schemas/duplicate_detector_contract.schema.json"
+      - "research/schemas/ns_duplicate_detector_adapter.schema.json"
+      - "tools/validate_similarity_screening.py"
+      - "tests/test_similarity_smoke.py"
+      - ".github/workflows/similarity-screening.yml"
+      - "docs/DUPLICATE_DEAD_FAMILY_V0_1.md"
+  push:
+    branches: [main]
+    paths:
+      - "AGENTS.md"
+      - "AGENTS.schema.json"
+      - "src/crucible_core/duplicate.py"
+      - "src/crucible_core/duplicate_memory.py"
+      - "src/crucible_core/__init__.py"
+      - "research/duplicate_detector_contract.json"
+      - "research/ns_duplicate_detector_adapter.json"
+      - "research/schemas/duplicate_detector_contract.schema.json"
+      - "research/schemas/ns_duplicate_detector_adapter.schema.json"
+      - "tools/validate_similarity_screening.py"
+      - ".github/workflows/similarity-screening.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.13"]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install laboratory and test dependencies
+        run: python -m pip install -e ".[test]"
+      - name: Validate agent contract
+        run: python tools/validate_agent_contract.py
+      - name: Validate Crucible Core
+        run: python tools/validate_crucible_core.py
+      - name: Validate Analogy Firewall
+        run: python tools/validate_analogy_firewall.py
+      - name: Validate Crucible ledger
+        run: python tools/validate_crucible_ledger.py
+      - name: Validate ML generator
+        run: python tools/validate_ml_generator.py
+      - name: Validate similarity screening
+        run: python tools/validate_similarity_screening.py
+      - name: Run similarity smoke test
+        run: python -m pytest tests/test_similarity_smoke.py
