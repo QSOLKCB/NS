@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 """Content-addressed single-writer journal for candidate-transform attempts."""
 from __future__ import annotations
-import fcntl, hashlib, json, os
+import copy, fcntl, hashlib, json, os
 from pathlib import Path
 from typing import Any, Mapping
 from .engine import canonical_json_bytes
@@ -46,14 +46,15 @@ class TransformAttemptJournal:
         tmp=path.with_name(f".{path.name}.tmp-{os.getpid()}")
         with tmp.open("xb") as h:h.write(data);h.flush();os.fsync(h.fileno())
         os.replace(tmp,path); return d
-    def _verify_object(self,d:str)->None:
+    def _read_object(self,d:str)->dict[str,Any]:
         path=self._path(d)
         if not path.is_file() or _hash(path.read_bytes())!=d: raise TransformJournalError("transform object missing or hash-mismatched")
         obj=_load(path.read_bytes(),"transform object")
         if obj.get("transform_version")!=TRANSFORM_VERSION or obj.get("object_type")!="transform_attempt": raise TransformJournalError("transform object version/type mismatch")
         payload=obj.get("payload")
         if not isinstance(payload,dict) or payload.get("parse_status") not in {"not_attempted","not_parsed","parsed"}: raise TransformJournalError("invalid transform attempt payload")
-        utc(payload.get("recorded_at_utc"))
+        utc(payload.get("recorded_at_utc")); return obj
+    def _verify_object(self,d:str)->None:self._read_object(d)
     def _scan(self)->None:
         if not self.log.exists(): self._count=0;self._head=None;self._attempts={};return
         previous=None; attempts={}; raw=self.log.read_bytes()
@@ -85,5 +86,9 @@ class TransformAttemptJournal:
         safe_id(attempt_id,"attempt_id")
         if attempt_id not in self._attempts: raise TransformJournalError("unknown transform attempt")
         return self._attempts[attempt_id]
+    def attempt_payload(self,attempt_id:str)->dict[str,Any]:
+        d=self.attempt_object_sha256(attempt_id);payload=self._read_object(d)["payload"]
+        if payload.get("attempt_id")!=attempt_id: raise TransformJournalError("transform attempt payload identity mismatch")
+        return copy.deepcopy(payload)
     def verify(self)->tuple[int,str|None,Mapping[str,str]]: self._scan();return self._count,self._head,dict(self._attempts)
     def authority_snapshot(self)->dict[str,bool]: return {"transform_attempt_is_domain_evidence":False,"transform_attempt_promotes_claim":False,"transform_attempt_selects_winner":False,"transform_attempt_inherits_parent_authority":False}
