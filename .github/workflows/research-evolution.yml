@@ -24,4 +24,4 @@ jobs:
       - run: python tools/validate_ml_generator.py
       - run: python tools/validate_similarity_screening.py
       - run: python tools/validate_candidate_transform.py
-      - run: python -m pytest tests/test_candidate_transform_core.py tests/test_candidate_transform_hardening.py
+      - run: python -m pytest tests/test_candidate_transform_core.py tests/test_candidate_transform_hardening.py tests/test_transform_codex_regressions.py
