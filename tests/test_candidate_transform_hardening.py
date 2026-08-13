@@ -26,7 +26,9 @@ def test_stale_ledger_context_cannot_commit(tmp_path:Path):
  with pytest.raises(cc.TransformError):g.commit_candidate(decision=d,context=ctx,ledger=l,actor="test",source_commit=C,recorded_at_utc=T)
  j.close()
 def test_analogy_parent_needs_firewall_aware_route(tmp_path:Path):
- parent=c(extra=("smooth solution","analogy_source=A1","mapping_class=heuristic_analogy","cross_domain_transfer_requires_target_domain_validation"));*_,j,_,d=setup(tmp_path,parent);assert not d.accepted and d.rejection_reasons==("invalid_context",);j.close()
+ parent=c(extra=("smooth solution","analogy_source=A1","mapping_class=heuristic_analogy","cross_domain_transfer_requires_target_domain_validation"));l=cc.ContentAddressedLedger(tmp_path/"ledger");oid=l.persist_candidate(parent,actor="test",source_commit=C,recorded_at_utc=T)
+ with pytest.raises(cc.TransformError,match="firewall-aware"):
+  cc.TransformParent(parent,oid).validate()
 def test_transform_journal_single_writer(tmp_path:Path):
  j=cc.TransformAttemptJournal(tmp_path/"journal")
  with pytest.raises(cc.TransformJournalError):cc.TransformAttemptJournal(tmp_path/"journal")
