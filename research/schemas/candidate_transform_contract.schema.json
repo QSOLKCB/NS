@@ -15,7 +15,7 @@
     "child_policy":{"type":"object"},
     "receipt_policy":{"type":"object"},
     "commit_policy":{"type":"object"},
-    "authority":{"type":"object"},
+    "authority":{"const":{"transform_output_is_domain_evidence":false,"transform_may_promote_claim":false,"transform_may_select_winner":false,"crossover_is_proof_synthesis":false}},
     "invariants":{"type":"array","minItems":8,"uniqueItems":true,"items":{"type":"string","minLength":1}}
   },
   "additionalProperties":false
