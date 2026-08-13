@@ -3,12 +3,13 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
+import math
 from typing import Any
 
 import numpy as np
 
-from .diagnostics import balance_residuals, snapshot, velocity_rhs_hat
+from .diagnostics import SnapshotDiagnostics, balance_residuals, snapshot, velocity_rhs_hat
 from .initial_data import taylor_green_hat
 from .spectral import (
     SpectralOperators,
@@ -30,22 +31,36 @@ class RunConfig:
     diagnostic_stride: int = 1
 
     def validate(self) -> None:
+        if not isinstance(self.resolution, int) or isinstance(self.resolution, bool):
+            raise ValueError("resolution must be an even integer >= 6")
         if self.resolution < 6 or self.resolution % 2:
             raise ValueError("resolution must be an even integer >= 6")
-        if self.viscosity <= 0.0:
-            raise ValueError("viscosity must be > 0")
-        if self.dt <= 0.0:
-            raise ValueError("dt must be > 0")
-        if self.steps < 1:
-            raise ValueError("steps must be >= 1")
-        if self.amplitude <= 0.0:
-            raise ValueError("amplitude must be > 0")
-        if self.diagnostic_stride < 1:
-            raise ValueError("diagnostic_stride must be >= 1")
+        if not math.isfinite(self.viscosity) or self.viscosity <= 0.0:
+            raise ValueError("viscosity must be finite and > 0")
+        if not math.isfinite(self.dt) or self.dt <= 0.0:
+            raise ValueError("dt must be finite and > 0")
+        if not isinstance(self.steps, int) or isinstance(self.steps, bool) or self.steps < 1:
+            raise ValueError("steps must be an integer >= 1")
+        if not math.isfinite(self.amplitude) or self.amplitude <= 0.0:
+            raise ValueError("amplitude must be finite and > 0")
+        if (
+            not isinstance(self.diagnostic_stride, int)
+            or isinstance(self.diagnostic_stride, bool)
+            or self.diagnostic_stride < 1
+        ):
+            raise ValueError("diagnostic_stride must be an integer >= 1")
 
 
 def _canonicalize(u_hat: np.ndarray, ops: SpectralOperators) -> np.ndarray:
     return project_divergence_free(dealias(u_hat, ops), ops)
+
+
+def _state_is_finite(u_hat: np.ndarray) -> bool:
+    return bool(np.isfinite(u_hat.real).all() and np.isfinite(u_hat.imag).all())
+
+
+def _snapshot_is_finite(value: SnapshotDiagnostics) -> bool:
+    return all(math.isfinite(float(item)) for item in asdict(value).values())
 
 
 def rk4_step(
@@ -79,30 +94,60 @@ def run_taylor_green(config: RunConfig) -> dict[str, Any]:
         viscosity=config.viscosity,
         ops=ops,
     )
+    if not _state_is_finite(u_hat) or not _snapshot_is_finite(initial):
+        raise FloatingPointError("initial Taylor-Green state or diagnostics are non-finite")
     diagnostics.append(initial.to_dict())
     previous = initial
 
     balance_history: list[dict[str, float]] = []
+    termination_reason = "requested_step_count_completed"
+    warnings_or_errors: list[str] = []
+    completed_steps = 0
+
     for step in range(1, config.steps + 1):
-        u_hat = rk4_step(
-            u_hat,
-            dt=config.dt,
-            viscosity=config.viscosity,
-            ops=ops,
-        )
-        current = snapshot(
-            u_hat,
-            time=step * config.dt,
-            dt=config.dt,
-            viscosity=config.viscosity,
-            ops=ops,
-        )
+        with np.errstate(over="ignore", invalid="ignore", divide="ignore"):
+            u_hat = rk4_step(
+                u_hat,
+                dt=config.dt,
+                viscosity=config.viscosity,
+                ops=ops,
+            )
+        if not _state_is_finite(u_hat):
+            termination_reason = "non_finite_numerical_state"
+            warnings_or_errors.append(
+                f"non-finite spectral state detected after attempted step {step}"
+            )
+            break
+
+        with np.errstate(over="ignore", invalid="ignore", divide="ignore"):
+            current = snapshot(
+                u_hat,
+                time=step * config.dt,
+                dt=config.dt,
+                viscosity=config.viscosity,
+                ops=ops,
+            )
+        if not _snapshot_is_finite(current):
+            termination_reason = "non_finite_diagnostics"
+            warnings_or_errors.append(
+                f"non-finite diagnostic detected after attempted step {step}"
+            )
+            break
+
         balance = balance_residuals(
             previous,
             current,
             dt=config.dt,
             viscosity=config.viscosity,
         )
+        if not all(math.isfinite(float(value)) for value in balance.values()):
+            termination_reason = "non_finite_balance_residual"
+            warnings_or_errors.append(
+                f"non-finite balance residual detected after attempted step {step}"
+            )
+            break
+
+        completed_steps = step
         balance_history.append({"step": step, **balance})
         if step % config.diagnostic_stride == 0 or step == config.steps:
             diagnostics.append({"step": step, **current.to_dict(), **balance})
@@ -110,16 +155,12 @@ def run_taylor_green(config: RunConfig) -> dict[str, Any]:
 
     return {
         "lab_version": LAB_VERSION,
-        "config": {
-            "resolution": config.resolution,
-            "viscosity": config.viscosity,
-            "dt": config.dt,
-            "steps": config.steps,
-            "amplitude": config.amplitude,
-            "diagnostic_stride": config.diagnostic_stride,
-        },
+        "config": asdict(config),
         "diagnostics": diagnostics,
         "balance_history": balance_history,
         "final_velocity": ifft_velocity(u_hat),
         "final_velocity_hat": u_hat,
+        "termination_reason": termination_reason,
+        "warnings_or_errors": warnings_or_errors,
+        "completed_steps": completed_steps,
     }

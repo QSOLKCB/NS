@@ -12,7 +12,7 @@
     "viscosity": "strictly_positive",
     "initial_data_family": "Taylor-Green_vortex",
     "precision": "float64_complex128",
-    "spatial_method": "Fourier_pseudospectral_2over3_dealiasing",
+    "spatial_method": "Fourier_pseudospectral_strict_2over3_dealiasing",
     "time_method": "classical_RK4_fixed_step"
   },
   "evidence_policy": {

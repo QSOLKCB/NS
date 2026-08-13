@@ -4,9 +4,11 @@ name: PDE lab validation
 on:
   pull_request:
     paths:
+      - "AGENTS.md"
       - "pyproject.toml"
       - "src/ns_lab/**"
       - "tests/**"
+      - "research/baseline_identities.json"
       - "research/lab_contract.json"
       - "research/schemas/lab_contract.schema.json"
       - "research/schemas/experiment_manifest.schema.json"
@@ -21,9 +23,11 @@ on:
     branches:
       - main
     paths:
+      - "AGENTS.md"
       - "pyproject.toml"
       - "src/ns_lab/**"
       - "tests/**"
+      - "research/baseline_identities.json"
       - "research/lab_contract.json"
       - "research/schemas/lab_contract.schema.json"
       - "research/schemas/experiment_manifest.schema.json"

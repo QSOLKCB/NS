@@ -52,6 +52,15 @@ def main(argv: list[str] | None = None) -> int:
         config=config,
         result=result,
     )
+
+    if manifest["termination_reason"] != "requested_step_count_completed":
+        print(
+            f"numerical failure {args.experiment_id}: "
+            f"reason={manifest['termination_reason']}, "
+            f"completed_steps={manifest['wall_clock_independent_step_counts']}"
+        )
+        return 2
+
     print(
         f"completed {args.experiment_id}: "
         f"E={manifest['diagnostics']['final_kinetic_energy']:.12g}, "

@@ -34,11 +34,15 @@ class SpectralOperators:
         inv_k2 = np.zeros_like(k2, dtype=np.float64)
         nonzero = k2 > 0.0
         inv_k2[nonzero] = 1.0 / k2[nonzero]
+
+        # Strict 2/3 truncation is required when N is divisible by three.
+        # Retaining both ±N/3 lets the quadratic interaction N/3 + N/3
+        # alias back onto the retained -N/3 mode.
         cutoff = resolution / 3.0
         dealias_mask = (
-            (np.abs(kx) <= cutoff)
-            & (np.abs(ky) <= cutoff)
-            & (np.abs(kz) <= cutoff)
+            (np.abs(kx) < cutoff)
+            & (np.abs(ky) < cutoff)
+            & (np.abs(kz) < cutoff)
         )
         return cls(
             resolution=resolution,

@@ -19,7 +19,7 @@
         "viscosity": "strictly_positive",
         "initial_data_family": "Taylor-Green_vortex",
         "precision": "float64_complex128",
-        "spatial_method": "Fourier_pseudospectral_2over3_dealiasing",
+        "spatial_method": "Fourier_pseudospectral_strict_2over3_dealiasing",
         "time_method": "classical_RK4_fixed_step"
       }
     },
@@ -44,15 +44,14 @@
       }
     },
     "baseline_identity_bindings": {
-      "type": "array", "minItems": 6, "maxItems": 6, "uniqueItems": true,
-      "items": {
-        "type": "object", "required": ["identity_id", "implementation"],
-        "properties": {
-          "identity_id": {"type": "string", "pattern": "^BASE_[A-Z0-9_]+$"},
-          "implementation": {"type": "string", "minLength": 1}
-        },
-        "additionalProperties": false
-      }
+      "const": [
+        {"identity_id": "BASE_INCOMPRESSIBILITY", "implementation": "ns_lab.diagnostics.snapshot:divergence_l2"},
+        {"identity_id": "BASE_NS_SCALING", "implementation": "ns_lab.diagnostics.velocity_lp_scaling_exponent"},
+        {"identity_id": "BASE_SMOOTH_ENERGY_EQUALITY", "implementation": "ns_lab.diagnostics.balance_residuals:energy_balance_residual"},
+        {"identity_id": "BASE_VORTICITY_EQUATION", "implementation": "ns_lab.diagnostics.vorticity_equation_residual_l2"},
+        {"identity_id": "BASE_SMOOTH_ENSTROPHY_BALANCE", "implementation": "ns_lab.diagnostics.balance_residuals:enstrophy_balance_residual"},
+        {"identity_id": "BASE_PRESSURE_POISSON", "implementation": "ns_lab.diagnostics.pressure_poisson_residual_l2"}
+      ]
     },
     "required_run_outputs": {"const": ["manifest.json", "diagnostics.json", "final_velocity.npy"]},
     "required_sensitivity_before_reproduced_numerical": {"const": ["rerun_same_inputs", "timestep_comparison", "resolution_comparison"]},
