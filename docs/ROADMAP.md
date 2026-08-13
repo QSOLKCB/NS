@@ -69,15 +69,35 @@ PR #5 v0.1 foundation:
 - [x] add NS domain adapter mapping regularity to Clay A/B and breakdown to C/D;
 - [x] bind every registered NS proof barrier into Crucible screening;
 - [x] retain existing numerical evidence ceilings and Clay correspondence requirements;
-- [x] add agent boot requirements, hostile-mutation validation and Python 3.11/3.13 CI;
-- [ ] add persistent content-addressed candidate/evidence/failure stores;
+- [x] harden claim downgrades, reciprocal hypothesis membership, per-candidate evidence provenance and adapter-owned constraint severities;
+- [x] add agent boot requirements, hostile-mutation validation and Python 3.11/3.13 CI.
+
+PR #6 Analogy Firewall foundation:
+
+- [x] add a domain-neutral cross-domain mapping registry;
+- [x] classify mappings as exact/operator/structural/heuristic/visual/non-correspondence;
+- [x] permit only the first four classes to seed positive exploratory candidates;
+- [x] make visual resemblance and explicit non-correspondence negative-control-only;
+- [x] forbid analogy records from becoming target-domain evidence;
+- [x] forbid analogy-driven claim promotion, proof-barrier satisfaction, winner selection and domain-equivalence claims;
+- [x] prevent inheritance of source-domain proof/evidence status;
+- [x] require target-domain revalidation under the NS adapter and every existing proof barrier;
+- [x] preserve mapping class, analogy ID, differences and forbidden inferences as transfer provenance;
+- [x] add an initial fluid/stochastic/generative-model transfer registry from hashed design input;
+- [x] add hostile mutation tests and Python 3.11/3.13 Analogy Firewall CI.
+
+Next ML-search engineering:
+
+- [ ] add persistent content-addressed candidate/evidence/failure/analogy stores;
 - [ ] add ML generator interfaces that emit schema-valid candidates only;
 - [ ] add duplicate/dead-family detection against the accumulated failure ledger;
 - [ ] add controlled candidate mutation/crossover provenance;
 - [ ] add sealed holdout materialization with auditable release events;
+- [ ] add transfer-ticket persistence so every analogy-derived candidate retains a content-addressed intake decision;
+- [ ] add target-domain reviewers capable of rejecting analogy families before expensive evaluation;
 - [ ] extract the generic Crucible package into its own repository only after the NS reference implementation stabilizes.
 
-Crucible Core is an orchestration/falsification engine, not a truth engine. Each future domain adapter must define its own epistemic standard.
+Crucible Core is an orchestration/falsification engine, not a truth engine. The Analogy Firewall broadens candidate generation without broadening evidentiary authority. Each future domain adapter must define its own epistemic standard.
 
 ## Phase 3 — Competing mechanism search
 
@@ -89,7 +109,7 @@ Use the Crucible frontier to search for sharpened a priori bounds, monotone/coer
 
 Use the same machinery to search for admissible initial-data/forcing families, concentration mechanisms, scaling scenarios or rigorous reductions capable of satisfying Clay C or D. Numerical blow-up signatures remain exploratory until a continuum bridge is proved.
 
-Future ML search should generate candidates on both tracks, preserve failed families, and use the failure ledger to reduce repeated exploration of already-rejected mechanisms.
+Future ML search should generate candidates on both tracks, preserve failed families, use the failure ledger to reduce repeated exploration of already-rejected mechanisms, and route cross-domain ideas through the Analogy Firewall before they reach the NS frontier.
 
 ## Phase 4 — Proof extraction
 
@@ -97,7 +117,7 @@ Promote only precise candidate lemmas. Attempt analytic proof, symbolic checking
 
 ## Phase 5 — Adversarial review
 
-Try to break every promoted result with edge cases, scaling checks, hidden assumptions, known theorems, alternate discretizations, proof-barrier matching and independent reviewers.
+Try to break every promoted result with edge cases, scaling checks, hidden assumptions, known theorems, alternate discretizations, proof-barrier matching, analogy-authority audits and independent reviewers.
 
 ## Phase 6 — Publication/archive
 
