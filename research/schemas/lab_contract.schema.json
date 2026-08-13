@@ -3,9 +3,9 @@
   "$id": "https://github.com/QSOLKCB/NS/blob/main/research/schemas/lab_contract.schema.json",
   "title": "QSOL NS periodic reference lab contract",
   "type": "object",
-  "required": ["schema_version", "document_type", "license", "solver_id", "solver_version", "scope", "evidence_policy", "determinism", "baseline_identity_bindings", "required_run_outputs", "required_sensitivity_before_reproduced_numerical", "required_sensitivity_before_any_singularity_oriented_use"],
+  "required": ["schema_version", "document_type", "license", "solver_id", "solver_version", "scope", "evidence_policy", "determinism", "baseline_identity_bindings", "precision_referee", "required_run_outputs", "required_sensitivity_before_reproduced_numerical", "required_sensitivity_before_any_singularity_oriented_use"],
   "properties": {
-    "schema_version": {"const": "0.1.0"},
+    "schema_version": {"const": "0.2.0"},
     "document_type": {"const": "qsol_ns_periodic_reference_lab_contract"},
     "license": {"const": "Apache-2.0"},
     "solver_id": {"const": "qsol_ns_periodic_pseudospectral_reference"},
@@ -52,6 +52,16 @@
         {"identity_id": "BASE_SMOOTH_ENSTROPHY_BALANCE", "implementation": "ns_lab.diagnostics.balance_residuals:enstrophy_balance_residual"},
         {"identity_id": "BASE_PRESSURE_POISSON", "implementation": "ns_lab.diagnostics.pressure_poisson_residual_l2"}
       ]
+    },
+    "precision_referee": {
+      "const": {
+        "contract": "research/precision_referee_contract.json",
+        "available_for_reference_family": true,
+        "independent_arithmetic": true,
+        "independent_nonlinear_evaluation": true,
+        "independent_spatial_discretization": false,
+        "scalable_mechanism_search_backend": false
+      }
     },
     "required_run_outputs": {"const": ["manifest.json", "diagnostics.json", "final_velocity.npy"]},
     "required_sensitivity_before_reproduced_numerical": {"const": ["rerun_same_inputs", "timestep_comparison", "resolution_comparison"]},
