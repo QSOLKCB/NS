@@ -57,7 +57,13 @@ def main() -> None:
     analogies = load(RESEARCH / "cross_domain_transfer_registry.json")
     agents = load(ROOT / "AGENTS.md")
 
-    for schema in (contract_schema, proposal_schema, context_schema, attempt_schema, adapter_schema):
+    for schema in (
+        contract_schema,
+        proposal_schema,
+        context_schema,
+        attempt_schema,
+        adapter_schema,
+    ):
         Draft202012Validator.check_schema(schema)
     contract_validator = Draft202012Validator(contract_schema)
     proposal_validator = Draft202012Validator(proposal_schema)
@@ -70,14 +76,23 @@ def main() -> None:
         raise SystemExit("ML generator implementation/contract version drift")
     if adapter["domain_id"] != ns_crucible["domain_id"]:
         raise SystemExit("NS generator adapter domain drift")
-    if adapter["hypothesis_set_id"] != ns_crucible["primary_hypothesis_set"]["hypothesis_set_id"]:
+    if (
+        adapter["hypothesis_set_id"]
+        != ns_crucible["primary_hypothesis_set"]["hypothesis_set_id"]
+    ):
         raise SystemExit("NS generator hypothesis-set drift")
-    track_ids = [item["track_id"] for item in ns_crucible["primary_hypothesis_set"]["tracks"]]
+    track_ids = [
+        item["track_id"] for item in ns_crucible["primary_hypothesis_set"]["tracks"]
+    ]
     if adapter["allowed_target_hypotheses"] != track_ids:
         raise SystemExit("NS generator tracks do not exactly match Crucible tracks")
     barrier_ids = [item["barrier_id"] for item in barriers["barriers"]]
     if barrier_ids != ns_crucible["constraint_bindings"]["proof_barrier_ids"]:
         raise SystemExit("NS proof-barrier registry drift")
+    if not adapter["context_policy"]["must_include_all_registered_proof_barrier_ids"]:
+        raise SystemExit("NS generator adapter must require every proof barrier")
+    if not adapter["context_policy"]["target_tracks_must_match_ns_crucible_adapter"]:
+        raise SystemExit("NS generator adapter must require the complete track set")
 
     for field in (
         "generator_is_ns_evidence",
@@ -134,7 +149,14 @@ def main() -> None:
     }
     reject(proposal_validator, hostile, "proposal schema accepts claim_level")
 
-    commit = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
+    overlong = dict(hostile)
+    del overlong["claim_level"]
+    overlong["proposal_id"] = "x" * 129
+    reject(proposal_validator, overlong, "proposal schema accepts filesystem-sized ID")
+
+    commit = subprocess.check_output(
+        ["git", "rev-parse", "HEAD"], cwd=ROOT, text=True
+    ).strip()
     stamp = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
     theorem_ids = {item["theorem_id"] for item in theorem_registry["theorems"]}
     analogy_ids = {item["analogy_id"] for item in analogies["records"]}
@@ -177,6 +199,7 @@ def main() -> None:
             domain_id=adapter["domain_id"],
             hypothesis_set_id=adapter["hypothesis_set_id"],
             allowed_target_hypotheses=set(track_ids),
+            required_proof_barrier_ids=set(barrier_ids),
             known_candidate_ids=set(),
             known_theorem_ids=theorem_ids,
             known_analogy_ids=analogy_ids,
@@ -194,7 +217,9 @@ def main() -> None:
         if decision.candidate.claim_level != "exploratory":
             raise SystemExit("generator promoted an accepted candidate")
         if ledger.verify().event_count != 0:
-            raise SystemExit("model-facing airlock mutated Crucible ledger before explicit commit")
+            raise SystemExit(
+                "model-facing airlock mutated Crucible ledger before explicit commit"
+            )
         gate.commit_candidate(
             decision,
             ledger=ledger,
@@ -203,15 +228,24 @@ def main() -> None:
             recorded_at_utc=stamp,
         )
         if ledger.verify().event_count != 1:
-            raise SystemExit("explicit accepted-candidate commit did not enter Crucible ledger")
+            raise SystemExit(
+                "explicit accepted-candidate commit did not enter Crucible ledger"
+            )
         count, _head = journal.verify()
         if count != 1:
             raise SystemExit("generation attempt was not durably journaled")
-        if any(gate.authority_snapshot()[key] for key in (
-            "domain_evidence", "claim_promotion", "proof_status_assignment",
-            "winner_selection", "confidence_as_authority", "direct_analogy_bypass",
-            "rejection_is_mathematical_failure",
-        )):
+        if any(
+            gate.authority_snapshot()[key]
+            for key in (
+                "domain_evidence",
+                "claim_promotion",
+                "proof_status_assignment",
+                "winner_selection",
+                "confidence_as_authority",
+                "direct_analogy_bypass",
+                "rejection_is_mathematical_failure",
+            )
+        ):
             raise SystemExit("generator authority snapshot exceeds proposal/intake scope")
 
     print(
