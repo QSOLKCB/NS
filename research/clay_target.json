@@ -1,0 +1,86 @@
+{
+  "schema_version": "1.0.0",
+  "document_type": "qsol_ns_clay_target",
+  "license": "Apache-2.0",
+  "authority": {
+    "name": "Clay Mathematics Institute",
+    "problem_title": "Existence and Smoothness of the Navier-Stokes Equation",
+    "author": "Charles L. Fefferman",
+    "landing_page": "https://www.claymath.org/millennium/Navier-Stokes-Equation/",
+    "official_pdf": "https://www.claymath.org/wp-content/uploads/2022/06/navierstokes.pdf",
+    "retrieved_date": "2026-08-13"
+  },
+  "shared_equation_scope": {
+    "dimension": 3,
+    "viscosity": "nu > 0",
+    "incompressible": true,
+    "unknowns": ["u", "p"],
+    "equations": [
+      "partial_t u + (u dot grad)u = nu Delta u - grad p + f",
+      "div u = 0",
+      "u(x,0)=u0(x)"
+    ]
+  },
+  "official_formulations": [
+    {
+      "id": "A",
+      "direction": "global_smoothness",
+      "domain": "R^3",
+      "initial_data": "any smooth divergence-free rapidly decaying u0 satisfying Fefferman condition (4)",
+      "forcing": "f identically zero",
+      "required_conclusion": "global smooth p,u on R^3 x [0,infinity) satisfying the equations and bounded energy",
+      "zero_force_allowed": true,
+      "zero_force_required": true
+    },
+    {
+      "id": "B",
+      "direction": "global_smoothness",
+      "domain": "R^3/Z^3",
+      "initial_data": "any smooth divergence-free spatially periodic u0 satisfying Fefferman condition (8)",
+      "forcing": "f identically zero",
+      "required_conclusion": "global smooth spatially periodic p,u on R^3 x [0,infinity)",
+      "zero_force_allowed": true,
+      "zero_force_required": true
+    },
+    {
+      "id": "C",
+      "direction": "breakdown",
+      "domain": "R^3",
+      "initial_data": "there exists smooth divergence-free rapidly decaying u0 satisfying Fefferman condition (4)",
+      "forcing": "there exists smooth rapidly decaying f satisfying Fefferman condition (5)",
+      "required_conclusion": "no global physically reasonable solution p,u satisfying the equations, global smoothness, and bounded energy",
+      "zero_force_allowed": true,
+      "zero_force_required": false
+    },
+    {
+      "id": "D",
+      "direction": "breakdown",
+      "domain": "R^3/Z^3",
+      "initial_data": "there exists smooth divergence-free spatially periodic u0 satisfying Fefferman condition (8)",
+      "forcing": "there exists smooth spatially periodic f with time decay satisfying Fefferman condition (9)",
+      "required_conclusion": "no global smooth spatially periodic solution p,u satisfying the equations",
+      "zero_force_allowed": true,
+      "zero_force_required": false
+    }
+  ],
+  "errata": [
+    {
+      "scope": "periodic_formulation",
+      "statement": "The pressure periodicity condition p(x+e_j,t)=p(x,t) must be made explicit in the periodic assumptions.",
+      "source": "official PDF errata page"
+    },
+    {
+      "scope": "weak_form_equation",
+      "statement": "Fefferman's PDF includes a corrected weak-form equation in the errata; use the erratum rather than silently reproducing the earlier printed form.",
+      "source": "official PDF errata page"
+    }
+  ],
+  "machine_invariants": [
+    "all_solution_claims_must_map_to_exactly_one_or_more_official_formulations",
+    "A_and_B_require_zero_forcing",
+    "C_and_D_allow_zero_forcing_but_do_not_require_it",
+    "R3_and_periodic_domains_are_not_interchangeable",
+    "periodic_pressure_condition_includes_official_erratum",
+    "modified_equation_results_do_not_satisfy_the_target_without_a_rigorous_equivalence_bridge"
+  ]
+}
