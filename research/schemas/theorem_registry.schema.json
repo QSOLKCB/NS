@@ -2,6 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/QSOLKCB/NS/blob/main/research/schemas/theorem_registry.schema.json",
   "title": "QSOL NS theorem registry",
+  "description": "Structural schema for historical theorem entries. Source-checked theorem semantics are additionally locked by tools/validate_boundary_map.py::SOURCE_CHECKED_THEOREM_SEMANTICS; changing a locked hypothesis, conclusion, domain, source set, year, or limitation requires an explicit audited validator-lock update after source review.",
   "type": "object",
   "required": ["schema_version", "document_type", "license", "registry_policy", "theorems"],
   "properties": {
@@ -33,8 +34,16 @@
         "year": {"type": "integer", "minimum": 1800, "maximum": 2100},
         "category": {"type": "string", "minLength": 1},
         "domain": {"type": "string", "minLength": 1},
-        "hypotheses_summary": {"type": "string", "minLength": 1},
-        "conclusion_summary": {"type": "string", "minLength": 1},
+        "hypotheses_summary": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Audited semantic lock enforced by tools/validate_boundary_map.py; registry-only edits that weaken this text fail cross-registry validation."
+        },
+        "conclusion_summary": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Audited semantic lock enforced by tools/validate_boundary_map.py; registry-only edits that strengthen this text fail cross-registry validation."
+        },
         "limitations": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
         "relation_to_clay": {"type": "string", "minLength": 1},
         "supports_tracks": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"enum": ["global_regularity", "breakdown"]}},
