@@ -22,6 +22,11 @@ SHARED_OPERATOR != SHARED_DYNAMICS
 STRUCTURAL_ANALOGY != DOMAIN_EQUIVALENCE
 ANALOGY != DOMAIN_EVIDENCE
 ANALOGY_CANNOT_PROMOTE_CLAIM
+PERSISTED_STATE != TRUTH
+LEDGER_REPLAY != CLAIM_PROMOTION
+CONTENT_ADDRESSING != MATHEMATICAL_VALIDATION
+MUTABLE_HISTORY != RESEARCH_PROVENANCE
+TRANSFER_TICKET != DOMAIN_EVIDENCE
 ```
 
 ## Machine research boundary
@@ -40,14 +45,16 @@ The project carries machine-readable research boundaries and laboratory contract
 - `research/analogy_firewall_contract.json` — authority limits for cross-domain analogy transfer;
 - `research/cross_domain_transfer_registry.json` — provenance-bearing mapping classifications and negative controls;
 - `research/ns_cross_domain_transfer_adapter.json` — NS intake/revalidation policy for analogy-derived candidates;
-- `research/schemas/` — schemas for research, experiment, laboratory, referee, Crucible and transfer contracts;
+- `research/crucible_ledger_contract.json` — content-addressed object/ref/event/replay and transfer-ticket persistence contract;
+- `research/schemas/` — schemas for research, experiment, laboratory, referee, Crucible, transfer and ledger contracts;
 - `tools/validate_boundary_map.py` — theorem/source boundary validation;
 - `tools/validate_lab_contract.py` — solver/manifest/identity correspondence validation;
 - `tools/validate_precision_referee.py` — precision-referee correspondence validation;
 - `tools/validate_crucible_core.py` — Crucible/NS-adapter correspondence and hostile-mutation validation;
-- `tools/validate_analogy_firewall.py` — transfer-registry/firewall/NS-intake authority validation.
+- `tools/validate_analogy_firewall.py` — transfer-registry/firewall/NS-intake authority validation;
+- `tools/validate_crucible_ledger.py` — ledger immutability, replay, transfer-ticket and authority validation.
 
-Only official problem statements and primary research sources may authorize theorem-registry entries. Secondary sources may help discover literature but cannot establish the machine theorem boundary. Cross-domain analogies are even more tightly bounded: they may generate exploratory candidates but are not NS evidence.
+Only official problem statements and primary research sources may authorize theorem-registry entries. Secondary sources may help discover literature but cannot establish the machine theorem boundary. Cross-domain analogies may generate exploratory candidates but are not NS evidence. Content-addressed persistence records what happened; it does not increase evidentiary authority.
 
 ## Deterministic PDE laboratory v0.1
 
@@ -82,31 +89,35 @@ The failure ledger is intended to make future ML search cumulative: dead candida
 
 PR #6 adds a controlled intake valve from other domains.
 
-`src/crucible_core/analogy.py` classifies cross-domain mappings as:
-
-- exact correspondence;
-- operator correspondence;
-- structural analogy;
-- heuristic analogy;
-- visual resemblance;
-- explicit non-correspondence.
-
-The first four may seed an **exploratory** candidate. The final two are negative-control-only.
+`src/crucible_core/analogy.py` classifies cross-domain mappings as exact correspondence, operator correspondence, structural analogy, heuristic analogy, visual resemblance, or explicit non-correspondence. The first four may seed an **exploratory** candidate. The final two are negative-control-only.
 
 No mapping class may automatically become NS evidence, raise a claim level, satisfy a proof barrier, select a winner, or assert whole-domain equivalence. Source-domain proof/evidence status is never inherited. Every accepted transfer must be revalidated under the NS adapter, Clay target and full proof-barrier set.
 
 The initial registry is derived from a user-supplied fluid/diffusion technical reference. The source is retained as design provenance, not promoted to theorem authority.
 
+## Content-Addressed Crucible Ledger v0.1
+
+PR #7 adds durable research-process memory for future ML search.
+
+`src/crucible_core/ledger.py` stores canonical JSON envelopes under SHA-256 object identities for candidates, evidence, failures, analogies, transfer tickets and snapshots. Logical refs are immutable, while `ledger.jsonl` provides the authoritative append-only SHA-chained event history.
+
+Every event records an actor, exact source commit and UTC timestamp. Replay verifies object hashes, canonical serialization, event sequence/hash chain and ref correspondence; tampered history fails closed.
+
+Analogy-derived candidates can be accompanied by immutable transfer tickets recording the analogy ID, mapping class, source digest, target domain, firewall decision and candidate object identity. The ticket requires exploratory intake and target-domain revalidation.
+
+The ledger is deliberately **single-writer-process only in v0.1**. It preserves state and provenance but has no authority to define truth, create domain evidence, promote a claim, choose a winner or alter the NS epistemic standard.
+
 ## Repository map
 
 - `AGENTS.md` / `AGENTS.schema.json` — machine-readable research constitution;
 - `src/ns_lab/` — deterministic periodic reference laboratory and precision referee;
-- `src/crucible_core/` — domain-neutral candidate/falsification and analogy-firewall machinery;
-- `tests/` — replay, solver, manifest, referee, Crucible and analogy-firewall regressions;
+- `src/crucible_core/` — domain-neutral candidate/falsification, analogy-firewall and content-addressed ledger machinery;
+- `tests/` — replay, solver, manifest, referee, Crucible, analogy-firewall and ledger regressions;
 - `docs/CRUCIBLE_CORE_V0_1.md` — generic Crucible design and nonclaims;
 - `docs/NS_CRUCIBLE_ADAPTER.md` — NS-specific epistemic binding;
 - `docs/ANALOGY_FIREWALL_V0_1.md` — controlled cross-domain transfer architecture;
 - `docs/NS_CROSS_DOMAIN_TRANSFER_ADAPTER.md` — NS-specific analogy intake/revalidation rules;
+- `docs/CRUCIBLE_LEDGER_V0_1.md` — content-addressed persistence/replay architecture and nonclaims;
 - `docs/PDE_LAB_V0_1.md` / `docs/PRECISION_REFEREE_V0_1.md` — numerical architecture;
 - `docs/PROBLEM_STATEMENT.md` / `docs/KNOWN_BOUNDARY.md` / `docs/PROOF_BARRIERS.md` — mathematical target and known boundary;
 - `docs/CLAIM_LEVELS.md` — evidence/claim promotion ladder;

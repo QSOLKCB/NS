@@ -1,0 +1,77 @@
+{
+  "schema_version": "0.1.0",
+  "document_type": "qsol_crucible_content_addressed_ledger_contract",
+  "license": "Apache-2.0",
+  "ledger_version": "0.1.0",
+  "purpose": "persistent content-addressed memory for Crucible candidates, evidence, failures, analogies, transfer tickets and snapshots",
+  "canonicalization": {
+    "serialization": "canonical_json",
+    "utf8": true,
+    "sort_keys": true,
+    "compact_separators": true,
+    "allow_nan": false,
+    "terminal_newline": true,
+    "digest": "sha256"
+  },
+  "object_store": {
+    "object_types": ["candidate", "evidence", "failure", "analogy", "transfer_ticket", "snapshot"],
+    "object_address_format": "sha256:<64 lowercase hex>",
+    "address_is_hash_of_canonical_envelope": true,
+    "objects_immutable": true,
+    "silent_overwrite_forbidden": true,
+    "deletion_api_exposed": false
+  },
+  "ref_policy": {
+    "logical_refs_immutable": true,
+    "logical_ref_rebinding_forbidden": true,
+    "same_ref_same_object_is_idempotent": true,
+    "refs_are_navigation_index_not_epistemic_authority": true,
+    "event_log_is_authoritative_history": true
+  },
+  "event_log": {
+    "format": "canonical_json_lines",
+    "append_only": true,
+    "sha256_hash_chained": true,
+    "sequence_contiguous_from_one": true,
+    "required_provenance": ["actor", "source_commit", "recorded_at_utc"],
+    "source_commit_exact_40_hex": true,
+    "timestamp_must_be_utc": true,
+    "single_writer_process_only_v0_1": true
+  },
+  "transfer_ticket_policy": {
+    "analogy_derived_candidate_requires_ticket": true,
+    "candidate_object_must_exist": true,
+    "candidate_object_type_must_be_candidate": true,
+    "candidate_target_domain_must_match_ticket": true,
+    "candidate_claim_level_at_intake": "exploratory",
+    "target_domain_validation_required": true,
+    "source_sha256_preserved": true,
+    "firewall_decision_preserved": true,
+    "ticket_is_domain_evidence": false
+  },
+  "replay_policy": {
+    "verify_object_hashes": true,
+    "verify_canonical_serialization": true,
+    "verify_event_hash_chain": true,
+    "verify_immutable_refs": true,
+    "replay_may_reconstruct_recorded_state": true,
+    "replay_may_promote_claim": false,
+    "replay_may_select_winner": false,
+    "replay_may_define_truth": false
+  },
+  "authority": {
+    "persisted_state_is_truth": false,
+    "persistence_creates_domain_evidence": false,
+    "ledger_may_promote_claim": false,
+    "ledger_may_select_winner": false,
+    "ledger_may_change_domain_epistemic_standard": false
+  },
+  "required_nonclaims": [
+    "persisted_state_is_not_truth",
+    "ledger_replay_is_not_claim_promotion",
+    "content_addressing_is_not_mathematical_validation",
+    "stored_evidence_is_not_strengthened_by_storage",
+    "transfer_ticket_is_not_target_domain_evidence",
+    "snapshot_is_not_publication_authority"
+  ]
+}

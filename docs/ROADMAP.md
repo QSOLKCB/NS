@@ -86,18 +86,31 @@ PR #6 Analogy Firewall foundation:
 - [x] add an initial fluid/stochastic/generative-model transfer registry from hashed design input;
 - [x] add hostile mutation tests and Python 3.11/3.13 Analogy Firewall CI.
 
+PR #7 Content-Addressed Crucible Ledger foundation:
+
+- [x] add persistent SHA-256 addressed candidate/evidence/failure/analogy objects;
+- [x] add immutable logical refs with rebinding forbidden;
+- [x] add a canonical append-only SHA-chained event log;
+- [x] require actor, exact source commit and UTC timestamp on ledger events;
+- [x] add replay verification for object hashes, canonical serialization, event chain and refs;
+- [x] add content-addressed snapshots of verified ledger state;
+- [x] add persistent transfer tickets for analogy-derived exploratory candidates;
+- [x] machine-lock that persistence/replay cannot define truth, create evidence, promote claims or select winners;
+- [x] explicitly scope v0.1 to a single writer process;
+- [x] add hostile tamper/rebinding/authority tests and Python 3.11/3.13 ledger CI.
+
 Next ML-search engineering:
 
-- [ ] add persistent content-addressed candidate/evidence/failure/analogy stores;
 - [ ] add ML generator interfaces that emit schema-valid candidates only;
 - [ ] add duplicate/dead-family detection against the accumulated failure ledger;
 - [ ] add controlled candidate mutation/crossover provenance;
 - [ ] add sealed holdout materialization with auditable release events;
-- [ ] add transfer-ticket persistence so every analogy-derived candidate retains a content-addressed intake decision;
 - [ ] add target-domain reviewers capable of rejecting analogy families before expensive evaluation;
+- [ ] add multi-process/concurrent writer coordination without weakening append-only history;
+- [ ] add explicit orphan-object audit/retention policy without deleting evidentiary history;
 - [ ] extract the generic Crucible package into its own repository only after the NS reference implementation stabilizes.
 
-Crucible Core is an orchestration/falsification engine, not a truth engine. The Analogy Firewall broadens candidate generation without broadening evidentiary authority. Each future domain adapter must define its own epistemic standard.
+Crucible Core is an orchestration/falsification engine, not a truth engine. The Analogy Firewall broadens candidate generation without broadening evidentiary authority. The Content-Addressed Crucible Ledger makes the resulting search history durable without increasing its claim level. Each future domain adapter must define its own epistemic standard.
 
 ## Phase 3 — Competing mechanism search
 
@@ -109,7 +122,7 @@ Use the Crucible frontier to search for sharpened a priori bounds, monotone/coer
 
 Use the same machinery to search for admissible initial-data/forcing families, concentration mechanisms, scaling scenarios or rigorous reductions capable of satisfying Clay C or D. Numerical blow-up signatures remain exploratory until a continuum bridge is proved.
 
-Future ML search should generate candidates on both tracks, preserve failed families, use the failure ledger to reduce repeated exploration of already-rejected mechanisms, and route cross-domain ideas through the Analogy Firewall before they reach the NS frontier.
+Future ML search should generate candidates on both tracks, preserve failed families, use the persistent failure ledger to reduce repeated exploration of already-rejected mechanisms, route cross-domain ideas through the Analogy Firewall, and retain every intake/failure/survival decision in content-addressed history.
 
 ## Phase 4 — Proof extraction
 
@@ -117,7 +130,7 @@ Promote only precise candidate lemmas. Attempt analytic proof, symbolic checking
 
 ## Phase 5 — Adversarial review
 
-Try to break every promoted result with edge cases, scaling checks, hidden assumptions, known theorems, alternate discretizations, proof-barrier matching, analogy-authority audits and independent reviewers.
+Try to break every promoted result with edge cases, scaling checks, hidden assumptions, known theorems, alternate discretizations, proof-barrier matching, analogy-authority audits, ledger-provenance audits and independent reviewers.
 
 ## Phase 6 — Publication/archive
 

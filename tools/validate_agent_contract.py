@@ -63,12 +63,14 @@ def main() -> None:
         ("run_tools_validate_precision_referee_py", "precision referee validator removed from agent boot"),
         ("run_tools_validate_crucible_core_py", "Crucible validator removed from agent boot"),
         ("run_tools_validate_analogy_firewall_py", "Analogy Firewall validator removed from agent boot"),
+        ("run_tools_validate_crucible_ledger_py", "Crucible ledger validator removed from agent boot"),
         ("read_research_precision_referee_contract_json", "precision referee contract removed from agent boot"),
         ("read_research_crucible_contract_json", "Crucible contract removed from agent boot"),
         ("read_research_ns_crucible_adapter_json", "NS Crucible adapter removed from agent boot"),
         ("read_research_analogy_firewall_contract_json", "Analogy Firewall contract removed from agent boot"),
         ("read_research_cross_domain_transfer_registry_json", "transfer registry removed from agent boot"),
         ("read_research_ns_cross_domain_transfer_adapter_json", "NS transfer adapter removed from agent boot"),
+        ("read_research_crucible_ledger_contract_json", "Crucible ledger contract removed from agent boot"),
     ]:
         mutated = copy.deepcopy(contract)
         mutated["agent_boot_sequence"].remove(boot_step)
@@ -95,6 +97,11 @@ def main() -> None:
         ("analogy_is_not_domain_evidence", "analogy evidence firewall removed"),
         ("analogy_cannot_promote_claim", "analogy claim-promotion firewall removed"),
         ("cross_domain_transfer_requires_target_domain_validation", "target-domain validation requirement removed"),
+        ("persisted_state_is_not_truth", "persistence truth boundary removed"),
+        ("ledger_replay_is_not_claim_promotion", "ledger replay promotion boundary removed"),
+        ("content_addressing_is_not_mathematical_validation", "content-addressing validation boundary removed"),
+        ("mutable_history_is_not_research_provenance", "immutable history boundary removed"),
+        ("transfer_ticket_is_not_domain_evidence", "transfer-ticket evidence boundary removed"),
     ]:
         mutated = copy.deepcopy(contract)
         mutated["research_invariants"].remove(invariant)
@@ -136,13 +143,37 @@ def main() -> None:
     mutated["analogy_policy"]["analogy_derived_candidate_initial_claim_level"] = "candidate_lemma"
     require_rejected(validator, mutated, "analogy-derived candidate starts above exploratory")
 
-    mutated = copy.deepcopy(contract)
-    mutated["review_policy"]["check_cross_domain_analogy_classification"] = False
-    require_rejected(validator, mutated, "cross-domain analogy classification review disabled")
+    for field, label in [
+        ("objects_immutable", "ledger object immutability disabled"),
+        ("logical_ref_rebinding_forbidden", "ledger ref rebinding enabled"),
+        ("event_log_append_only", "ledger event log made mutable"),
+        ("event_log_sha256_hash_chained", "ledger event hash chain disabled"),
+        ("event_provenance_requires_actor_source_commit_and_utc", "ledger event provenance weakened"),
+        ("analogy_derived_candidate_requires_transfer_ticket", "transfer ticket requirement disabled"),
+    ]:
+        mutated = copy.deepcopy(contract)
+        mutated["ledger_policy"][field] = False
+        require_rejected(validator, mutated, label)
 
-    mutated = copy.deepcopy(contract)
-    mutated["review_policy"]["check_analogy_target_revalidation"] = False
-    require_rejected(validator, mutated, "analogy target revalidation review disabled")
+    for field, label in [
+        ("ledger_may_define_truth", "ledger granted truth authority"),
+        ("ledger_may_promote_claim", "ledger granted claim-promotion authority"),
+        ("ledger_may_select_winner", "ledger granted winner-selection authority"),
+        ("persistence_creates_domain_evidence", "persistence granted evidence authority"),
+    ]:
+        mutated = copy.deepcopy(contract)
+        mutated["ledger_policy"][field] = True
+        require_rejected(validator, mutated, label)
+
+    for field, label in [
+        ("check_cross_domain_analogy_classification", "cross-domain analogy classification review disabled"),
+        ("check_analogy_target_revalidation", "analogy target revalidation review disabled"),
+        ("check_content_addressed_ledger_integrity", "ledger integrity review disabled"),
+        ("check_transfer_ticket_provenance", "transfer-ticket provenance review disabled"),
+    ]:
+        mutated = copy.deepcopy(contract)
+        mutated["review_policy"][field] = False
+        require_rejected(validator, mutated, label)
 
     print("AGENTS contract validation: PASS")
 
