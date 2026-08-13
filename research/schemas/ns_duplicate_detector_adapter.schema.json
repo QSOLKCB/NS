@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/QSOLKCB/NS/blob/main/research/schemas/ns_duplicate_detector_adapter.schema.json",
+  "type": "object",
+  "required": ["schema_version","document_type","license","adapter_version","detector_contract","domain_id","hypothesis_set_id","allowed_target_hypotheses","calibration","comparison_policy","dead_family_policy","registry_bindings","epistemic_authority"],
+  "properties": {
+    "schema_version": {"const": "0.1.0"},
+    "document_type": {"const": "qsol_ns_duplicate_detector_adapter"},
+    "license": {"const": "Apache-2.0"},
+    "adapter_version": {"const": "0.1.0"},
+    "detector_contract": {"const": "research/duplicate_detector_contract.json"},
+    "domain_id": {"const": "navier_stokes_3d_incompressible"},
+    "hypothesis_set_id": {"const": "NS_PRIMARY_COMPETITION"},
+    "allowed_target_hypotheses": {"const": ["NS_GLOBAL_REGULARITY","NS_FINITE_TIME_BREAKDOWN"]},
+    "calibration": {
+      "type": "object",
+      "required": ["structural_similarity_threshold","dead_family_similarity_threshold","minimum_shared_tokens","status","automatic_rejection_authorized"],
+      "properties": {
+        "structural_similarity_threshold": {"type": "number", "exclusiveMinimum": 0, "maximum": 1},
+        "dead_family_similarity_threshold": {"type": "number", "exclusiveMinimum": 0, "maximum": 1},
+        "minimum_shared_tokens": {"type": "integer", "minimum": 1},
+        "status": {"const": "local_screening_parameters_not_universal_constants"},
+        "automatic_rejection_authorized": {"const": false}
+      },
+      "additionalProperties": false
+    },
+    "comparison_policy": {
+      "type": "object",
+      "required": ["same_domain_required","same_hypothesis_set_required","same_target_track_required","exact_fingerprint_excludes_identity_and_machine_provenance","near_duplicate_metric","embedding_or_external_model_required"],
+      "properties": {
+        "same_domain_required": {"const": true},
+        "same_hypothesis_set_required": {"const": true},
+        "same_target_track_required": {"const": true},
+        "exact_fingerprint_excludes_identity_and_machine_provenance": {"const": true},
+        "near_duplicate_metric": {"const": "token_jaccard_v1"},
+        "embedding_or_external_model_required": {"const": false}
+      },
+      "additionalProperties": false
+    },
+    "dead_family_policy": {
+      "type": "object",
+      "required": ["must_reference_persisted_candidate_object","must_reference_persisted_failure_objects","match_requires_review","proof_of_falsehood","candidate_rejection_authority"],
+      "properties": {
+        "must_reference_persisted_candidate_object": {"const": true},
+        "must_reference_persisted_failure_objects": {"const": true},
+        "match_requires_review": {"const": true},
+        "proof_of_falsehood": {"const": false},
+        "candidate_rejection_authority": {"const": false}
+      },
+      "additionalProperties": false
+    },
+    "registry_bindings": {
+      "const": {
+        "crucible_adapter": "research/ns_crucible_adapter.json",
+        "crucible_ledger_contract": "research/crucible_ledger_contract.json",
+        "proof_barrier_registry": "research/proof_barriers.json",
+        "ml_generator_adapter": "research/ns_ml_generator_adapter.json"
+      }
+    },
+    "epistemic_authority": {
+      "const": {
+        "detector_is_ns_evidence": false,
+        "detector_can_change_claim_level": false,
+        "detector_can_reject_candidate": false,
+        "detector_can_select_track_winner": false,
+        "similarity_is_equivalence": false,
+        "dead_family_match_is_falsehood": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

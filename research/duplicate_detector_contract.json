@@ -1,0 +1,55 @@
+{
+  "schema_version": "0.1.0",
+  "document_type": "qsol_duplicate_dead_family_detector_contract",
+  "license": "Apache-2.0",
+  "detector_version": "0.1.0",
+  "purpose": "deterministic search-efficiency screening against prior candidates and failure-backed mechanism families",
+  "algorithms": {
+    "exact_fingerprint": "normalized_declared_mechanism_sha256_v1",
+    "structural_similarity": "token_jaccard_v1",
+    "threshold_scope": "adapter_local_screening_parameters_not_universal_constants"
+  },
+  "origin_classes": [
+    "exact_domain_construction",
+    "established_bridge",
+    "source_described",
+    "structural_transfer",
+    "heuristic",
+    "schematic"
+  ],
+  "classifications": [
+    "novel_to_screening_memory",
+    "exact_duplicate",
+    "structural_near_duplicate",
+    "dead_family_match"
+  ],
+  "screening_policy": {
+    "cross_track_comparison_forbidden": true,
+    "failure_backing_required_for_dead_family": true,
+    "flagged_candidate_requires_review": true,
+    "automatic_candidate_rejection": false,
+    "similarity_establishes_mathematical_equivalence": false,
+    "dead_family_match_proves_falsehood": false,
+    "origin_class_changes_claim_level": false,
+    "origin_class_changes_evidence_status": false,
+    "screening_changes_claim_level": false,
+    "screening_creates_domain_evidence": false,
+    "screening_selects_hypothesis_winner": false
+  },
+  "memory_policy": {
+    "content_addressed": true,
+    "append_only_sha_chain": true,
+    "immutable_logical_refs": true,
+    "candidate_refs_must_match_verified_crucible_ledger": true,
+    "failure_refs_must_match_verified_crucible_ledger": true,
+    "screening_memory_is_domain_evidence": false
+  },
+  "invariants": [
+    "SIMILAR_CANDIDATE != MATHEMATICALLY_EQUIVALENT_CANDIDATE",
+    "DEAD_FAMILY_MATCH != PROOF_OF_FALSEHOOD",
+    "SCREENING_FLAG != CANDIDATE_REJECTION",
+    "ORIGIN_CLASS != CLAIM_LEVEL",
+    "LOCAL_SIMILARITY_THRESHOLD != UNIVERSAL_CONSTANT",
+    "SCREENING_MEMORY != DOMAIN_EVIDENCE"
+  ]
+}

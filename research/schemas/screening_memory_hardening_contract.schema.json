@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/QSOLKCB/NS/blob/main/research/schemas/screening_memory_hardening_contract.schema.json",
+  "type": "object",
+  "required": ["schema_version","document_type","license","requirements"],
+  "properties": {
+    "schema_version": {"const": "0.1.0"},
+    "document_type": {"const": "qsol_screening_memory_hardening_contract"},
+    "license": {"const": "Apache-2.0"},
+    "requirements": {
+      "type": "object",
+      "required": ["candidate_payload_must_match_content_addressed_id","failure_payload_must_match_content_addressed_id","explicit_target_track_required_for_comparison","report_semantics_must_be_coherent","event_provenance_requires_actor_source_commit_and_utc","missing_derived_refs_recoverable_from_verified_log","single_writer_process_only_v0_1"],
+      "properties": {
+        "candidate_payload_must_match_content_addressed_id": {"const": true},
+        "failure_payload_must_match_content_addressed_id": {"const": true},
+        "explicit_target_track_required_for_comparison": {"const": true},
+        "report_semantics_must_be_coherent": {"const": true},
+        "event_provenance_requires_actor_source_commit_and_utc": {"const": true},
+        "missing_derived_refs_recoverable_from_verified_log": {"const": true},
+        "single_writer_process_only_v0_1": {"const": true}
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

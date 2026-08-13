@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/QSOLKCB/NS/blob/main/research/schemas/duplicate_detector_contract.schema.json",
+  "type": "object",
+  "required": ["schema_version","document_type","license","detector_version","purpose","algorithms","origin_classes","classifications","screening_policy","memory_policy","invariants"],
+  "properties": {
+    "schema_version": {"const": "0.1.0"},
+    "document_type": {"const": "qsol_duplicate_dead_family_detector_contract"},
+    "license": {"const": "Apache-2.0"},
+    "detector_version": {"const": "0.1.0"},
+    "purpose": {"type": "string", "minLength": 1},
+    "algorithms": {
+      "type": "object",
+      "required": ["exact_fingerprint","structural_similarity","threshold_scope"],
+      "properties": {
+        "exact_fingerprint": {"const": "normalized_declared_mechanism_sha256_v1"},
+        "structural_similarity": {"const": "token_jaccard_v1"},
+        "threshold_scope": {"const": "adapter_local_screening_parameters_not_universal_constants"}
+      },
+      "additionalProperties": false
+    },
+    "origin_classes": {"const": ["exact_domain_construction","established_bridge","source_described","structural_transfer","heuristic","schematic"]},
+    "classifications": {"const": ["novel_to_screening_memory","exact_duplicate","structural_near_duplicate","dead_family_match"]},
+    "screening_policy": {
+      "type": "object",
+      "required": ["cross_track_comparison_forbidden","failure_backing_required_for_dead_family","flagged_candidate_requires_review","automatic_candidate_rejection","similarity_establishes_mathematical_equivalence","dead_family_match_proves_falsehood","origin_class_changes_claim_level","origin_class_changes_evidence_status","screening_changes_claim_level","screening_creates_domain_evidence","screening_selects_hypothesis_winner"],
+      "properties": {
+        "cross_track_comparison_forbidden": {"const": true},
+        "failure_backing_required_for_dead_family": {"const": true},
+        "flagged_candidate_requires_review": {"const": true},
+        "automatic_candidate_rejection": {"const": false},
+        "similarity_establishes_mathematical_equivalence": {"const": false},
+        "dead_family_match_proves_falsehood": {"const": false},
+        "origin_class_changes_claim_level": {"const": false},
+        "origin_class_changes_evidence_status": {"const": false},
+        "screening_changes_claim_level": {"const": false},
+        "screening_creates_domain_evidence": {"const": false},
+        "screening_selects_hypothesis_winner": {"const": false}
+      },
+      "additionalProperties": false
+    },
+    "memory_policy": {
+      "type": "object",
+      "required": ["content_addressed","append_only_sha_chain","immutable_logical_refs","candidate_refs_must_match_verified_crucible_ledger","failure_refs_must_match_verified_crucible_ledger","screening_memory_is_domain_evidence"],
+      "properties": {
+        "content_addressed": {"const": true},
+        "append_only_sha_chain": {"const": true},
+        "immutable_logical_refs": {"const": true},
+        "candidate_refs_must_match_verified_crucible_ledger": {"const": true},
+        "failure_refs_must_match_verified_crucible_ledger": {"const": true},
+        "screening_memory_is_domain_evidence": {"const": false}
+      },
+      "additionalProperties": false
+    },
+    "invariants": {"type": "array", "minItems": 6, "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
+  },
+  "additionalProperties": false
+}

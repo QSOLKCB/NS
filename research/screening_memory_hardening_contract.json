@@ -1,0 +1,14 @@
+{
+  "schema_version": "0.1.0",
+  "document_type": "qsol_screening_memory_hardening_contract",
+  "license": "Apache-2.0",
+  "requirements": {
+    "candidate_payload_must_match_content_addressed_id": true,
+    "failure_payload_must_match_content_addressed_id": true,
+    "explicit_target_track_required_for_comparison": true,
+    "report_semantics_must_be_coherent": true,
+    "event_provenance_requires_actor_source_commit_and_utc": true,
+    "missing_derived_refs_recoverable_from_verified_log": true,
+    "single_writer_process_only_v0_1": true
+  }
+}

@@ -114,9 +114,23 @@ PR #8 Schema-Constrained ML Generator foundation:
 - [x] harden provider-failure retention, exact NS track/proof-barrier context, context-scoped references, UTC provenance, parse/schema state separation, authority-language scanning and component-safe proposal IDs;
 - [x] add hostile authority-smuggling tests and Python 3.11/3.13 ML-generator CI.
 
+PR #9 Candidate Similarity Screening foundation:
+
+- [x] add normalized declared-mechanism SHA-256 fingerprints for deterministic exact-repeat screening;
+- [x] add deterministic token-Jaccard screening for structural near-matches and prior-failure mechanism-family matches;
+- [x] require same domain, hypothesis set and target track before candidate comparisons;
+- [x] classify candidate origin separately from claim level using exact/bridge/source/transfer/heuristic/schematic provenance classes;
+- [x] build prior-failure mechanism families only from a candidate plus one or more failure records belonging to that candidate;
+- [x] bind screening candidate/failure references to content-addressed identities from a verified Crucible Ledger replay;
+- [x] add a separate content-addressed SHA-chained screening journal with immutable logical refs;
+- [x] make every flagged result advisory and review-required, with no automatic candidate rejection;
+- [x] machine-lock that similarity does not establish mathematical equivalence, falsehood, evidence status, claim promotion or winner selection;
+- [x] record thresholds as local NS screening calibration rather than universal constants;
+- [x] add machine contracts, schemas, validator, behavioral regressions, documentation and Python 3.11/3.13 CI.
+
 Next ML-search engineering:
 
-- [ ] add duplicate/dead-family detection against the accumulated failure ledger;
+- [x] add duplicate/prior-failure-family detection against accumulated Crucible history;
 - [ ] add controlled candidate mutation/crossover provenance;
 - [ ] add sealed holdout materialization with auditable release events;
 - [ ] add target-domain reviewers capable of rejecting analogy families before expensive evaluation;
@@ -129,13 +143,13 @@ Next ML-search engineering:
 
 The following work may borrow **software architecture, falsification methods, provenance patterns, observer contracts and candidate-generation heuristics** from other QSOL repositories. Those sources do not become Navier-Stokes evidence by reuse. Mathematical or scientific ideas imported from another domain must still enter through the Analogy Firewall and satisfy the NS domain adapter, theorem boundary and proof barriers.
 
-**PR #9 — Duplicate & Dead-Family Detection.**
+**PR #9 — Candidate Similarity Screening — IMPLEMENTED IN THIS PR.**
 
-- [ ] classify candidate origin separately from claim level, borrowing the useful editorial separation in `QSOLKCB/synergetics2` between exact constructions, established bridges, source-described material, interpretation and schematic material;
-- [ ] distinguish exact duplicate identity, structural near-duplicate and previously rejected mechanism family without treating similarity as mathematical equivalence;
-- [ ] use only locally calibrated similarity/dead-family thresholds, following the calibration discipline used in `QSOLKCB/res-rag` rather than promoting local thresholds to universal constants;
-- [ ] bind every duplicate/dead-family decision to content-addressed candidate/failure identities and preserve false-positive escape/review paths;
-- [ ] machine-lock `SIMILAR_CANDIDATE != MATHEMATICALLY_EQUIVALENT_CANDIDATE` and `DEAD_FAMILY_MATCH != PROOF_OF_FALSEHOOD`.
+- [x] classify candidate origin separately from claim level, adapting the useful editorial separation in `QSOLKCB/synergetics2`;
+- [x] distinguish normalized exact repeats, structural near-matches and prior-failure mechanism-family matches without treating similarity as mathematical equivalence;
+- [x] use only locally calibrated thresholds, following the calibration discipline used in `QSOLKCB/res-rag` rather than promoting local thresholds to universal constants;
+- [x] bind screening decisions to content-addressed candidate/failure identities and preserve false-positive review paths;
+- [x] machine-lock `SIMILAR_CANDIDATE != MATHEMATICALLY_EQUIVALENT_CANDIDATE` and `DEAD_FAMILY_MATCH != PROOF_OF_FALSEHOOD`.
 
 **PR #10 — Controlled Mutation & Crossover Engine.**
 
@@ -162,7 +176,7 @@ The following work may borrow **software architecture, falsification methods, pr
 
 **PR #13 — Crucible Atlas & Observer Bus.**
 
-- [ ] borrow the searchable atlas/pathway presentation ideas from `QSOLKCB/synergetics2` for candidate ancestry, theorem dependencies, proof barriers, dead families and surviving frontier visualization;
+- [ ] borrow the searchable atlas/pathway presentation ideas from `QSOLKCB/synergetics2` for candidate ancestry, theorem dependencies, proof barriers, prior-failure families and surviving frontier visualization;
 - [ ] borrow the strict canonical-versus-interpretive observation split from `QSOLKCB/E8_MUSIC`;
 - [ ] define canonical deterministic observers for numerical fields/diagnostics with frozen transforms and receipt chains, while keeping creative visualization/sonification in a separately labelled interpretive receiver;
 - [ ] fail closed rather than silently clipping, normalizing or remapping canonical observer data;
@@ -175,7 +189,7 @@ The following work may borrow **software architecture, falsification methods, pr
 - [ ] admit motifs from other speculative/formal QSOL frameworks only as provenance-labelled candidate reservoirs, never by importing their physical interpretation or evidentiary status;
 - [ ] consider a later Lean 4 assurance layer, following the bounded formal-assurance discipline used in `QSOLKCB/UFF` and `QSOLKCB/E8_MUSIC`, to prove selected software/epistemic invariants without presenting formal verification as a Navier-Stokes proof.
 
-Crucible Core is an orchestration/falsification engine, not a truth engine. The Analogy Firewall broadens candidate generation without broadening evidentiary authority. The Content-Addressed Crucible Ledger makes the resulting search history durable without increasing its claim level. The ML Generator permits bounded model proposals without granting the model a write path to research authority. Cross-repository borrowing may expand search strategy and instrumentation, but it does not bypass target-domain validation. Each future domain adapter must define its own epistemic standard.
+Crucible Core is an orchestration/falsification engine, not a truth engine. The Analogy Firewall broadens candidate generation without broadening evidentiary authority. The Content-Addressed Crucible Ledger makes the resulting search history durable without increasing its claim level. The ML Generator permits bounded model proposals without granting the model a write path to research authority. Similarity screening reduces repeated search without deciding mathematical equivalence or falsehood. Cross-repository borrowing may expand search strategy and instrumentation, but it does not bypass target-domain validation. Each future domain adapter must define its own epistemic standard.
 
 ## Phase 3 — Competing mechanism search
 
@@ -187,7 +201,7 @@ Use the Crucible frontier to search for sharpened a priori bounds, monotone/coer
 
 Use the same machinery to search for admissible initial-data/forcing families, concentration mechanisms, scaling scenarios or rigorous reductions capable of satisfying Clay C or D. Numerical blow-up signatures remain exploratory until a continuum bridge is proved.
 
-Future ML search should generate candidates on both tracks through the schema-constrained airlock, preserve failed families, use the persistent failure ledger to reduce repeated exploration of already-rejected mechanisms, route cross-domain ideas through the Analogy Firewall, and retain every generation/intake/failure/survival decision in auditable history.
+Future ML search should generate candidates on both tracks through the schema-constrained airlock, preserve failed families, use the persistent failure ledger and similarity screening memory to reduce repeated exploration of already-rejected mechanisms, route cross-domain ideas through the Analogy Firewall, and retain every generation/intake/screening/failure/survival decision in auditable history.
 
 ## Phase 4 — Proof extraction
 
@@ -195,7 +209,7 @@ Promote only precise candidate lemmas. Attempt analytic proof, symbolic checking
 
 ## Phase 5 — Adversarial review
 
-Try to break every promoted result with edge cases, scaling checks, hidden assumptions, known theorems, alternate discretizations, proof-barrier matching, analogy-authority audits, ledger-provenance audits, generator-authority audits and independent reviewers.
+Try to break every promoted result with edge cases, scaling checks, hidden assumptions, known theorems, alternate discretizations, proof-barrier matching, analogy-authority audits, ledger-provenance audits, generator-authority audits, similarity-screening audits and independent reviewers.
 
 ## Phase 6 — Publication/archive
 

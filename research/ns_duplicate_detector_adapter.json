@@ -1,0 +1,49 @@
+{
+  "schema_version": "0.1.0",
+  "document_type": "qsol_ns_duplicate_detector_adapter",
+  "license": "Apache-2.0",
+  "adapter_version": "0.1.0",
+  "detector_contract": "research/duplicate_detector_contract.json",
+  "domain_id": "navier_stokes_3d_incompressible",
+  "hypothesis_set_id": "NS_PRIMARY_COMPETITION",
+  "allowed_target_hypotheses": [
+    "NS_GLOBAL_REGULARITY",
+    "NS_FINITE_TIME_BREAKDOWN"
+  ],
+  "calibration": {
+    "structural_similarity_threshold": 0.82,
+    "dead_family_similarity_threshold": 0.76,
+    "minimum_shared_tokens": 4,
+    "status": "local_screening_parameters_not_universal_constants",
+    "automatic_rejection_authorized": false
+  },
+  "comparison_policy": {
+    "same_domain_required": true,
+    "same_hypothesis_set_required": true,
+    "same_target_track_required": true,
+    "exact_fingerprint_excludes_identity_and_machine_provenance": true,
+    "near_duplicate_metric": "token_jaccard_v1",
+    "embedding_or_external_model_required": false
+  },
+  "dead_family_policy": {
+    "must_reference_persisted_candidate_object": true,
+    "must_reference_persisted_failure_objects": true,
+    "match_requires_review": true,
+    "proof_of_falsehood": false,
+    "candidate_rejection_authority": false
+  },
+  "registry_bindings": {
+    "crucible_adapter": "research/ns_crucible_adapter.json",
+    "crucible_ledger_contract": "research/crucible_ledger_contract.json",
+    "proof_barrier_registry": "research/proof_barriers.json",
+    "ml_generator_adapter": "research/ns_ml_generator_adapter.json"
+  },
+  "epistemic_authority": {
+    "detector_is_ns_evidence": false,
+    "detector_can_change_claim_level": false,
+    "detector_can_reject_candidate": false,
+    "detector_can_select_track_winner": false,
+    "similarity_is_equivalence": false,
+    "dead_family_match_is_falsehood": false
+  }
+}
