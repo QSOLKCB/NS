@@ -1,7 +1,13 @@
 <!-- SPDX-License-Identifier: CC-BY-4.0 -->
 # Experiment Contract
 
-An experiment may be promoted beyond exploratory status only if its manifest records the following fields.
+An experiment may be promoted beyond `exploratory` only if its manifest records every field required by the machine contract.
+
+## Canonical field authority
+
+`AGENTS.md` → `experiment_requirements.required_fields` is the canonical machine-readable definition for general promoted-experiment manifest fields.
+
+This document mirrors those exact field names for humans. If this document and `AGENTS.md` ever disagree, the mismatch is a governance defect that must be fixed before promotion; agents must not invent aliases or silently choose one vocabulary.
 
 ## Identity
 
@@ -15,49 +21,60 @@ An experiment may be promoted beyond exploratory status only if its manifest rec
 
 ## PDE definition
 
-- spatial domain;
-- boundary conditions;
-- initial velocity field definition;
-- proof or diagnostic of divergence-free admissibility when required;
-- viscosity;
-- forcing;
-- nondimensionalization/scaling convention;
-- solution quantity being measured.
+- `spatial_domain`
+- `boundary_conditions`
+- `initial_velocity_field_definition`
+- `divergence_free_admissibility`
+- `viscosity`
+- `forcing`
+- `scaling_convention`
+- `measured_solution_quantity`
 
 ## Numerical method
 
-- solver and version;
-- spatial discretization;
-- time integrator;
-- time-step/adaptivity policy;
-- resolution;
-- precision/data type;
-- tolerances;
-- dealiasing/filtering/regularization;
-- interpolation/remeshing;
-- random seed or explicit `null`.
+- `solver`
+- `solver_version`
+- `spatial_discretization`
+- `time_integrator`
+- `time_step_policy`
+- `resolution`
+- `precision`
+- `tolerances`
+- `filtering_regularization`
+- `interpolation_remeshing`
+- `random_seed_or_null`
 
 ## Runtime identity
 
-- operating system/container identity;
-- compiler/interpreter;
-- dependency lock or exact versions;
-- hardware features that may affect numerics;
-- thread/process count when relevant.
+- `operating_system_or_container_identity`
+- `compiler_or_interpreter`
+- `dependency_lock_or_exact_versions`
+- `numerics_relevant_hardware_features`
+- `thread_or_process_count`
 
 ## Evidence
 
-- input hashes;
-- output hashes;
-- diagnostics requested before execution;
-- termination reason;
-- warnings/errors;
-- wall-clock-independent step counts where useful;
-- raw outputs or a content-addressed pointer to them.
+- `input_hashes`
+- `output_hashes`
+- `diagnostics`
+- `termination_reason`
+- `warnings_or_errors`
+- `wall_clock_independent_step_counts`
+- `raw_outputs_or_content_addressed_pointer`
+
+Fields that are inapplicable must be present with an explicit `null`, empty collection, or other schema-valid no-value representation rather than silently omitted.
 
 ## Singularity-oriented runs
 
-A blow-up-like signature must not be promoted on one resolution alone. Record convergence/resolution behavior, precision sensitivity, conservation/balance residuals, timestep sensitivity and a competing numerical-failure explanation.
+In addition to the general fields above, any run used to support a blow-up or singularity-oriented claim must record every field in `AGENTS.md` → `experiment_requirements.singularity_run_required_fields`:
+
+- `convergence_resolution_behavior`
+- `precision_sensitivity`
+- `conservation_balance_residuals`
+- `timestep_sensitivity`
+- `competing_numerical_failure_explanation`
+
+A blow-up-like signature must not be promoted on one resolution alone.
 
 ## Mutation rule
 

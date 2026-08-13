@@ -33,6 +33,8 @@ Required before novelty language:
 - distinction from known criteria/theorems stated;
 - independent expert review sought for major claims.
 
+Seeking review at Gate C is encouraged but does **not** satisfy Gate D.
+
 ## Gate D — Millennium-solution claim
 
 Required before any public statement that the Clay problem has been solved or disproved:
@@ -41,9 +43,12 @@ Required before any public statement that the Clay problem has been solved or di
 - proof artifact frozen to an exact commit/tag;
 - all assumptions and external theorem dependencies enumerated;
 - adversarial internal review completed;
-- independent mathematical review obtained or actively solicited through appropriate scholarly channels;
+- independent mathematical review **completed**, with reviewer identity or attributable review record, review scope, and material findings preserved;
+- all blocking issues raised by that external review resolved or explicitly incorporated into a downgrade decision;
 - human operator explicitly authorizes the wording;
 - repository status and citation metadata match the frozen artifact.
+
+Merely requesting, soliciting, scheduling, or awaiting independent review is insufficient for Gate D.
 
 No automated agent may waive Gate D.
 
