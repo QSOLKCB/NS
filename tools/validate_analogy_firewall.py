@@ -5,6 +5,7 @@
 from __future__ import annotations
 
 import copy
+import hashlib
 import json
 from pathlib import Path
 
@@ -71,6 +72,20 @@ def main() -> None:
     registry_validator.validate(registry)
     adapter_validator.validate(adapter)
 
+    source_material = registry["source_material"]
+    source_name = source_material["name"]
+    if Path(source_name).name != source_name:
+        raise SystemExit("registry source material name must resolve at repository root")
+    source_path = ROOT / source_name
+    if not source_path.is_file():
+        raise SystemExit(f"registry provenance artifact is missing: {source_name}")
+    actual_source_sha256 = hashlib.sha256(source_path.read_bytes()).hexdigest()
+    if actual_source_sha256 != source_material["sha256"]:
+        raise SystemExit(
+            "registry provenance artifact SHA-256 mismatch: "
+            f"expected={source_material['sha256']} actual={actual_source_sha256}"
+        )
+
     if contract["firewall_version"] != FIREWALL_VERSION:
         raise SystemExit("Analogy Firewall implementation/contract version drift")
     if adapter["target_domain"] != ns_crucible["domain_id"]:
@@ -91,6 +106,10 @@ def main() -> None:
         record_validator.validate(raw)
         record = make_record(raw)
         record.validate()
+        if not record.provenance_ref.startswith(f"{source_name}#"):
+            raise SystemExit(
+                f"analogy {record.analogy_id} does not reference preserved source artifact"
+            )
         if record.analogy_id in registry_by_id:
             raise SystemExit(f"duplicate analogy_id: {record.analogy_id}")
         registry_by_id[record.analogy_id] = record
@@ -179,6 +198,19 @@ def main() -> None:
     else:
         raise SystemExit("visual/non-correspondence mapping gained positive transfer authority")
 
+    for forbidden_level in ("candidate_lemma", "public_solution_claim"):
+        try:
+            AnalogyFirewall(
+                target_domain=adapter["target_domain"],
+                initial_claim_level=forbidden_level,
+            )
+        except AnalogyFirewallError:
+            pass
+        else:
+            raise SystemExit(
+                f"firewall accepted non-exploratory initial claim level: {forbidden_level}"
+            )
+
     firewall = AnalogyFirewall(
         target_domain=adapter["target_domain"],
         initial_claim_level=adapter["candidate_intake"]["initial_claim_level"],
@@ -218,6 +250,13 @@ def main() -> None:
             raise SystemExit(f"firewall authorized forbidden use: {forbidden_use}")
 
     try:
+        firewall.authorize_use("BROWNIAN_TRANSPORT_TO_DIFFUSION_SDE", "candidate_generation")
+    except AnalogyFirewallError:
+        pass
+    else:
+        raise SystemExit("firewall authorized a record targeting another domain")
+
+    try:
         firewall.issue_candidate(
             analogy_id="LASER_SPECKLE_NOT_FLUID_FLOW",
             candidate_id="forbidden-negative-control-candidate",
@@ -231,6 +270,8 @@ def main() -> None:
         raise SystemExit("negative control generated a positive NS candidate")
 
     authority = firewall.authority_snapshot()
+    if authority["initial_claim_level"] != "exploratory":
+        raise SystemExit("firewall authority snapshot drifted above exploratory intake")
     if any(authority[key] for key in (
         "domain_evidence",
         "claim_promotion",
@@ -245,7 +286,8 @@ def main() -> None:
     print(
         "Analogy Firewall validation: PASS "
         f"(version={FIREWALL_VERSION}, records={len(registry_by_id)}, "
-        f"eligible_ns={len(eligible)}, barriers={len(barrier_ids)})"
+        f"eligible_ns={len(eligible)}, barriers={len(barrier_ids)}, "
+        f"source_sha256={actual_source_sha256})"
     )
 
 
