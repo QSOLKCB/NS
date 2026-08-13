@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/QSOLKCB/NS/blob/main/research/schemas/crucible_failure_record.schema.json",
+  "title": "QSOL Crucible failure ledger record",
+  "type": "object",
+  "required": ["failure_id", "candidate_id", "domain_id", "failed_constraint", "failure_class", "evidence_ids", "reusable_lesson", "claim_level_before", "claim_level_after", "recorded_by"],
+  "properties": {
+    "failure_id": {"type": "string", "minLength": 1},
+    "candidate_id": {"type": "string", "minLength": 1},
+    "domain_id": {"type": "string", "minLength": 1},
+    "failed_constraint": {"type": "string", "minLength": 1},
+    "failure_class": {"type": "string", "minLength": 1},
+    "evidence_ids": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "reusable_lesson": {"type": "string", "minLength": 1},
+    "claim_level_before": {"type": "string", "minLength": 1},
+    "claim_level_after": {"type": "string", "minLength": 1},
+    "recorded_by": {"type": "string", "minLength": 1}
+  },
+  "additionalProperties": false
+}
