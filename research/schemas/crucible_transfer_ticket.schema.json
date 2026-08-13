@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/QSOLKCB/NS/blob/main/research/schemas/crucible_transfer_ticket.schema.json",
+  "title": "QSOL Crucible analogy transfer ticket",
+  "type": "object",
+  "required": ["ticket_id", "analogy_id", "mapping_class", "source_sha256", "target_domain", "firewall_decision", "candidate_object_id", "target_domain_validation_required", "initial_claim_level"],
+  "properties": {
+    "ticket_id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"},
+    "analogy_id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"},
+    "mapping_class": {"enum": ["exact_correspondence", "operator_correspondence", "structural_analogy", "heuristic_analogy"]},
+    "source_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "target_domain": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"},
+    "firewall_decision": {"const": "candidate_generation_authorized"},
+    "candidate_object_id": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "target_domain_validation_required": {"const": true},
+    "initial_claim_level": {"const": "exploratory"}
+  },
+  "additionalProperties": false
+}
