@@ -1,0 +1,212 @@
+{
+  "schema_version": "1.0.0",
+  "document_type": "qsol_ns_theorem_registry",
+  "license": "Apache-2.0",
+  "registry_policy": {
+    "source_authority": "research/source_registry.json",
+    "official_target": "research/clay_target.json",
+    "default_verification_status": "source_checked_summary",
+    "novelty_claim_default": false,
+    "solution_claim_default": false
+  },
+  "theorems": [
+    {
+      "theorem_id": "KNOWN_LERAY_GLOBAL_WEAK_EXISTENCE",
+      "title": "Classical global weak existence",
+      "source_ids": ["LERAY_1934", "CMI_FEFFERMAN_2000"],
+      "year": 1934,
+      "category": "weak_existence",
+      "domain": "R^3",
+      "hypotheses_summary": "Finite-energy divergence-free initial data in the classical Leray framework; consult the primary source for the exact approximation and function-space formulation.",
+      "conclusion_summary": "Global-in-time weak solutions exist in the Leray sense.",
+      "limitations": [
+        "does_not_establish_global_smoothness",
+        "does_not_establish_general_uniqueness_of_weak_solutions",
+        "weak_existence_is_not_a_solution_of_A_or_B"
+      ],
+      "relation_to_clay": "Establishes a weaker global existence theory than the smooth solutions demanded by the global-regularity formulations.",
+      "supports_tracks": ["global_regularity", "breakdown"],
+      "blocks_blowup_scenarios": [],
+      "verification_status": "source_checked_summary",
+      "formalized": false,
+      "novelty_claim": false,
+      "solves_clay": false
+    },
+    {
+      "theorem_id": "KNOWN_FUJITA_KATO_LOCAL_3D",
+      "title": "Local strong-solution theory",
+      "source_ids": ["FUJITA_KATO_1964"],
+      "year": 1964,
+      "category": "local_well_posedness",
+      "domain": "R^3",
+      "hypotheses_summary": "Initial data satisfying the source's strong-solution function-space hypotheses.",
+      "conclusion_summary": "A unique strong solution exists for a nonzero time interval in the source framework.",
+      "limitations": [
+        "local_not_global",
+        "exact_function_space_hypotheses_must_be_preserved",
+        "does_not_control_arbitrary_large_time_behavior"
+      ],
+      "relation_to_clay": "Moves the unresolved issue to continuation/global control rather than instantaneous local existence.",
+      "supports_tracks": ["global_regularity", "breakdown"],
+      "blocks_blowup_scenarios": ["breakdown_at_initial_time_for_admissible_strong_data"],
+      "verification_status": "source_checked_summary",
+      "formalized": false,
+      "novelty_claim": false,
+      "solves_clay": false
+    },
+    {
+      "theorem_id": "KNOWN_SERRIN_CONDITIONAL_REGULARITY",
+      "title": "Serrin conditional regularity criterion",
+      "source_ids": ["SERRIN_1962"],
+      "year": 1962,
+      "category": "conditional_regularity",
+      "domain": "source_dependent",
+      "hypotheses_summary": "A weak solution additionally satisfies a Serrin integrability condition; the standard three-dimensional summary is a mixed space-time condition with 2/q + 3/p <= 1 in the admissible source range, with exact endpoint and locality assumptions taken from the primary source.",
+      "conclusion_summary": "Under the additional integrability hypothesis the weak solution is regular in the corresponding region/time interval.",
+      "limitations": [
+        "criterion_is_conditional",
+        "criterion_does_not_supply_the_required_norm_bound_for_arbitrary_data",
+        "endpoint_and_domain_hypotheses_must_not_be_inferred_from_memory"
+      ],
+      "relation_to_clay": "Provides a continuation/regularity target: a global a priori bound in a qualifying Serrin class would be powerful, but the criterion alone does not prove such a bound.",
+      "supports_tracks": ["global_regularity", "breakdown"],
+      "blocks_blowup_scenarios": ["finite_time_singularity_while_serrin_condition_remains_valid"],
+      "verification_status": "source_checked_summary",
+      "formalized": false,
+      "novelty_claim": false,
+      "solves_clay": false
+    },
+    {
+      "theorem_id": "KNOWN_CKN_PARTIAL_REGULARITY",
+      "title": "Caffarelli-Kohn-Nirenberg partial regularity",
+      "source_ids": ["CKN_1982"],
+      "year": 1982,
+      "category": "partial_regularity",
+      "domain": "R^3_space_time_local",
+      "hypotheses_summary": "Suitable weak solutions satisfying the local energy inequality in the Caffarelli-Kohn-Nirenberg framework.",
+      "conclusion_summary": "The possible singular set is small; in particular its one-dimensional parabolic Hausdorff measure is zero.",
+      "limitations": [
+        "does_not_prove_the_singular_set_is_empty",
+        "applies_to_suitable_weak_solutions",
+        "partial_regularity_is_not_global_smoothness"
+      ],
+      "relation_to_clay": "Severely restricts the geometry/size of possible singularities but leaves open whether any singularity occurs.",
+      "supports_tracks": ["global_regularity", "breakdown"],
+      "blocks_blowup_scenarios": ["singular_sets_too_large_to_satisfy_CKN_bound"],
+      "verification_status": "source_checked_summary",
+      "formalized": false,
+      "novelty_claim": false,
+      "solves_clay": false
+    },
+    {
+      "theorem_id": "KNOWN_KATO_CRITICAL_L3_THEORY",
+      "title": "Critical L3 local and small-data global theory",
+      "source_ids": ["KATO_1984"],
+      "year": 1984,
+      "category": "critical_space_well_posedness",
+      "domain": "R^3",
+      "hypotheses_summary": "Initial data in the critical L3-based framework used by Kato, with a sufficiently small critical norm for the global small-data conclusion.",
+      "conclusion_summary": "Local strong well-posedness holds in the critical framework, and sufficiently small critical data give global solutions.",
+      "limitations": [
+        "small_data_global_result_does_not_cover_arbitrary_large_data",
+        "critical_space_membership_alone_is_not_the_smallness_condition",
+        "exact_source_solution_class_must_be_preserved"
+      ],
+      "relation_to_clay": "Shows that the unresolved difficulty concerns large-data behavior rather than all critical data indiscriminately.",
+      "supports_tracks": ["global_regularity"],
+      "blocks_blowup_scenarios": ["blowup_from_sufficiently_small_data_in_the_source_critical_class"],
+      "verification_status": "source_checked_summary",
+      "formalized": false,
+      "novelty_claim": false,
+      "solves_clay": false
+    },
+    {
+      "theorem_id": "KNOWN_KOCH_TATARU_SMALL_BMO_MINUS_1",
+      "title": "Small-data global well-posedness in BMO^{-1}",
+      "source_ids": ["KOCH_TATARU_2001"],
+      "year": 2001,
+      "category": "critical_space_small_data_global",
+      "domain": "R^3",
+      "hypotheses_summary": "Divergence-free initial data sufficiently small in the BMO^{-1}-type critical norm of the source framework.",
+      "conclusion_summary": "A global well-posed solution exists in the Koch-Tataru solution space.",
+      "limitations": [
+        "requires_small_critical_norm",
+        "does_not_cover_arbitrary_large_data",
+        "must_not_be_promoted_to_general_global_regularness"
+      ],
+      "relation_to_clay": "Extends the region of globally controlled small critical data while preserving the large-data gap.",
+      "supports_tracks": ["global_regularity"],
+      "blocks_blowup_scenarios": ["blowup_from_sufficiently_small_BMO_minus_1_data_in_source_class"],
+      "verification_status": "source_checked_summary",
+      "formalized": false,
+      "novelty_claim": false,
+      "solves_clay": false
+    },
+    {
+      "theorem_id": "KNOWN_ESS_ENDPOINT_L3",
+      "title": "Endpoint L3 regularity / blow-up criterion",
+      "source_ids": ["ESS_2003"],
+      "year": 2003,
+      "category": "endpoint_regular_blowup_criterion",
+      "domain": "R^3_local_or_global_source_framework",
+      "hypotheses_summary": "A suitable/weak solution remains uniformly bounded in the spatial L3 norm up to a candidate singular time, under the source's precise hypotheses.",
+      "conclusion_summary": "The endpoint L3 control prevents the candidate finite-time singularity; contrapositively, finite-time blow-up requires loss of the corresponding uniform L3 control.",
+      "limitations": [
+        "does_not_prove_uniform_L3_control_for_arbitrary_smooth_data",
+        "title_notation_L_3_infinity_must_not_be_misread_as_spatial_Lorentz_L3_infinity",
+        "exact_locality_and_solution_hypotheses_come_from_primary_source"
+      ],
+      "relation_to_clay": "Provides a sharp necessary blow-up behavior and a critical target for any global a priori estimate.",
+      "supports_tracks": ["global_regularity", "breakdown"],
+      "blocks_blowup_scenarios": ["finite_time_blowup_with_uniform_spatial_L3_bound"],
+      "verification_status": "source_checked_summary",
+      "formalized": false,
+      "novelty_claim": false,
+      "solves_clay": false
+    },
+    {
+      "theorem_id": "KNOWN_NRS_NO_L3_BACKWARD_SELF_SIMILAR_PROFILE",
+      "title": "Exclusion of classical backward self-similar L3 profiles",
+      "source_ids": ["NRS_1996"],
+      "year": 1996,
+      "category": "self_similar_blowup_exclusion",
+      "domain": "R^3",
+      "hypotheses_summary": "Backward self-similar Leray-form solutions whose similarity profile obeys the source's L3/integrability hypotheses.",
+      "conclusion_summary": "No nontrivial profile in the stated class yields the proposed backward self-similar blow-up.",
+      "limitations": [
+        "excludes_a_specific_self_similar_class_not_all_blowup",
+        "does_not_exclude_asymptotically_or_discretely_self_similar_scenarios_without_additional_results",
+        "profile_integrability_hypotheses_are_essential"
+      ],
+      "relation_to_clay": "Removes an important classical blow-up ansatz from the admissible search space under its hypotheses.",
+      "supports_tracks": ["global_regularity", "breakdown"],
+      "blocks_blowup_scenarios": ["classical_backward_self_similar_L3_profile"],
+      "verification_status": "source_checked_summary",
+      "formalized": false,
+      "novelty_claim": false,
+      "solves_clay": false
+    },
+    {
+      "theorem_id": "KNOWN_TSAI_LOCAL_ENERGY_SELF_SIMILAR_EXCLUSION",
+      "title": "Self-similar exclusion under local energy estimates",
+      "source_ids": ["TSAI_1998"],
+      "year": 1998,
+      "category": "self_similar_blowup_exclusion",
+      "domain": "R^3",
+      "hypotheses_summary": "Self-similar Navier-Stokes solutions satisfying the source's local-energy and stated integrability hypotheses; the published erratum must be consulted for proof-level reuse.",
+      "conclusion_summary": "Self-similar solutions in the covered class are trivial, excluding that class as a finite-time blow-up mechanism.",
+      "limitations": [
+        "does_not_exclude_all_singularities",
+        "published_erratum_must_be_consulted",
+        "local_energy_and_integrability_hypotheses_are_not_optional"
+      ],
+      "relation_to_clay": "Further narrows the backward self-similar breakdown search space but leaves non-self-similar mechanisms open.",
+      "supports_tracks": ["global_regularity", "breakdown"],
+      "blocks_blowup_scenarios": ["covered_self_similar_local_energy_profiles"],
+      "verification_status": "source_checked_summary",
+      "formalized": false,
+      "novelty_claim": false,
+      "solves_clay": false
+    }
+  ]
+}
