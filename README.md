@@ -34,6 +34,12 @@ GENERATOR_OUTPUT != CLAIM_PROMOTION
 GENERATOR_SELF_ASSESSMENT != EVIDENCE_STATUS
 INVALID_GENERATION_ATTEMPT != MATHEMATICAL_FAILURE
 ACCEPTED_CANDIDATE != SURVIVING_CANDIDATE
+SIMILAR_CANDIDATE != MATHEMATICALLY_EQUIVALENT_CANDIDATE
+DEAD_FAMILY_MATCH != PROOF_OF_FALSEHOOD
+SCREENING_FLAG != CANDIDATE_REJECTION
+ORIGIN_CLASS != CLAIM_LEVEL
+LOCAL_SIMILARITY_THRESHOLD != UNIVERSAL_CONSTANT
+SCREENING_MEMORY != DOMAIN_EVIDENCE
 ```
 
 ## Machine research boundary
@@ -55,16 +61,19 @@ The project carries machine-readable research boundaries and laboratory contract
 - `research/crucible_ledger_contract.json` — content-addressed object/ref/event/replay and transfer-ticket persistence contract;
 - `research/ml_generator_contract.json` — provider-neutral ML proposal/intake and attempt-journal authority contract;
 - `research/ns_ml_generator_adapter.json` — NS track/registry/context binding for ML-generated proposals;
-- `research/schemas/` — schemas for research, experiment, laboratory, referee, Crucible, transfer, ledger and ML-generator contracts;
+- `research/duplicate_detector_contract.json` — deterministic similarity-screening authority and persistence contract;
+- `research/ns_duplicate_detector_adapter.json` — NS same-track screening and local-calibration binding;
+- `research/schemas/` — schemas for research, experiment, laboratory, referee, Crucible, transfer, ledger, ML-generator and screening contracts;
 - `tools/validate_boundary_map.py` — theorem/source boundary validation;
 - `tools/validate_lab_contract.py` — solver/manifest/identity correspondence validation;
 - `tools/validate_precision_referee.py` — precision-referee correspondence validation;
 - `tools/validate_crucible_core.py` — Crucible/NS-adapter correspondence and hostile-mutation validation;
 - `tools/validate_analogy_firewall.py` — transfer-registry/firewall/NS-intake authority validation;
 - `tools/validate_crucible_ledger.py` — ledger immutability, replay, transfer-ticket and authority validation;
-- `tools/validate_ml_generator.py` — ML context/proposal/intake/journal and authority validation.
+- `tools/validate_ml_generator.py` — ML context/proposal/intake/journal and authority validation;
+- `tools/validate_similarity_screening.py` — candidate-similarity calibration, authority and NS-adapter validation.
 
-Only official problem statements and primary research sources may authorize theorem-registry entries. Secondary sources may help discover literature but cannot establish the machine theorem boundary. Cross-domain analogies may generate exploratory candidates but are not NS evidence. Content-addressed persistence records what happened; it does not increase evidentiary authority. ML generation is one layer more constrained: model text is untrusted input until the generator airlock admits a schema-valid exploratory candidate.
+Only official problem statements and primary research sources may authorize theorem-registry entries. Secondary sources may help discover literature but cannot establish the machine theorem boundary. Cross-domain analogies may generate exploratory candidates but are not NS evidence. Content-addressed persistence records what happened; it does not increase evidentiary authority. ML generation is one layer more constrained: model text is untrusted input until the generator airlock admits a schema-valid exploratory candidate. Similarity screening is a search-efficiency layer: it can surface prior candidate/failure history for review but cannot establish equivalence, falsehood or rejection authority.
 
 ## Deterministic PDE laboratory v0.1
 
@@ -93,7 +102,7 @@ For NS, `research/ns_crucible_adapter.json` binds the two initial tracks:
 
 All registered NS proof barriers remain hard screening obligations. The deterministic lab and precision referee remain numerical evaluators with their existing evidence ceilings.
 
-The failure ledger is intended to make future ML search cumulative: dead candidate families preserve *why* they failed instead of being rediscovered in another chat or run.
+The failure ledger is intended to make future ML search cumulative: failed candidate families preserve *why* they failed instead of being rediscovered in another chat or run.
 
 ## Analogy Firewall v0.1
 
@@ -129,18 +138,33 @@ Accepted proposals become registration-valid `Candidate` objects with `claim_lev
 
 Direct analogy references are intentionally rejected by this airlock even when registered: cross-domain proposals must route through the existing Analogy Firewall and transfer-ticket path rather than gaining a second weaker intake route.
 
+## Candidate Similarity Screening v0.1
+
+PR #9 adds deterministic search-memory screening after candidate persistence.
+
+`src/crucible_core/duplicate.py` computes a normalized declared-mechanism SHA-256 fingerprint for exact repeats and a deterministic token-Jaccard overlap for structural near-matches. Comparison is restricted to the same domain, hypothesis set and target track.
+
+The NS adapter records a structural threshold of `0.82`, a prior-failure-family threshold of `0.76`, and a minimum of four shared tokens. These are **local screening calibration parameters, not universal constants**.
+
+Candidate origin is recorded independently of claim level as exact-domain construction, established bridge, source-described, structural transfer, heuristic, or schematic provenance. Prior-failure mechanism families must be backed by a content-addressed candidate identity plus one or more persisted Crucible `FailureRecord` identities.
+
+`src/crucible_core/duplicate_memory.py` provides a separate content-addressed SHA-chained screening journal for origin classifications, prior-failure families and similarity reports. Candidate/failure references must agree with a verified Crucible Ledger replay.
+
+A screening flag means **review prior search history before spending more compute**. It does not reject the candidate, prove mathematical equivalence or falsehood, create NS evidence, raise claim level, or select a hypothesis winner.
+
 ## Repository map
 
 - `AGENTS.md` / `AGENTS.schema.json` — machine-readable research constitution;
 - `src/ns_lab/` — deterministic periodic reference laboratory and precision referee;
-- `src/crucible_core/` — candidate/falsification, analogy-firewall, content-addressed ledger and ML-generator machinery;
-- `tests/` — replay, solver, manifest, referee, Crucible, analogy-firewall, ledger and ML-generator regressions;
+- `src/crucible_core/` — candidate/falsification, analogy-firewall, content-addressed ledger, ML-generator and similarity-screening machinery;
+- `tests/` — replay, solver, manifest, referee, Crucible, analogy-firewall, ledger, ML-generator and similarity-screening regressions;
 - `docs/CRUCIBLE_CORE_V0_1.md` — generic Crucible design and nonclaims;
 - `docs/NS_CRUCIBLE_ADAPTER.md` — NS-specific epistemic binding;
 - `docs/ANALOGY_FIREWALL_V0_1.md` — controlled cross-domain transfer architecture;
 - `docs/NS_CROSS_DOMAIN_TRANSFER_ADAPTER.md` — NS-specific analogy intake/revalidation rules;
 - `docs/CRUCIBLE_LEDGER_V0_1.md` — content-addressed persistence/replay architecture and nonclaims;
 - `docs/ML_GENERATOR_V0_1.md` — schema-constrained model proposal/intake architecture;
+- `docs/SIMILARITY_SCREENING_V0_1.md` — candidate-repeat/prior-failure screening architecture and nonclaims;
 - `docs/PDE_LAB_V0_1.md` / `docs/PRECISION_REFEREE_V0_1.md` — numerical architecture;
 - `docs/PROBLEM_STATEMENT.md` / `docs/KNOWN_BOUNDARY.md` / `docs/PROOF_BARRIERS.md` — mathematical target and known boundary;
 - `docs/CLAIM_LEVELS.md` — evidence/claim promotion ladder;
