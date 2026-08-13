@@ -1,0 +1,128 @@
+{
+  "schema_version": "1.0.0",
+  "document_type": "qsol_ns_source_registry",
+  "license": "Apache-2.0",
+  "authority_rule": "Only official problem statements and primary research sources may authorize theorem_registry entries. Secondary sources may be used for discovery only.",
+  "sources": [
+    {
+      "source_id": "CMI_FEFFERMAN_2000",
+      "authority_class": "official_problem_statement",
+      "authors": ["Charles L. Fefferman"],
+      "year": 2000,
+      "title": "Existence and Smoothness of the Navier-Stokes Equation",
+      "publisher_or_venue": "Clay Mathematics Institute",
+      "doi": null,
+      "url": "https://www.claymath.org/wp-content/uploads/2022/06/navierstokes.pdf",
+      "role": "canonical_problem_authority",
+      "notes": "Defines the official A-D formulations and includes errata for the periodic-pressure condition and a weak-form equation."
+    },
+    {
+      "source_id": "LERAY_1934",
+      "authority_class": "primary_research",
+      "authors": ["Jean Leray"],
+      "year": 1934,
+      "title": "Sur le mouvement d'un liquide visqueux emplissant l'espace",
+      "publisher_or_venue": "Acta Mathematica",
+      "doi": "10.1007/BF02547354",
+      "url": "https://doi.org/10.1007/BF02547354",
+      "role": "global_weak_solution_foundation",
+      "notes": "Classical foundation for global weak solutions in three dimensions; does not establish global smoothness or general uniqueness."
+    },
+    {
+      "source_id": "FUJITA_KATO_1964",
+      "authority_class": "primary_research",
+      "authors": ["Hiroshi Fujita", "Tosio Kato"],
+      "year": 1964,
+      "title": "On the Navier-Stokes initial value problem. I",
+      "publisher_or_venue": "Archive for Rational Mechanics and Analysis",
+      "doi": "10.1007/BF00276188",
+      "url": "https://doi.org/10.1007/BF00276188",
+      "role": "local_strong_solution_theory",
+      "notes": "Foundational local strong-solution framework; exact functional hypotheses must be taken from the source when reused."
+    },
+    {
+      "source_id": "SERRIN_1962",
+      "authority_class": "primary_research",
+      "authors": ["James Serrin"],
+      "year": 1962,
+      "title": "On the interior regularity of weak solutions of the Navier-Stokes equations",
+      "publisher_or_venue": "Archive for Rational Mechanics and Analysis",
+      "doi": "10.1007/BF00253344",
+      "url": "https://doi.org/10.1007/BF00253344",
+      "role": "conditional_regularity_criterion",
+      "notes": "Source for Serrin-type conditional regularity; exact endpoint and domain hypotheses must not be weakened by summary."
+    },
+    {
+      "source_id": "CKN_1982",
+      "authority_class": "primary_research",
+      "authors": ["Luis Caffarelli", "Robert Kohn", "Louis Nirenberg"],
+      "year": 1982,
+      "title": "Partial regularity of suitable weak solutions of the Navier-Stokes equations",
+      "publisher_or_venue": "Communications on Pure and Applied Mathematics",
+      "doi": "10.1002/cpa.3160350604",
+      "url": "https://doi.org/10.1002/cpa.3160350604",
+      "role": "partial_regularity",
+      "notes": "Partial regularity for suitable weak solutions; does not imply that the singular set is empty."
+    },
+    {
+      "source_id": "KATO_1984",
+      "authority_class": "primary_research",
+      "authors": ["Tosio Kato"],
+      "year": 1984,
+      "title": "Strong Lp-solutions of the Navier-Stokes equation in Rm, with applications to weak solutions",
+      "publisher_or_venue": "Mathematische Zeitschrift",
+      "doi": "10.1007/BF01174182",
+      "url": "https://doi.org/10.1007/BF01174182",
+      "role": "critical_space_well_posedness",
+      "notes": "Critical-space local theory and small-data global theory; not an arbitrary-large-data global result."
+    },
+    {
+      "source_id": "NRS_1996",
+      "authority_class": "primary_research",
+      "authors": ["Jindrich Necas", "Michael Ruzicka", "Vladimir Sverak"],
+      "year": 1996,
+      "title": "On Leray's self-similar solutions of the Navier-Stokes equations",
+      "publisher_or_venue": "Acta Mathematica",
+      "doi": "10.1007/BF02551584",
+      "url": "https://doi.org/10.1007/BF02551584",
+      "role": "self_similar_blowup_exclusion",
+      "notes": "Excludes nontrivial classical backward self-similar profiles under the source's integrability hypotheses; not an exclusion of all possible blow-up mechanisms."
+    },
+    {
+      "source_id": "TSAI_1998",
+      "authority_class": "primary_research",
+      "authors": ["Tai-Peng Tsai"],
+      "year": 1998,
+      "title": "On Leray's self-similar solutions of the Navier-Stokes equations satisfying local energy estimates",
+      "publisher_or_venue": "Archive for Rational Mechanics and Analysis",
+      "doi": "10.1007/s002050050099",
+      "url": "https://doi.org/10.1007/s002050050099",
+      "role": "self_similar_blowup_exclusion",
+      "notes": "Extends self-similar exclusion under local-energy/integrability hypotheses. A published erratum exists in Arch. Rational Mech. Anal. 147 (1999), 363 and must be consulted before proof reuse."
+    },
+    {
+      "source_id": "KOCH_TATARU_2001",
+      "authority_class": "primary_research",
+      "authors": ["Herbert Koch", "Daniel Tataru"],
+      "year": 2001,
+      "title": "Well-posedness for the Navier-Stokes equations",
+      "publisher_or_venue": "Advances in Mathematics",
+      "doi": "10.1006/aima.2000.1937",
+      "url": "https://doi.org/10.1006/aima.2000.1937",
+      "role": "critical_space_small_data_global_theory",
+      "notes": "Small-data global well-posedness in BMO^{-1}-type critical space; does not cover arbitrary large data."
+    },
+    {
+      "source_id": "ESS_2003",
+      "authority_class": "primary_research",
+      "authors": ["Luis Escauriaza", "Gregory Seregin", "Vladimir Sverak"],
+      "year": 2003,
+      "title": "L_{3,infinity}-solutions of Navier-Stokes equations and backward uniqueness",
+      "publisher_or_venue": "Russian Mathematical Surveys",
+      "doi": "10.1070/RM2003v058n02ABEH000609",
+      "url": "https://doi.org/10.1070/RM2003v058n02ABEH000609",
+      "role": "endpoint_regular_blowup_criterion",
+      "notes": "The title notation L_{3,infinity} refers to the endpoint time-uniform spatial L3 context; do not silently reinterpret it as a spatial Lorentz L^{3,infinity} statement."
+    }
+  ]
+}

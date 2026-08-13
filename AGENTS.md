@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.1.0",
+  "schema_version": "1.2.0",
   "document_type": "qsol_ns_agent_contract",
   "serialization": "json",
   "repository": "QSOLKCB/NS",
@@ -17,8 +17,14 @@
   "agent_boot_sequence": [
     "parse_AGENTS_md_as_JSON",
     "validate_against_AGENTS_schema_json",
+    "run_tools_validate_boundary_map_py",
     "read_README_md",
     "read_docs_PROBLEM_STATEMENT_md",
+    "read_research_clay_target_json",
+    "read_research_source_registry_json",
+    "read_research_theorem_registry_json",
+    "read_research_proof_barriers_json",
+    "read_research_baseline_identities_json",
     "read_docs_CLAIM_LEVELS_md",
     "read_docs_EXPERIMENT_CONTRACT_md",
     "read_docs_REPRODUCIBILITY_md",
@@ -65,6 +71,20 @@
     "numerics_can_promote_to": "reproduced_numerical",
     "formal_checker_can_promote_to": "proved_lemma",
     "formal_checker_scope": "encoded_statement_only"
+  },
+  "literature_boundary_policy": {
+    "canonical_clay_target": "research/clay_target.json",
+    "source_registry": "research/source_registry.json",
+    "theorem_registry": "research/theorem_registry.json",
+    "proof_barrier_registry": "research/proof_barriers.json",
+    "baseline_identity_registry": "research/baseline_identities.json",
+    "boundary_validator": "tools/validate_boundary_map.py",
+    "theorem_authority_requires_primary_or_official_source": true,
+    "secondary_sources_may_discover_but_not_authorize": true,
+    "hypothesis_weakening_without_proof_forbidden": true,
+    "conclusion_strengthening_without_proof_forbidden": true,
+    "domain_or_forcing_substitution_without_bridge_forbidden": true,
+    "novelty_claim_requires_registry_and_literature_update": true
   },
   "experiment_requirements": {
     "canonical_field_definition": "AGENTS.md#experiment_requirements.required_fields",

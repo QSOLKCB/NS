@@ -1,0 +1,112 @@
+{
+  "schema_version": "1.0.0",
+  "document_type": "qsol_ns_proof_barrier_registry",
+  "license": "Apache-2.0",
+  "policy": "A proposed argument that crosses a registered barrier must supply an explicit bridge theorem or weaken its conclusion. Naming a barrier does not prove impossibility; it identifies a proof obligation.",
+  "barriers": [
+    {
+      "barrier_id": "WEAK_EXISTENCE_NOT_SMOOTHNESS",
+      "category": "solution_concept",
+      "invalid_inference": "Global Leray weak existence implies the global smoothness demanded by Clay A or B.",
+      "why_invalid": "Weak existence permits substantially less regularity and does not establish the required global smooth solution or general weak uniqueness.",
+      "required_response": "Prove a regularity upgrade under the exact official hypotheses, or state only a weak-existence conclusion.",
+      "related_theorem_ids": ["KNOWN_LERAY_GLOBAL_WEAK_EXISTENCE"]
+    },
+    {
+      "barrier_id": "CONDITIONAL_CRITERION_NOT_APRIORI_BOUND",
+      "category": "regularity_criteria",
+      "invalid_inference": "A Serrin-type or endpoint L3 criterion proves regularity for arbitrary smooth initial data.",
+      "why_invalid": "The criterion says what follows if a controlling norm is finite; it does not automatically prove that the norm remains finite for arbitrary data.",
+      "required_response": "Derive the required norm bound globally from the Navier-Stokes dynamics without assuming the desired regularity.",
+      "related_theorem_ids": ["KNOWN_SERRIN_CONDITIONAL_REGULARITY", "KNOWN_ESS_ENDPOINT_L3"]
+    },
+    {
+      "barrier_id": "PARTIAL_REGULARITY_NOT_EMPTY_SINGULAR_SET",
+      "category": "partial_regularity",
+      "invalid_inference": "The Caffarelli-Kohn-Nirenberg size bound proves there are no singularities.",
+      "why_invalid": "A set may have zero one-dimensional parabolic Hausdorff measure and still be nonempty.",
+      "required_response": "Supply an additional argument forcing the possible singular set to be empty.",
+      "related_theorem_ids": ["KNOWN_CKN_PARTIAL_REGULARITY"]
+    },
+    {
+      "barrier_id": "SELF_SIMILAR_EXCLUSION_NOT_GENERAL_NO_BLOWUP",
+      "category": "blowup_ansatz",
+      "invalid_inference": "Excluding classical self-similar profiles excludes every finite-time singularity.",
+      "why_invalid": "Non-self-similar, asymptotically self-similar, discretely self-similar, multi-scale or other concentration mechanisms are not automatically covered.",
+      "required_response": "Prove that every admissible singularity must fall into the excluded class, or restrict the claim to that class.",
+      "related_theorem_ids": ["KNOWN_NRS_NO_L3_BACKWARD_SELF_SIMILAR_PROFILE", "KNOWN_TSAI_LOCAL_ENERGY_SELF_SIMILAR_EXCLUSION"]
+    },
+    {
+      "barrier_id": "SMALL_DATA_NOT_ARBITRARY_DATA",
+      "category": "quantifiers",
+      "invalid_inference": "A global small-data theorem establishes global regularity for all smooth data.",
+      "why_invalid": "The smallness hypothesis removes the large-data regime where the unresolved difficulty remains.",
+      "required_response": "Eliminate the smallness hypothesis by a new a priori argument or explicitly retain it in the conclusion.",
+      "related_theorem_ids": ["KNOWN_KATO_CRITICAL_L3_THEORY", "KNOWN_KOCH_TATARU_SMALL_BMO_MINUS_1"]
+    },
+    {
+      "barrier_id": "DOMAIN_SUBSTITUTION_R3_PERIODIC",
+      "category": "official_target",
+      "invalid_inference": "A result on R^3 automatically proves the corresponding periodic formulation, or conversely.",
+      "why_invalid": "Clay states separate R^3 and periodic formulations with different decay/periodicity hypotheses and an explicit pressure-periodicity erratum.",
+      "required_response": "Prove a rigorous transfer/equivalence theorem or map the result only to the domain actually treated.",
+      "related_theorem_ids": []
+    },
+    {
+      "barrier_id": "FORCING_SUBSTITUTION",
+      "category": "official_target",
+      "invalid_inference": "A forced result can be used for Clay A/B, or an unforced argument automatically addresses every aspect of C/D.",
+      "why_invalid": "A and B require f=0, whereas C and D allow a smooth admissible forcing and only require existence of one breakdown example.",
+      "required_response": "Preserve the exact forcing quantifier of the selected official formulation.",
+      "related_theorem_ids": []
+    },
+    {
+      "barrier_id": "MODIFIED_EQUATION_NOT_CANONICAL_NS",
+      "category": "model_correspondence",
+      "invalid_inference": "A theorem for hyperviscous, regularized, averaged, truncated, discretized or otherwise modified equations is automatically a theorem for the canonical equations.",
+      "why_invalid": "Changing the operator or solution space can change the regularity mechanism and critical scaling.",
+      "required_response": "Provide a rigorous equivalence/limit theorem with hypotheses strong enough to transfer the claimed conclusion to canonical Navier-Stokes.",
+      "related_theorem_ids": []
+    },
+    {
+      "barrier_id": "NUMERICAL_CONTINUUM_GAP",
+      "category": "computation",
+      "invalid_inference": "A converged-looking numerical singularity or globally stable simulation proves continuum blow-up or global smoothness.",
+      "why_invalid": "Finite precision, finite resolution, time stepping, filtering and truncation do not by themselves control the continuum limit near a candidate singularity.",
+      "required_response": "Supply rigorous a posteriori/error bounds or a computer-assisted proof theorem that bridges the discrete computation to the continuum statement.",
+      "related_theorem_ids": []
+    },
+    {
+      "barrier_id": "CIRCULAR_REGULARITY",
+      "category": "logic",
+      "invalid_inference": "Use an estimate whose derivation already assumes the smoothness or norm finiteness that the argument is intended to prove.",
+      "why_invalid": "The desired conclusion is embedded in a premise or in an integration-by-parts/limit step whose justification requires that conclusion.",
+      "required_response": "Re-derive the step at an independently established regularity level and identify every approximation/limit passage.",
+      "related_theorem_ids": []
+    },
+    {
+      "barrier_id": "UNJUSTIFIED_LIMIT_INTERCHANGE",
+      "category": "analysis",
+      "invalid_inference": "Exchange limits, derivatives, integrals, infinite sums or weak/strong convergence without hypotheses that justify the operation.",
+      "why_invalid": "Near singular regimes the missing compactness, domination or uniform bound can be exactly the unresolved issue.",
+      "required_response": "State and prove the convergence/compactness/dominating estimate that licenses each interchange.",
+      "related_theorem_ids": []
+    },
+    {
+      "barrier_id": "FORMAL_ENCODING_NOT_MATHEMATICAL_CORRESPONDENCE",
+      "category": "formal_methods",
+      "invalid_inference": "A proof assistant accepting an encoded surrogate establishes the official Clay statement.",
+      "why_invalid": "The prover checks the encoded theorem from encoded assumptions; correspondence to the official PDE, solution concept and quantifiers is a separate obligation.",
+      "required_response": "Provide an explicit correspondence note and audit the encoding against the selected official formulation.",
+      "related_theorem_ids": []
+    },
+    {
+      "barrier_id": "SPECIAL_FAMILY_QUANTIFIER_INVERSION",
+      "category": "quantifiers",
+      "invalid_inference": "A proof for a chosen ansatz, symmetry class or finite-dimensional family establishes a universal all-data result.",
+      "why_invalid": "Clay A/B quantify over every admissible initial datum; a special family covers only a subset unless a reduction theorem proves universality.",
+      "required_response": "Prove that every admissible datum/solution reduces to the treated family, or keep the claim restricted to that family.",
+      "related_theorem_ids": []
+    }
+  ]
+}

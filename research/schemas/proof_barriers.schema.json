@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/QSOLKCB/NS/blob/main/research/schemas/proof_barriers.schema.json",
+  "title": "QSOL NS proof barrier registry",
+  "type": "object",
+  "required": ["schema_version", "document_type", "license", "policy", "barriers"],
+  "properties": {
+    "schema_version": {"const": "1.0.0"},
+    "document_type": {"const": "qsol_ns_proof_barrier_registry"},
+    "license": {"const": "Apache-2.0"},
+    "policy": {"type": "string", "minLength": 1},
+    "barriers": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/barrier"}}
+  },
+  "$defs": {
+    "barrier": {
+      "type": "object",
+      "required": ["barrier_id", "category", "invalid_inference", "why_invalid", "required_response", "related_theorem_ids"],
+      "properties": {
+        "barrier_id": {"type": "string", "pattern": "^[A-Z0-9_]+$"},
+        "category": {"type": "string", "minLength": 1},
+        "invalid_inference": {"type": "string", "minLength": 1},
+        "why_invalid": {"type": "string", "minLength": 1},
+        "required_response": {"type": "string", "minLength": 1},
+        "related_theorem_ids": {"type": "array", "uniqueItems": true, "items": {"type": "string", "pattern": "^KNOWN_[A-Z0-9_]+$"}}
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

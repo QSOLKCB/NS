@@ -57,6 +57,22 @@ def main() -> None:
     mutated["proof_requirements"]["formal_artifact_required_fields"].remove("encoded_statement")
     require_rejected(validator, mutated, "formal provenance field removed")
 
+    mutated = copy.deepcopy(contract)
+    mutated["agent_boot_sequence"].remove("run_tools_validate_boundary_map_py")
+    require_rejected(validator, mutated, "boundary validator removed from agent boot")
+
+    mutated = copy.deepcopy(contract)
+    mutated["literature_boundary_policy"]["secondary_sources_may_discover_but_not_authorize"] = False
+    require_rejected(validator, mutated, "secondary-source authority boundary disabled")
+
+    mutated = copy.deepcopy(contract)
+    mutated["literature_boundary_policy"]["hypothesis_weakening_without_proof_forbidden"] = False
+    require_rejected(validator, mutated, "hypothesis weakening protection disabled")
+
+    mutated = copy.deepcopy(contract)
+    mutated["literature_boundary_policy"]["domain_or_forcing_substitution_without_bridge_forbidden"] = False
+    require_rejected(validator, mutated, "domain/forcing bridge protection disabled")
+
     print("AGENTS contract validation: PASS")
 
 
