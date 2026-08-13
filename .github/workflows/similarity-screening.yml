@@ -16,7 +16,7 @@ on:
       - "tools/validate_similarity_screening.py"
       - "tests/test_similarity_smoke.py"
       - ".github/workflows/similarity-screening.yml"
-      - "docs/DUPLICATE_DEAD_FAMILY_V0_1.md"
+      - "docs/SIMILARITY_SCREENING_V0_1.md"
   push:
     branches: [main]
     paths:
