@@ -40,7 +40,7 @@
         "supports_tracks": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"enum": ["global_regularity", "breakdown"]}},
         "blocks_blowup_scenarios": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
         "verification_status": {"const": "source_checked_summary"},
-        "formalized": {"type": "boolean"},
+        "formalized": {"const": false},
         "novelty_claim": {"const": false},
         "solves_clay": {"const": false}
       },

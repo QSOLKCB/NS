@@ -13,10 +13,10 @@
       "required": ["name", "problem_title", "author", "landing_page", "official_pdf", "retrieved_date"],
       "properties": {
         "name": {"const": "Clay Mathematics Institute"},
-        "problem_title": {"type": "string", "minLength": 1},
+        "problem_title": {"const": "Existence and Smoothness of the Navier-Stokes Equation"},
         "author": {"const": "Charles L. Fefferman"},
-        "landing_page": {"type": "string", "format": "uri"},
-        "official_pdf": {"type": "string", "format": "uri"},
+        "landing_page": {"const": "https://www.claymath.org/millennium/Navier-Stokes-Equation/", "format": "uri"},
+        "official_pdf": {"const": "https://www.claymath.org/wp-content/uploads/2022/06/navierstokes.pdf", "format": "uri"},
         "retrieved_date": {"type": "string", "format": "date"}
       },
       "additionalProperties": false
@@ -29,7 +29,11 @@
         "viscosity": {"const": "nu > 0"},
         "incompressible": {"const": true},
         "unknowns": {"const": ["u", "p"]},
-        "equations": {"type": "array", "minItems": 3, "items": {"type": "string", "minLength": 1}}
+        "equations": {"const": [
+          "partial_t u + (u dot grad)u = nu Delta u - grad p + f",
+          "div u = 0",
+          "u(x,0)=u0(x)"
+        ]}
       },
       "additionalProperties": false
     },
@@ -46,7 +50,14 @@
       "items": false
     },
     "errata": {"type": "array", "minItems": 2, "items": {"$ref": "#/$defs/erratum"}},
-    "machine_invariants": {"type": "array", "minItems": 6, "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
+    "machine_invariants": {"const": [
+      "all_solution_claims_must_map_to_exactly_one_or_more_official_formulations",
+      "A_and_B_require_zero_forcing",
+      "C_and_D_allow_zero_forcing_but_do_not_require_it",
+      "R3_and_periodic_domains_are_not_interchangeable",
+      "periodic_pressure_condition_includes_official_erratum",
+      "modified_equation_results_do_not_satisfy_the_target_without_a_rigorous_equivalence_bridge"
+    ]}
   },
   "$defs": {
     "formulationBase": {
@@ -56,22 +67,82 @@
         "id": {"type": "string"},
         "direction": {"enum": ["global_smoothness", "breakdown"]},
         "domain": {"enum": ["R^3", "R^3/Z^3"]},
-        "initial_data": {"type": "string", "minLength": 1},
-        "forcing": {"type": "string", "minLength": 1},
-        "required_conclusion": {"type": "string", "minLength": 1},
+        "initial_data": {"type": "string"},
+        "forcing": {"type": "string"},
+        "required_conclusion": {"type": "string"},
         "zero_force_allowed": {"type": "boolean"},
         "zero_force_required": {"type": "boolean"}
       },
       "additionalProperties": false
     },
-    "formulationA": {"allOf": [{"$ref": "#/$defs/formulationBase"}, {"properties": {"id": {"const": "A"}, "direction": {"const": "global_smoothness"}, "domain": {"const": "R^3"}, "zero_force_allowed": {"const": true}, "zero_force_required": {"const": true}}}]},
-    "formulationB": {"allOf": [{"$ref": "#/$defs/formulationBase"}, {"properties": {"id": {"const": "B"}, "direction": {"const": "global_smoothness"}, "domain": {"const": "R^3/Z^3"}, "zero_force_allowed": {"const": true}, "zero_force_required": {"const": true}}}]},
-    "formulationC": {"allOf": [{"$ref": "#/$defs/formulationBase"}, {"properties": {"id": {"const": "C"}, "direction": {"const": "breakdown"}, "domain": {"const": "R^3"}, "zero_force_allowed": {"const": true}, "zero_force_required": {"const": false}}}]},
-    "formulationD": {"allOf": [{"$ref": "#/$defs/formulationBase"}, {"properties": {"id": {"const": "D"}, "direction": {"const": "breakdown"}, "domain": {"const": "R^3/Z^3"}, "zero_force_allowed": {"const": true}, "zero_force_required": {"const": false}}}]},
+    "formulationA": {
+      "allOf": [
+        {"$ref": "#/$defs/formulationBase"},
+        {"properties": {
+          "id": {"const": "A"},
+          "direction": {"const": "global_smoothness"},
+          "domain": {"const": "R^3"},
+          "initial_data": {"const": "any smooth divergence-free rapidly decaying u0 satisfying Fefferman condition (4)"},
+          "forcing": {"const": "f identically zero"},
+          "required_conclusion": {"const": "global smooth p,u on R^3 x [0,infinity) satisfying the equations and bounded energy"},
+          "zero_force_allowed": {"const": true},
+          "zero_force_required": {"const": true}
+        }}
+      ]
+    },
+    "formulationB": {
+      "allOf": [
+        {"$ref": "#/$defs/formulationBase"},
+        {"properties": {
+          "id": {"const": "B"},
+          "direction": {"const": "global_smoothness"},
+          "domain": {"const": "R^3/Z^3"},
+          "initial_data": {"const": "any smooth divergence-free spatially periodic u0 satisfying Fefferman condition (8)"},
+          "forcing": {"const": "f identically zero"},
+          "required_conclusion": {"const": "global smooth spatially periodic p,u on R^3 x [0,infinity)"},
+          "zero_force_allowed": {"const": true},
+          "zero_force_required": {"const": true}
+        }}
+      ]
+    },
+    "formulationC": {
+      "allOf": [
+        {"$ref": "#/$defs/formulationBase"},
+        {"properties": {
+          "id": {"const": "C"},
+          "direction": {"const": "breakdown"},
+          "domain": {"const": "R^3"},
+          "initial_data": {"const": "there exists smooth divergence-free rapidly decaying u0 satisfying Fefferman condition (4)"},
+          "forcing": {"const": "there exists smooth rapidly decaying f satisfying Fefferman condition (5)"},
+          "required_conclusion": {"const": "no global physically reasonable solution p,u satisfying the equations, global smoothness, and bounded energy"},
+          "zero_force_allowed": {"const": true},
+          "zero_force_required": {"const": false}
+        }}
+      ]
+    },
+    "formulationD": {
+      "allOf": [
+        {"$ref": "#/$defs/formulationBase"},
+        {"properties": {
+          "id": {"const": "D"},
+          "direction": {"const": "breakdown"},
+          "domain": {"const": "R^3/Z^3"},
+          "initial_data": {"const": "there exists smooth divergence-free spatially periodic u0 satisfying Fefferman condition (8)"},
+          "forcing": {"const": "there exists smooth spatially periodic f with time decay satisfying Fefferman condition (9)"},
+          "required_conclusion": {"const": "no global smooth spatially periodic solution p,u satisfying the equations"},
+          "zero_force_allowed": {"const": true},
+          "zero_force_required": {"const": false}
+        }}
+      ]
+    },
     "erratum": {
       "type": "object",
       "required": ["scope", "statement", "source"],
-      "properties": {"scope": {"type": "string", "minLength": 1}, "statement": {"type": "string", "minLength": 1}, "source": {"type": "string", "minLength": 1}},
+      "properties": {
+        "scope": {"type": "string", "minLength": 1},
+        "statement": {"type": "string", "minLength": 1},
+        "source": {"type": "string", "minLength": 1}
+      },
       "additionalProperties": false
     }
   },
