@@ -26,17 +26,31 @@ Initial PR #2 foundation:
 - [ ] map rigorous/computer-assisted PDE verification methods;
 - [ ] maintain a queue of unresolved source checks and errata.
 
-Phase 1 is deliberately iterative. The initial registry is a conservative spine, not an exhaustive literature claim.
+Phase 1 remains iterative while Phase 2 engineering begins. The initial registry is a conservative spine, not an exhaustive literature claim.
 
-## Phase 2 — Deterministic PDE laboratory
+## Phase 2 — Deterministic PDE laboratory — IN PROGRESS
 
-- implement reference solvers and exact experiment manifests;
-- turn `research/baseline_identities.json` into executable diagnostics;
-- add divergence, energy, enstrophy and vorticity diagnostics;
-- add spectral and scale-local diagnostics;
-- add resolution, precision and timestep sweeps;
-- distinguish numerical instability from candidate continuum behavior;
-- require any singularity-oriented run to report competing numerical-failure explanations.
+PR #3 v0.1 foundation:
+
+- [x] implement a narrow periodic pseudo-spectral reference solver;
+- [x] use deterministic Taylor–Green initial data;
+- [x] add 2/3 de-aliasing and spectral divergence-free projection;
+- [x] use fixed-step RK4 with explicit solver/version identity;
+- [x] turn all six baseline identities into executable diagnostic bindings;
+- [x] emit exact experiment manifests and content hashes;
+- [x] preserve deterministic raw velocity output;
+- [x] add identical-input replay tests;
+- [x] add timestep and resolution comparison helpers;
+- [x] add numerical-failure and sweep policies;
+- [x] machine-disable singularity-oriented promotion while independent precision comparison is unavailable;
+- [x] add Python 3.11/3.13 CI for contract, tests and reference smoke run;
+- [ ] add an independent higher-precision backend;
+- [ ] add alternate initial-data families with exact admissibility records;
+- [ ] add independent solver implementation for cross-method comparison;
+- [ ] add spectral-transfer and scale-local diagnostics beyond the v0.1 baseline;
+- [ ] add longer-run checkpoint/restart with content-addressed state identity.
+
+The v0.1 laboratory is an exploratory/reproducibility instrument, not a proof engine.
 
 ## Phase 3 — Competing mechanism search
 

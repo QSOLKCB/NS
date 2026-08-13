@@ -3,6 +3,10 @@
 
 Every research result must carry exactly one current claim level. Promotion is deliberate; no tool may silently promote a result.
 
+> **A compelling narrative does not increase evidentiary status.**
+
+A result is promoted only by additional evidence that satisfies the requirements of the higher level. Plausibility, elegance, explanatory power, surprise, repetition in discussion, social consensus, or a story that fits existing expectations do not themselves raise claim status.
+
 ## L0 — Exploratory
 
 Unreproduced calculation, sketch, conjecture, visual anomaly, single numerical run, heuristic or incomplete derivation.
@@ -47,6 +51,7 @@ L3 != L4
 L4 != L6
 FORMAL_CHECK != NOVELTY_CHECK
 REPRODUCIBILITY != MATHEMATICAL_PROOF
+NARRATIVE_PLAUSIBILITY != EVIDENTIARY_STATUS
 ```
 
 Downgrades are always permitted when flaws are discovered and must preserve the reason in version history.

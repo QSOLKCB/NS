@@ -1,0 +1,30 @@
+# SPDX-License-Identifier: Apache-2.0
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "qsol-ns-lab"
+version = "0.1.0"
+description = "Deterministic reference laboratory for exploratory 3D incompressible Navier-Stokes numerics"
+requires-python = ">=3.11"
+license = "Apache-2.0"
+dependencies = [
+  "numpy>=2.0,<3",
+]
+
+[project.optional-dependencies]
+test = [
+  "pytest>=8,<10",
+  "jsonschema>=4.23,<5",
+]
+
+[project.scripts]
+qsol-ns-lab = "ns_lab.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
