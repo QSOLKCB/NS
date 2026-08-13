@@ -2,7 +2,7 @@
 
 **Private reproducible research workbench for the 3D incompressible Navier–Stokes existence and smoothness problem, and first reference domain for the QSOL Crucible architecture.**
 
-QSOL NS is a two-track research program: global regularity and finite-time breakdown are treated as competing hypotheses until mathematics rules one out. Numerical experiments, symbolic work, formal verification, literature reconstruction and ML-assisted candidate generation are discovery/checking tools, never substitutes for proof.
+QSOL NS is a two-track research program: global regularity and finite-time breakdown are treated as competing hypotheses until mathematics rules one out. Numerical experiments, symbolic work, formal verification, literature reconstruction, ML-assisted candidate generation and controlled cross-domain transfer are discovery/checking tools, never substitutes for proof.
 
 ## Research boundary
 
@@ -17,6 +17,11 @@ NARRATIVE_PLAUSIBILITY != EVIDENTIARY_STATUS
 PRECISION_AGREEMENT != CONTINUUM_PROOF
 CRUCIBLE_SURVIVAL != PROOF
 FAILURE_OF_ONE_CANDIDATE != PROOF_OF_A_COMPETITOR
+VISUAL_RESEMBLANCE != PHYSICAL_MECHANISM
+SHARED_OPERATOR != SHARED_DYNAMICS
+STRUCTURAL_ANALOGY != DOMAIN_EQUIVALENCE
+ANALOGY != DOMAIN_EVIDENCE
+ANALOGY_CANNOT_PROMOTE_CLAIM
 ```
 
 ## Machine research boundary
@@ -32,13 +37,17 @@ The project carries machine-readable research boundaries and laboratory contract
 - `research/precision_referee_contract.json` — scope/nonclaims of the arbitrary-precision referee;
 - `research/crucible_contract.json` — domain-neutral hypothesis/falsification orchestration contract;
 - `research/ns_crucible_adapter.json` — NS epistemic adapter binding Crucible to Clay, proof barriers and claim authority;
-- `research/schemas/` — schemas for research, experiment, laboratory, referee and Crucible contracts;
+- `research/analogy_firewall_contract.json` — authority limits for cross-domain analogy transfer;
+- `research/cross_domain_transfer_registry.json` — provenance-bearing mapping classifications and negative controls;
+- `research/ns_cross_domain_transfer_adapter.json` — NS intake/revalidation policy for analogy-derived candidates;
+- `research/schemas/` — schemas for research, experiment, laboratory, referee, Crucible and transfer contracts;
 - `tools/validate_boundary_map.py` — theorem/source boundary validation;
 - `tools/validate_lab_contract.py` — solver/manifest/identity correspondence validation;
 - `tools/validate_precision_referee.py` — precision-referee correspondence validation;
-- `tools/validate_crucible_core.py` — Crucible/NS-adapter correspondence and hostile-mutation validation.
+- `tools/validate_crucible_core.py` — Crucible/NS-adapter correspondence and hostile-mutation validation;
+- `tools/validate_analogy_firewall.py` — transfer-registry/firewall/NS-intake authority validation.
 
-Only official problem statements and primary research sources may authorize theorem-registry entries. Secondary sources may help discover literature but cannot establish the machine theorem boundary.
+Only official problem statements and primary research sources may authorize theorem-registry entries. Secondary sources may help discover literature but cannot establish the machine theorem boundary. Cross-domain analogies are even more tightly bounded: they may generate exploratory candidates but are not NS evidence.
 
 ## Deterministic PDE laboratory v0.1
 
@@ -69,14 +78,35 @@ All registered NS proof barriers remain hard screening obligations. The determin
 
 The failure ledger is intended to make future ML search cumulative: dead candidate families preserve *why* they failed instead of being rediscovered in another chat or run.
 
+## Analogy Firewall v0.1
+
+PR #6 adds a controlled intake valve from other domains.
+
+`src/crucible_core/analogy.py` classifies cross-domain mappings as:
+
+- exact correspondence;
+- operator correspondence;
+- structural analogy;
+- heuristic analogy;
+- visual resemblance;
+- explicit non-correspondence.
+
+The first four may seed an **exploratory** candidate. The final two are negative-control-only.
+
+No mapping class may automatically become NS evidence, raise a claim level, satisfy a proof barrier, select a winner, or assert whole-domain equivalence. Source-domain proof/evidence status is never inherited. Every accepted transfer must be revalidated under the NS adapter, Clay target and full proof-barrier set.
+
+The initial registry is derived from a user-supplied fluid/diffusion technical reference. The source is retained as design provenance, not promoted to theorem authority.
+
 ## Repository map
 
 - `AGENTS.md` / `AGENTS.schema.json` — machine-readable research constitution;
 - `src/ns_lab/` — deterministic periodic reference laboratory and precision referee;
-- `src/crucible_core/` — domain-neutral candidate/falsification state machine;
-- `tests/` — replay, solver, manifest, referee and Crucible regressions;
+- `src/crucible_core/` — domain-neutral candidate/falsification and analogy-firewall machinery;
+- `tests/` — replay, solver, manifest, referee, Crucible and analogy-firewall regressions;
 - `docs/CRUCIBLE_CORE_V0_1.md` — generic Crucible design and nonclaims;
 - `docs/NS_CRUCIBLE_ADAPTER.md` — NS-specific epistemic binding;
+- `docs/ANALOGY_FIREWALL_V0_1.md` — controlled cross-domain transfer architecture;
+- `docs/NS_CROSS_DOMAIN_TRANSFER_ADAPTER.md` — NS-specific analogy intake/revalidation rules;
 - `docs/PDE_LAB_V0_1.md` / `docs/PRECISION_REFEREE_V0_1.md` — numerical architecture;
 - `docs/PROBLEM_STATEMENT.md` / `docs/KNOWN_BOUNDARY.md` / `docs/PROOF_BARRIERS.md` — mathematical target and known boundary;
 - `docs/CLAIM_LEVELS.md` — evidence/claim promotion ladder;
@@ -88,7 +118,7 @@ The Millennium Prize target is the Clay Mathematics Institute Navier-Stokes prob
 
 ## Current phase
 
-**Phase 1 boundary reconstruction continues; Phase 2 laboratory engineering and the reusable Crucible search architecture are in progress.**
+**Phase 1 boundary reconstruction continues; Phase 2 laboratory engineering and Phase 2.5 Crucible/ML-search architecture are in progress.**
 
 No solution, counterexample, proof of global regularity, proof of finite-time singularity, or new theorem is claimed by this repository at present.
 
