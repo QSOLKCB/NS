@@ -1,0 +1,18 @@
+cff-version: 1.2.0
+message: "If you use this research software, cite this repository and any release DOI supplied by the corresponding release record."
+title: "QSOL NS: Reproducible Navier–Stokes Research Workbench"
+type: software
+authors:
+  - family-names: Slade
+    given-names: Trent
+    orcid: "https://orcid.org/0009-0002-4515-9237"
+repository-code: "https://github.com/QSOLKCB/NS"
+license: Apache-2.0
+keywords:
+  - Navier-Stokes equations
+  - existence and smoothness
+  - reproducible research
+  - computational mathematics
+  - formal verification
+  - deterministic experiments
+  - singularity diagnostics

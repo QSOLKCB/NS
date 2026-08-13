@@ -1,0 +1,311 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/QSOLKCB/NS/blob/main/AGENTS.schema.json",
+  "title": "QSOL NS Agent Contract",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "document_type",
+    "serialization",
+    "repository",
+    "default_branch",
+    "human_operator",
+    "agent_boot_sequence",
+    "branch_policy",
+    "research_invariants",
+    "claim_levels",
+    "claim_promotion",
+    "experiment_requirements",
+    "proof_requirements",
+    "licensing",
+    "file_policy",
+    "language_policy",
+    "review_policy",
+    "completion_contract"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.1.0"},
+    "document_type": {"const": "qsol_ns_agent_contract"},
+    "serialization": {"const": "json"},
+    "repository": {"const": "QSOLKCB/NS"},
+    "default_branch": {"const": "main"},
+    "human_operator": {
+      "type": "object",
+      "required": ["role", "required_for"],
+      "properties": {
+        "role": {"const": "final_authority"},
+        "required_for": {
+          "const": [
+            "public_solution_claim",
+            "license_scope_change",
+            "history_rewrite",
+            "deletion_of_evidentiary_artifacts",
+            "release_or_archive_publication"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "agent_boot_sequence": {
+      "const": [
+        "parse_AGENTS_md_as_JSON",
+        "validate_against_AGENTS_schema_json",
+        "read_README_md",
+        "read_docs_PROBLEM_STATEMENT_md",
+        "read_docs_CLAIM_LEVELS_md",
+        "read_docs_EXPERIMENT_CONTRACT_md",
+        "read_docs_REPRODUCIBILITY_md",
+        "read_docs_PUBLICATION_GATE_md",
+        "inspect_current_branch_and_head_commit",
+        "inspect_worktree_or_target_diff_before_mutation"
+      ]
+    },
+    "branch_policy": {
+      "type": "object",
+      "required": ["direct_main_write", "agent_branch_prefix", "default_delivery", "force_push", "history_rewrite"],
+      "properties": {
+        "direct_main_write": {"const": false},
+        "agent_branch_prefix": {"const": "agent/"},
+        "default_delivery": {"const": "draft_pull_request"},
+        "force_push": {"const": false},
+        "history_rewrite": {"const": false}
+      },
+      "additionalProperties": false
+    },
+    "research_invariants": {
+      "const": [
+        "numerical_blowup_signature_is_not_proof_of_blowup",
+        "absence_of_observed_blowup_is_not_proof_of_global_regularity",
+        "formal_verification_is_not_physical_truth",
+        "candidate_lemma_is_not_verified_theorem",
+        "private_experiment_is_not_public_claim",
+        "official_clay_problem_is_not_redefined_by_repository_text",
+        "negative_and_null_results_are_preserved",
+        "solver_failure_is_not_mathematical_singularity",
+        "floating_point_overflow_is_not_mathematical_singularity",
+        "resolution_instability_is_not_mathematical_singularity",
+        "claim_status_must_never_exceed_evidence_status"
+      ]
+    },
+    "claim_levels": {
+      "const": [
+        "exploratory",
+        "reproduced_numerical",
+        "candidate_lemma",
+        "proved_lemma",
+        "externally_checked_theorem",
+        "publication_candidate",
+        "public_solution_claim"
+      ]
+    },
+    "claim_promotion": {
+      "type": "object",
+      "required": [
+        "upward_promotion_is_monotonic",
+        "automatic_promotion_allowed",
+        "corrective_downgrades_allowed",
+        "downgrade_reason_must_be_preserved",
+        "public_solution_claim_requires_human_operator",
+        "public_solution_claim_requires_completed_external_mathematical_review",
+        "numerics_can_promote_to",
+        "formal_checker_can_promote_to",
+        "formal_checker_scope"
+      ],
+      "properties": {
+        "upward_promotion_is_monotonic": {"const": true},
+        "automatic_promotion_allowed": {"const": false},
+        "corrective_downgrades_allowed": {"const": true},
+        "downgrade_reason_must_be_preserved": {"const": true},
+        "public_solution_claim_requires_human_operator": {"const": true},
+        "public_solution_claim_requires_completed_external_mathematical_review": {"const": true},
+        "numerics_can_promote_to": {"const": "reproduced_numerical"},
+        "formal_checker_can_promote_to": {"const": "proved_lemma"},
+        "formal_checker_scope": {"const": "encoded_statement_only"}
+      },
+      "additionalProperties": false
+    },
+    "experiment_requirements": {
+      "type": "object",
+      "required": [
+        "canonical_field_definition",
+        "required_fields",
+        "singularity_run_required_fields",
+        "raw_outputs_preserved",
+        "failed_runs_preserved_when_informative",
+        "silent_parameter_changes_forbidden"
+      ],
+      "properties": {
+        "canonical_field_definition": {"const": "AGENTS.md#experiment_requirements.required_fields"},
+        "required_fields": {
+          "const": [
+            "experiment_id",
+            "source_commit",
+            "created_at_utc",
+            "operator_or_agent",
+            "purpose",
+            "hypothesis",
+            "claim_level",
+            "spatial_domain",
+            "boundary_conditions",
+            "initial_velocity_field_definition",
+            "divergence_free_admissibility",
+            "viscosity",
+            "forcing",
+            "scaling_convention",
+            "measured_solution_quantity",
+            "solver",
+            "solver_version",
+            "spatial_discretization",
+            "time_integrator",
+            "time_step_policy",
+            "resolution",
+            "precision",
+            "tolerances",
+            "filtering_regularization",
+            "interpolation_remeshing",
+            "random_seed_or_null",
+            "operating_system_or_container_identity",
+            "compiler_or_interpreter",
+            "dependency_lock_or_exact_versions",
+            "numerics_relevant_hardware_features",
+            "thread_or_process_count",
+            "input_hashes",
+            "output_hashes",
+            "diagnostics",
+            "termination_reason",
+            "warnings_or_errors",
+            "wall_clock_independent_step_counts",
+            "raw_outputs_or_content_addressed_pointer"
+          ]
+        },
+        "singularity_run_required_fields": {
+          "const": [
+            "convergence_resolution_behavior",
+            "precision_sensitivity",
+            "conservation_balance_residuals",
+            "timestep_sensitivity",
+            "competing_numerical_failure_explanation"
+          ]
+        },
+        "raw_outputs_preserved": {"const": true},
+        "failed_runs_preserved_when_informative": {"const": true},
+        "silent_parameter_changes_forbidden": {"const": true}
+      },
+      "additionalProperties": false
+    },
+    "proof_requirements": {
+      "type": "object",
+      "required": [
+        "explicit_hypotheses",
+        "explicit_domain",
+        "explicit_regularization_or_approximation",
+        "external_theorem_dependencies_cited",
+        "formal_artifact_required_fields",
+        "proof_gap_markers_forbidden_in_verified_status"
+      ],
+      "properties": {
+        "explicit_hypotheses": {"const": true},
+        "explicit_domain": {"const": true},
+        "explicit_regularization_or_approximation": {"const": true},
+        "external_theorem_dependencies_cited": {"const": true},
+        "formal_artifact_required_fields": {
+          "const": [
+            "prover",
+            "prover_version",
+            "dependency_lock_identity",
+            "theorem_fully_qualified_name",
+            "encoded_statement",
+            "assumptions_and_axioms_used",
+            "source_commit",
+            "build_command",
+            "successful_ci_or_run_identity_or_null",
+            "correspondence_note"
+          ]
+        },
+        "proof_gap_markers_forbidden_in_verified_status": {
+          "const": [
+            "sorry",
+            "admit",
+            "assume_without_source",
+            "numerically_obvious",
+            "physically_obvious"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "licensing": {
+      "type": "object",
+      "required": ["software_spdx", "machine_policy_spdx", "research_prose_spdx", "license_scope_authority", "license_mutation_requires_human_operator"],
+      "properties": {
+        "software_spdx": {"const": "Apache-2.0"},
+        "machine_policy_spdx": {"const": "Apache-2.0"},
+        "research_prose_spdx": {"const": "CC-BY-4.0"},
+        "license_scope_authority": {"const": "LICENSES.md"},
+        "license_mutation_requires_human_operator": {"const": true}
+      },
+      "additionalProperties": false
+    },
+    "file_policy": {
+      "type": "object",
+      "required": ["immutable_without_explicit_reason", "generated_artifacts_must_record_generator", "binary_results_require_manifest_entry", "secrets_forbidden"],
+      "properties": {
+        "immutable_without_explicit_reason": {
+          "const": ["LICENSE", "LICENSES.md", "NOTICE", "CITATION.cff", "AGENTS.md", "AGENTS.schema.json"]
+        },
+        "generated_artifacts_must_record_generator": {"const": true},
+        "binary_results_require_manifest_entry": {"const": true},
+        "secrets_forbidden": {"const": true}
+      },
+      "additionalProperties": false
+    },
+    "language_policy": {
+      "type": "object",
+      "required": ["solution_language_forbidden_unless_status_is_public_solution_claim", "required_uncertainty_label_for_exploratory_results"],
+      "properties": {
+        "solution_language_forbidden_unless_status_is_public_solution_claim": {
+          "const": ["solved", "solution established", "millennium problem resolved", "proof complete"]
+        },
+        "required_uncertainty_label_for_exploratory_results": {"const": true}
+      },
+      "additionalProperties": false
+    },
+    "review_policy": {
+      "type": "object",
+      "required": [
+        "adversarial_review",
+        "check_prior_art_before_novelty_claim",
+        "check_scaling_and_units",
+        "check_boundary_and_initial_conditions",
+        "check_discrete_continuum_gap",
+        "check_roundoff_and_resolution_sensitivity",
+        "check_circular_reasoning",
+        "check_hidden_regularization"
+      ],
+      "properties": {
+        "adversarial_review": {"const": true},
+        "check_prior_art_before_novelty_claim": {"const": true},
+        "check_scaling_and_units": {"const": true},
+        "check_boundary_and_initial_conditions": {"const": true},
+        "check_discrete_continuum_gap": {"const": true},
+        "check_roundoff_and_resolution_sensitivity": {"const": true},
+        "check_circular_reasoning": {"const": true},
+        "check_hidden_regularization": {"const": true}
+      },
+      "additionalProperties": false
+    },
+    "completion_contract": {
+      "type": "object",
+      "required": ["summarize_changed_files", "report_validation_performed", "report_unresolved_risks", "report_exact_head_commit", "never_claim_background_work"],
+      "properties": {
+        "summarize_changed_files": {"const": true},
+        "report_validation_performed": {"const": true},
+        "report_unresolved_risks": {"const": true},
+        "report_exact_head_commit": {"const": true},
+        "never_claim_background_work": {"const": true}
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

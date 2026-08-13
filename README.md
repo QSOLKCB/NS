@@ -1,66 +1,47 @@
 # QSOL NS
 
-**Private research workbench for the 3D incompressible Navier–Stokes existence and smoothness problem.**
+**Private reproducible research workbench for the 3D incompressible Navier–Stokes existence and smoothness problem.**
 
-QSOL NS is intended to support a disciplined two-track investigation of the Navier–Stokes Millennium Prize Problem while keeping numerical evidence, mathematical proof, and physical interpretation rigorously separated.
+QSOL NS is a two-track research program: global regularity and finite-time breakdown are treated as competing hypotheses until mathematics rules one out. Numerical experiments, symbolic work, formal verification and literature reconstruction are used as discovery and checking tools, never as substitutes for proof.
 
-## Core problem
-
-For the 3D incompressible Navier–Stokes equations
+## Research boundary
 
 ```text
-∂ₜu + (u·∇)u = -∇p + νΔu
-∇·u = 0
+NUMERICAL_BLOWUP_SIGNATURE != PROOF_OF_BLOWUP
+NO_OBSERVED_BLOWUP != PROOF_OF_GLOBAL_REGULARITY
+FORMAL_VERIFICATION != EMPIRICAL_TRUTH
+CANDIDATE_LEMMA != VERIFIED_THEOREM
+PRIVATE_EXPERIMENT != PUBLIC_CLAIM
 ```
 
-with velocity field `u`, pressure `p`, and viscosity `ν > 0`, the project studies the global existence/smoothness question from both admissible directions:
+## Repository map
 
-1. **Global-regularity track** — seek rigorous estimates, invariants, continuation criteria, monotonic quantities, or exclusions of concentration mechanisms that could establish global smoothness.
-2. **Finite-time singularity track** — seek admissible smooth divergence-free initial data and a rigorously characterizable mechanism capable of forcing loss of regularity in finite time.
+- `AGENTS.md` — authoritative machine-readable agent policy; file contents are strict JSON, not prose.
+- `AGENTS.schema.json` — JSON Schema for the agent policy.
+- `docs/PROBLEM_STATEMENT.md` — canonical target and scope discipline.
+- `docs/RESEARCH_CHARTER.md` — research method and governance.
+- `docs/CLAIM_LEVELS.md` — evidence/claim promotion ladder.
+- `docs/EXPERIMENT_CONTRACT.md` — minimum metadata for computational experiments.
+- `docs/REPRODUCIBILITY.md` — deterministic/replay requirements.
+- `docs/NUMERICAL_EVIDENCE_POLICY.md` — what computation may and may not establish.
+- `docs/FORMAL_VERIFICATION_POLICY.md` — machine-proof scope and nonclaims.
+- `docs/PUBLICATION_GATE.md` — conditions for promotion beyond the private workspace.
+- `docs/LITERATURE_MAP.md` — controlled literature intake and prior-art map.
+- `docs/ROADMAP.md` — staged research plan.
+- `docs/DECISION_LOG.md` — durable architectural/research decisions.
+- `CONTRIBUTING.md` — contribution rules.
+- `SECURITY.md` — vulnerability and research-integrity reporting.
+- `LICENSES.md` / `NOTICE` — licensing scope and attribution.
+- `CITATION.cff` — citation metadata for the project.
 
-Neither track is privileged in advance. The mathematics decides.
+## Canonical external authority
 
-## Governing research boundary
-
-```text
-NUMERICAL BLOW-UP SIGNATURE != PROOF OF BLOW-UP
-NO OBSERVED BLOW-UP != PROOF OF GLOBAL REGULARITY
-FORMAL VERIFICATION != PHYSICAL TRUTH
-```
-
-Numerical experiments may discover conjectures, candidate mechanisms, counterexample families, scaling laws, or proof obligations. They do not settle the Millennium problem by themselves.
-
-## Planned repository structure
-
-```text
-docs/        exact problem statement, theorem boundary, literature map, research notes
-experiments/ deterministic numerical experiments and singularity diagnostics
-formal/      machine-checked lemmas and proof-support material where useful
-src/         reusable numerical, symbolic, and verification tooling
-tests/       regression, determinism, and invariant tests
-```
-
-## Reproducibility principles
-
-- freeze initial conditions and numerical parameters;
-- record solver, compiler, dependency, and runtime identities;
-- separate exploratory runs from evidentiary runs;
-- retain negative and null results;
-- distinguish numerical instability from mathematical singularity;
-- state every theorem claim with explicit hypotheses and dependencies;
-- preserve exact commit identity for any result promoted into a paper or archival record;
-- never promote computational consistency into mathematical proof without a valid argument bridging the two.
+The Millennium Prize target is the Clay Mathematics Institute Navier–Stokes problem and Charles L. Fefferman's official problem description. This repository does not redefine the prize problem. Any candidate solution must map its hypotheses and conclusion explicitly to an allowed official formulation before publication-grade status is possible.
 
 ## Current status
 
-Early **private research stage**. No claim of a solution, counterexample, proof, or new theorem is made by the existence of this repository.
+**Private exploratory research.** No solution, counterexample, proof of global regularity, proof of finite-time singularity, or new theorem is claimed by this repository at present.
 
-## Private-repository access test
+## Licensing
 
-This README was intentionally updated through the connected GitHub integration while `QSOLKCB/NS` was private. See [`docs/PRIVATE_REPO_SMOKE_TEST.md`](docs/PRIVATE_REPO_SMOKE_TEST.md) for the companion nested-file write/read test.
-
-## License
-
-Source code is licensed under the **Apache License 2.0**; see [`LICENSE`](LICENSE).
-
-Research papers, figures, and selected documentation may later be released under **CC BY 4.0** when appropriate. Any such material will be explicitly marked rather than assumed to inherit a different license from the repository root.
+Software, machine-readable policies, schemas, configuration, tests and tooling are Apache-2.0 unless a file states otherwise. Human-authored research prose and figures explicitly marked `CC-BY-4.0` are licensed under Creative Commons Attribution 4.0 International. See `LICENSES.md`.
