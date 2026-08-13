@@ -57,21 +57,18 @@ def main() -> None:
     mutated["proof_requirements"]["formal_artifact_required_fields"].remove("encoded_statement")
     require_rejected(validator, mutated, "formal provenance field removed")
 
-    mutated = copy.deepcopy(contract)
-    mutated["agent_boot_sequence"].remove("run_tools_validate_boundary_map_py")
-    require_rejected(validator, mutated, "boundary validator removed from agent boot")
-
-    mutated = copy.deepcopy(contract)
-    mutated["agent_boot_sequence"].remove("run_tools_validate_lab_contract_py")
-    require_rejected(validator, mutated, "lab validator removed from agent boot")
-
-    mutated = copy.deepcopy(contract)
-    mutated["agent_boot_sequence"].remove("run_tools_validate_precision_referee_py")
-    require_rejected(validator, mutated, "precision referee validator removed from agent boot")
-
-    mutated = copy.deepcopy(contract)
-    mutated["agent_boot_sequence"].remove("read_research_precision_referee_contract_json")
-    require_rejected(validator, mutated, "precision referee contract removed from agent boot")
+    for boot_step, label in [
+        ("run_tools_validate_boundary_map_py", "boundary validator removed from agent boot"),
+        ("run_tools_validate_lab_contract_py", "lab validator removed from agent boot"),
+        ("run_tools_validate_precision_referee_py", "precision referee validator removed from agent boot"),
+        ("run_tools_validate_crucible_core_py", "Crucible validator removed from agent boot"),
+        ("read_research_precision_referee_contract_json", "precision referee contract removed from agent boot"),
+        ("read_research_crucible_contract_json", "Crucible contract removed from agent boot"),
+        ("read_research_ns_crucible_adapter_json", "NS Crucible adapter removed from agent boot"),
+    ]:
+        mutated = copy.deepcopy(contract)
+        mutated["agent_boot_sequence"].remove(boot_step)
+        require_rejected(validator, mutated, label)
 
     mutated = copy.deepcopy(contract)
     mutated["literature_boundary_policy"]["secondary_sources_may_discover_but_not_authorize"] = False
@@ -88,6 +85,27 @@ def main() -> None:
     mutated = copy.deepcopy(contract)
     mutated["research_invariants"].remove("precision_agreement_is_not_continuum_proof")
     require_rejected(validator, mutated, "precision evidence boundary removed")
+
+    mutated = copy.deepcopy(contract)
+    mutated["research_invariants"].remove("crucible_core_does_not_define_domain_truth")
+    require_rejected(validator, mutated, "Crucible truth-authority boundary removed")
+
+    for field, label in [
+        ("core_may_define_domain_truth", "Crucible granted domain-truth authority"),
+        ("core_may_promote_claim", "Crucible granted claim-promotion authority"),
+        ("core_may_select_winner", "Crucible granted winner-selection authority"),
+    ]:
+        mutated = copy.deepcopy(contract)
+        mutated["crucible_policy"][field] = True
+        require_rejected(validator, mutated, label)
+
+    mutated = copy.deepcopy(contract)
+    mutated["crucible_policy"]["holdout_access_requires_candidate_freeze"] = False
+    require_rejected(validator, mutated, "Crucible holdout freeze gate disabled")
+
+    mutated = copy.deepcopy(contract)
+    mutated["crucible_policy"]["negative_results_preserved"] = False
+    require_rejected(validator, mutated, "Crucible negative-result preservation disabled")
 
     print("AGENTS contract validation: PASS")
 

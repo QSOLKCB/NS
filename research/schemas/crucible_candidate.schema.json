@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/QSOLKCB/NS/blob/main/research/schemas/crucible_candidate.schema.json",
+  "title": "QSOL Crucible candidate record",
+  "type": "object",
+  "required": ["candidate_id", "domain_id", "hypothesis_set_id", "hypothesis", "claim_level", "generation_method", "parent_candidate_ids", "assumptions", "status", "frozen"],
+  "properties": {
+    "candidate_id": {"type": "string", "minLength": 1},
+    "domain_id": {"type": "string", "minLength": 1},
+    "hypothesis_set_id": {"type": "string", "minLength": 1},
+    "hypothesis": {"type": "string", "minLength": 1},
+    "claim_level": {"type": "string", "minLength": 1},
+    "generation_method": {"type": "string", "minLength": 1},
+    "parent_candidate_ids": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "assumptions": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "status": {"enum": ["active", "frozen", "rejected_by_domain_constraint"]},
+    "frozen": {"type": "boolean"}
+  },
+  "allOf": [
+    {"if": {"properties": {"status": {"const": "frozen"}}, "required": ["status"]}, "then": {"properties": {"frozen": {"const": true}}}},
+    {"if": {"properties": {"status": {"const": "rejected_by_domain_constraint"}}, "required": ["status"]}, "then": {"properties": {"frozen": {"const": true}}}}
+  ],
+  "additionalProperties": false
+}

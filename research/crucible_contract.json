@@ -1,0 +1,61 @@
+{
+  "schema_version": "0.1.0",
+  "document_type": "qsol_crucible_core_contract",
+  "license": "Apache-2.0",
+  "core_version": "0.1.0",
+  "purpose": "domain-neutral orchestration of competing hypotheses, evidence, constraints, falsification, failure memory, holdouts, and survivor frontier management",
+  "authority": {
+    "core_defines_domain_truth": false,
+    "core_may_promote_claims": false,
+    "core_may_select_winner": false,
+    "domain_adapter_required": true,
+    "domain_adapter_owns_epistemic_standard": true
+  },
+  "principles": {
+    "competing_hypotheses_first_class": true,
+    "negative_and_null_results_preserved": true,
+    "failure_ledger_append_only": true,
+    "holdout_requires_frozen_candidate": true,
+    "narrative_plausibility_changes_evidence_status": false,
+    "universal_confidence_score_enabled": false,
+    "survival_count_is_truth_metric": false
+  },
+  "objects": [
+    "candidate",
+    "hypothesis_set",
+    "evidence_record",
+    "constraint_result",
+    "failure_record"
+  ],
+  "lifecycle": [
+    "generate",
+    "formalize",
+    "constrain",
+    "falsify",
+    "record_failure",
+    "refine",
+    "domain_owned_promotion"
+  ],
+  "holdout_policy": {
+    "stages": ["training", "development", "holdout"],
+    "holdout_payload_may_be_used_during_generation": false,
+    "candidate_must_be_frozen_before_holdout_evidence": true,
+    "holdout_success_automatically_promotes_claim": false
+  },
+  "failure_ledger_policy": {
+    "hard_failure_requires_record": true,
+    "record_preserves_failed_constraint": true,
+    "record_preserves_evidence_refs": true,
+    "record_preserves_reusable_lesson": true,
+    "record_preserves_claim_level_before_and_after": true,
+    "deletion_by_core": false
+  },
+  "required_nonclaims": [
+    "crucible_survival_is_not_truth",
+    "high_survival_count_is_not_proof",
+    "holdout_success_is_not_unique_explanation",
+    "falsification_of_one_candidate_does_not_prove_competitor",
+    "core_orchestration_is_not_domain_epistemic_authority",
+    "narrative_plausibility_is_not_evidentiary_status"
+  ]
+}
