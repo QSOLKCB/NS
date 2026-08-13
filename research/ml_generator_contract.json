@@ -1,0 +1,76 @@
+{
+  "schema_version": "0.1.0",
+  "document_type": "qsol_schema_constrained_ml_generator_contract",
+  "license": "Apache-2.0",
+  "generator_version": "0.1.0",
+  "purpose": "provider-neutral schema-constrained ML proposal intake with tamper-evident attempt retention and no epistemic authority escalation",
+  "authority": {
+    "model_output_is_candidate": false,
+    "generator_output_is_domain_evidence": false,
+    "generator_may_promote_claim": false,
+    "generator_may_assign_proof_status": false,
+    "generator_may_select_winner": false,
+    "generator_confidence_is_authority": false,
+    "accepted_candidate_initial_claim_level": "exploratory",
+    "generator_rejection_is_mathematical_failure": false
+  },
+  "backend_policy": {
+    "provider_neutral_protocol": true,
+    "network_provider_required_in_core": false,
+    "deterministic_fixture_backend_required_for_ci": true,
+    "backend_returns_untrusted_text": true
+  },
+  "context_packet": {
+    "canonical_json": true,
+    "sha256_identity": true,
+    "binds_domain_and_hypothesis_set": true,
+    "binds_theorem_ids": true,
+    "binds_proof_barrier_ids": true,
+    "binds_frontier": true,
+    "binds_failure_lessons": true,
+    "binds_permitted_analogy_ids": true,
+    "binds_ledger_head": true,
+    "binds_source_commit": true
+  },
+  "proposal_policy": {
+    "strict_json_object_only": true,
+    "additional_properties_forbidden": true,
+    "nonfinite_numbers_forbidden": true,
+    "model_supplied_claim_level_forbidden": true,
+    "model_supplied_evidence_or_proof_status_forbidden": true,
+    "model_supplied_confidence_authority_forbidden": true,
+    "unknown_hypothesis_rejected": true,
+    "unknown_parent_rejected": true,
+    "unknown_theorem_dependency_rejected": true,
+    "unregistered_analogy_rejected": true,
+    "direct_analogy_intake_forbidden": true,
+    "registered_analogy_requires_existing_firewall_route": true
+  },
+  "attempt_journal": {
+    "every_attempt_recorded": true,
+    "rejected_attempts_recorded": true,
+    "raw_output_sha256_preserved": true,
+    "raw_output_preserved": true,
+    "context_sha256_preserved": true,
+    "prompt_template_sha256_preserved": true,
+    "backend_and_model_identity_preserved": true,
+    "append_only_sha256_hash_chained": true,
+    "content_addressed_attempt_objects": true,
+    "attempt_journal_is_not_domain_evidence": true
+  },
+  "commit_policy": {
+    "model_cannot_directly_commit_candidate": true,
+    "accepted_decision_commit_is_explicit_separate_step": true,
+    "candidate_claim_level_on_commit": "exploratory",
+    "crucible_ledger_remains_authoritative_for_candidate_persistence": true
+  },
+  "required_nonclaims": [
+    "model_output_is_not_candidate",
+    "valid_json_is_not_valid_research_candidate",
+    "generator_output_is_not_domain_evidence",
+    "generator_output_is_not_claim_promotion",
+    "generator_self_assessment_is_not_evidence_status",
+    "invalid_generation_attempt_is_not_mathematical_failure",
+    "accepted_candidate_is_not_surviving_candidate"
+  ]
+}

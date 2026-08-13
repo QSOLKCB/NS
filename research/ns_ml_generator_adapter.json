@@ -1,0 +1,43 @@
+{
+  "schema_version": "0.1.0",
+  "document_type": "qsol_ns_ml_generator_adapter",
+  "license": "Apache-2.0",
+  "adapter_version": "0.1.0",
+  "generator_contract": "research/ml_generator_contract.json",
+  "domain_id": "navier_stokes_3d_incompressible",
+  "hypothesis_set_id": "NS_PRIMARY_COMPETITION",
+  "allowed_target_hypotheses": [
+    "NS_GLOBAL_REGULARITY",
+    "NS_FINITE_TIME_BREAKDOWN"
+  ],
+  "registry_bindings": {
+    "theorem_registry": "research/theorem_registry.json",
+    "proof_barrier_registry": "research/proof_barriers.json",
+    "analogy_registry": "research/cross_domain_transfer_registry.json",
+    "crucible_adapter": "research/ns_crucible_adapter.json",
+    "ledger_contract": "research/crucible_ledger_contract.json"
+  },
+  "candidate_intake": {
+    "initial_claim_level": "exploratory",
+    "direct_model_claim_level_forbidden": true,
+    "direct_model_evidence_status_forbidden": true,
+    "direct_model_proof_status_forbidden": true,
+    "direct_model_winner_selection_forbidden": true,
+    "unknown_theorem_dependency_rejected": true,
+    "unknown_parent_rejected": true,
+    "analogy_reference_requires_firewall_route": true
+  },
+  "context_policy": {
+    "must_bind_exact_source_commit": true,
+    "must_bind_ledger_head": true,
+    "must_include_all_registered_proof_barrier_ids": true,
+    "target_tracks_must_match_ns_crucible_adapter": true
+  },
+  "epistemic_authority": {
+    "generator_is_ns_evidence": false,
+    "generator_can_discharge_proof_barrier": false,
+    "generator_can_change_claim_level": false,
+    "generator_can_select_track_winner": false,
+    "accepted_candidate_is_ns_result": false
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/QSOLKCB/NS/blob/main/research/schemas/ns_ml_generator_adapter.schema.json",
+  "title": "QSOL NS ML generator adapter",
+  "type": "object",
+  "required": ["schema_version", "document_type", "license", "adapter_version", "generator_contract", "domain_id", "hypothesis_set_id", "allowed_target_hypotheses", "registry_bindings", "candidate_intake", "context_policy", "epistemic_authority"],
+  "properties": {
+    "schema_version": {"const": "0.1.0"},
+    "document_type": {"const": "qsol_ns_ml_generator_adapter"},
+    "license": {"const": "Apache-2.0"},
+    "adapter_version": {"const": "0.1.0"},
+    "generator_contract": {"const": "research/ml_generator_contract.json"},
+    "domain_id": {"const": "navier_stokes_3d_incompressible"},
+    "hypothesis_set_id": {"const": "NS_PRIMARY_COMPETITION"},
+    "allowed_target_hypotheses": {"const": ["NS_GLOBAL_REGULARITY", "NS_FINITE_TIME_BREAKDOWN"]},
+    "registry_bindings": {"const": {"theorem_registry": "research/theorem_registry.json", "proof_barrier_registry": "research/proof_barriers.json", "analogy_registry": "research/cross_domain_transfer_registry.json", "crucible_adapter": "research/ns_crucible_adapter.json", "ledger_contract": "research/crucible_ledger_contract.json"}},
+    "candidate_intake": {"const": {"initial_claim_level": "exploratory", "direct_model_claim_level_forbidden": true, "direct_model_evidence_status_forbidden": true, "direct_model_proof_status_forbidden": true, "direct_model_winner_selection_forbidden": true, "unknown_theorem_dependency_rejected": true, "unknown_parent_rejected": true, "analogy_reference_requires_firewall_route": true}},
+    "context_policy": {"const": {"must_bind_exact_source_commit": true, "must_bind_ledger_head": true, "must_include_all_registered_proof_barrier_ids": true, "target_tracks_must_match_ns_crucible_adapter": true}},
+    "epistemic_authority": {"const": {"generator_is_ns_evidence": false, "generator_can_discharge_proof_barrier": false, "generator_can_change_claim_level": false, "generator_can_select_track_winner": false, "accepted_candidate_is_ns_result": false}}
+  },
+  "additionalProperties": false
+}

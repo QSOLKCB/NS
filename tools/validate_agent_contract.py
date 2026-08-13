@@ -64,6 +64,7 @@ def main() -> None:
         ("run_tools_validate_crucible_core_py", "Crucible validator removed from agent boot"),
         ("run_tools_validate_analogy_firewall_py", "Analogy Firewall validator removed from agent boot"),
         ("run_tools_validate_crucible_ledger_py", "Crucible ledger validator removed from agent boot"),
+        ("run_tools_validate_ml_generator_py", "ML generator validator removed from agent boot"),
         ("read_research_precision_referee_contract_json", "precision referee contract removed from agent boot"),
         ("read_research_crucible_contract_json", "Crucible contract removed from agent boot"),
         ("read_research_ns_crucible_adapter_json", "NS Crucible adapter removed from agent boot"),
@@ -71,6 +72,8 @@ def main() -> None:
         ("read_research_cross_domain_transfer_registry_json", "transfer registry removed from agent boot"),
         ("read_research_ns_cross_domain_transfer_adapter_json", "NS transfer adapter removed from agent boot"),
         ("read_research_crucible_ledger_contract_json", "Crucible ledger contract removed from agent boot"),
+        ("read_research_ml_generator_contract_json", "ML generator contract removed from agent boot"),
+        ("read_research_ns_ml_generator_adapter_json", "NS ML generator adapter removed from agent boot"),
     ]:
         mutated = copy.deepcopy(contract)
         mutated["agent_boot_sequence"].remove(boot_step)
@@ -102,6 +105,13 @@ def main() -> None:
         ("content_addressing_is_not_mathematical_validation", "content-addressing validation boundary removed"),
         ("mutable_history_is_not_research_provenance", "immutable history boundary removed"),
         ("transfer_ticket_is_not_domain_evidence", "transfer-ticket evidence boundary removed"),
+        ("model_output_is_not_candidate", "model output/candidate boundary removed"),
+        ("valid_json_is_not_valid_research_candidate", "JSON/research-candidate boundary removed"),
+        ("generator_output_is_not_domain_evidence", "generator evidence boundary removed"),
+        ("generator_output_is_not_claim_promotion", "generator claim boundary removed"),
+        ("generator_self_assessment_is_not_evidence_status", "generator self-assessment boundary removed"),
+        ("invalid_generation_attempt_is_not_mathematical_failure", "generation failure/math failure boundary removed"),
+        ("accepted_candidate_is_not_surviving_candidate", "accepted/surviving candidate boundary removed"),
     ]:
         mutated = copy.deepcopy(contract)
         mutated["research_invariants"].remove(invariant)
@@ -166,10 +176,37 @@ def main() -> None:
         require_rejected(validator, mutated, label)
 
     for field, label in [
+        ("model_output_is_candidate", "model output made candidate automatically"),
+        ("generator_may_be_domain_evidence", "generator granted domain-evidence authority"),
+        ("generator_may_promote_claim", "generator granted claim-promotion authority"),
+        ("generator_may_assign_proof_status", "generator granted proof authority"),
+        ("generator_may_select_winner", "generator granted winner authority"),
+        ("direct_analogy_bypass", "generator granted Analogy Firewall bypass"),
+        ("model_facing_airlock_may_mutate_crucible_ledger", "model-facing airlock granted ledger mutation"),
+    ]:
+        mutated = copy.deepcopy(contract)
+        mutated["generator_policy"][field] = True
+        require_rejected(validator, mutated, label)
+
+    mutated = copy.deepcopy(contract)
+    mutated["generator_policy"]["accepted_candidate_initial_claim_level"] = "candidate_lemma"
+    require_rejected(validator, mutated, "ML candidate starts above exploratory")
+
+    for field, label in [
+        ("every_attempt_recorded", "generation attempts may disappear"),
+        ("rejected_attempts_recorded", "rejected generation attempts may disappear"),
+    ]:
+        mutated = copy.deepcopy(contract)
+        mutated["generator_policy"][field] = False
+        require_rejected(validator, mutated, label)
+
+    for field, label in [
         ("check_cross_domain_analogy_classification", "cross-domain analogy classification review disabled"),
         ("check_analogy_target_revalidation", "analogy target revalidation review disabled"),
         ("check_content_addressed_ledger_integrity", "ledger integrity review disabled"),
         ("check_transfer_ticket_provenance", "transfer-ticket provenance review disabled"),
+        ("check_ml_generator_authority", "ML generator authority review disabled"),
+        ("check_generation_attempt_provenance", "generation-attempt provenance review disabled"),
     ]:
         mutated = copy.deepcopy(contract)
         mutated["review_policy"][field] = False

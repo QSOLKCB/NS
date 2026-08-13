@@ -27,6 +27,13 @@ LEDGER_REPLAY != CLAIM_PROMOTION
 CONTENT_ADDRESSING != MATHEMATICAL_VALIDATION
 MUTABLE_HISTORY != RESEARCH_PROVENANCE
 TRANSFER_TICKET != DOMAIN_EVIDENCE
+MODEL_OUTPUT != CANDIDATE
+VALID_JSON != VALID_RESEARCH_CANDIDATE
+GENERATOR_OUTPUT != DOMAIN_EVIDENCE
+GENERATOR_OUTPUT != CLAIM_PROMOTION
+GENERATOR_SELF_ASSESSMENT != EVIDENCE_STATUS
+INVALID_GENERATION_ATTEMPT != MATHEMATICAL_FAILURE
+ACCEPTED_CANDIDATE != SURVIVING_CANDIDATE
 ```
 
 ## Machine research boundary
@@ -46,15 +53,18 @@ The project carries machine-readable research boundaries and laboratory contract
 - `research/cross_domain_transfer_registry.json` — provenance-bearing mapping classifications and negative controls;
 - `research/ns_cross_domain_transfer_adapter.json` — NS intake/revalidation policy for analogy-derived candidates;
 - `research/crucible_ledger_contract.json` — content-addressed object/ref/event/replay and transfer-ticket persistence contract;
-- `research/schemas/` — schemas for research, experiment, laboratory, referee, Crucible, transfer and ledger contracts;
+- `research/ml_generator_contract.json` — provider-neutral ML proposal/intake and attempt-journal authority contract;
+- `research/ns_ml_generator_adapter.json` — NS track/registry/context binding for ML-generated proposals;
+- `research/schemas/` — schemas for research, experiment, laboratory, referee, Crucible, transfer, ledger and ML-generator contracts;
 - `tools/validate_boundary_map.py` — theorem/source boundary validation;
 - `tools/validate_lab_contract.py` — solver/manifest/identity correspondence validation;
 - `tools/validate_precision_referee.py` — precision-referee correspondence validation;
 - `tools/validate_crucible_core.py` — Crucible/NS-adapter correspondence and hostile-mutation validation;
 - `tools/validate_analogy_firewall.py` — transfer-registry/firewall/NS-intake authority validation;
-- `tools/validate_crucible_ledger.py` — ledger immutability, replay, transfer-ticket and authority validation.
+- `tools/validate_crucible_ledger.py` — ledger immutability, replay, transfer-ticket and authority validation;
+- `tools/validate_ml_generator.py` — ML context/proposal/intake/journal and authority validation.
 
-Only official problem statements and primary research sources may authorize theorem-registry entries. Secondary sources may help discover literature but cannot establish the machine theorem boundary. Cross-domain analogies may generate exploratory candidates but are not NS evidence. Content-addressed persistence records what happened; it does not increase evidentiary authority.
+Only official problem statements and primary research sources may authorize theorem-registry entries. Secondary sources may help discover literature but cannot establish the machine theorem boundary. Cross-domain analogies may generate exploratory candidates but are not NS evidence. Content-addressed persistence records what happened; it does not increase evidentiary authority. ML generation is one layer more constrained: model text is untrusted input until the generator airlock admits a schema-valid exploratory candidate.
 
 ## Deterministic PDE laboratory v0.1
 
@@ -107,17 +117,30 @@ Analogy-derived candidates can be accompanied by immutable transfer tickets reco
 
 The ledger is deliberately **single-writer-process only in v0.1**. It preserves state and provenance but has no authority to define truth, create domain evidence, promote a claim, choose a winner or alter the NS epistemic standard.
 
+## Schema-Constrained ML Generator v0.1
+
+PR #8 adds the first model-facing research airlock.
+
+`src/crucible_core/generator.py` defines a provider-neutral `GeneratorBackend` protocol, deterministic fixture backend, hashable `GeneratorContextPacket`, strict `CandidateProposal`, `GeneratorAirlock`, and a separate content-addressed SHA-chained `GeneratorAttemptJournal`.
+
+A backend receives a bounded context packet containing the NS tracks, theorem IDs, proof barriers, current frontier/failure lessons, permitted analogy IDs, exact source commit and Crucible-ledger head. It returns untrusted text. The airlock accepts only a strict JSON object with the exact proposal fields; additional authority-bearing fields such as `claim_level`, `proved`, `solves_clay`, evidence/proof status or confidence authority are rejected.
+
+Accepted proposals become registration-valid `Candidate` objects with `claim_level=exploratory`. The model-facing `run()` path journals every attempt — accepted or rejected — but **does not mutate the Crucible ledger**. Committing an accepted candidate is an explicit separate machine step.
+
+Direct analogy references are intentionally rejected by this airlock even when registered: cross-domain proposals must route through the existing Analogy Firewall and transfer-ticket path rather than gaining a second weaker intake route.
+
 ## Repository map
 
 - `AGENTS.md` / `AGENTS.schema.json` — machine-readable research constitution;
 - `src/ns_lab/` — deterministic periodic reference laboratory and precision referee;
-- `src/crucible_core/` — domain-neutral candidate/falsification, analogy-firewall and content-addressed ledger machinery;
-- `tests/` — replay, solver, manifest, referee, Crucible, analogy-firewall and ledger regressions;
+- `src/crucible_core/` — candidate/falsification, analogy-firewall, content-addressed ledger and ML-generator machinery;
+- `tests/` — replay, solver, manifest, referee, Crucible, analogy-firewall, ledger and ML-generator regressions;
 - `docs/CRUCIBLE_CORE_V0_1.md` — generic Crucible design and nonclaims;
 - `docs/NS_CRUCIBLE_ADAPTER.md` — NS-specific epistemic binding;
 - `docs/ANALOGY_FIREWALL_V0_1.md` — controlled cross-domain transfer architecture;
 - `docs/NS_CROSS_DOMAIN_TRANSFER_ADAPTER.md` — NS-specific analogy intake/revalidation rules;
 - `docs/CRUCIBLE_LEDGER_V0_1.md` — content-addressed persistence/replay architecture and nonclaims;
+- `docs/ML_GENERATOR_V0_1.md` — schema-constrained model proposal/intake architecture;
 - `docs/PDE_LAB_V0_1.md` / `docs/PRECISION_REFEREE_V0_1.md` — numerical architecture;
 - `docs/PROBLEM_STATEMENT.md` / `docs/KNOWN_BOUNDARY.md` / `docs/PROOF_BARRIERS.md` — mathematical target and known boundary;
 - `docs/CLAIM_LEVELS.md` — evidence/claim promotion ladder;
