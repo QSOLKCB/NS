@@ -128,10 +128,24 @@ PR #9 Candidate Similarity Screening foundation:
 - [x] record thresholds as local NS screening calibration rather than universal constants;
 - [x] add machine contracts, schemas, validator, behavioral regressions, documentation and Python 3.11/3.13 CI.
 
+PR #10 Controlled Mutation & Crossover Engine foundation:
+
+- [x] define runtime-owned role-separated transform operators rather than generic retry prompting;
+- [x] support weaken-assumption, scaling-repair, failed-estimate replacement, reverse-track perspective, adversarial attack and same-track survivor crossover;
+- [x] bind every parent and failure payload to exact verified Crucible Ledger object identities;
+- [x] require exact frozen ledger-head/frontier/proof-barrier context before model invocation;
+- [x] preserve operator, parentage, context, prompt/output hashes and content-addressed attempt receipt;
+- [x] hard-code every accepted child to `exploratory`, `active`, and unfrozen;
+- [x] forbid inheritance of parent claim level, evidence status, frozen state or survival status;
+- [x] forbid model control of parent IDs, operator, status, claim/evidence/proof fields and engine-owned provenance;
+- [x] keep model-facing transformation separate from explicit Crucible Ledger commit and reject stale commit context;
+- [x] require a future explicit firewall-aware route for analogy-derived parents rather than silently laundering transfer provenance;
+- [x] add single-writer content-addressed transform attempt memory, hostile regressions, validator and Python 3.11/3.13 CI.
+
 Next ML-search engineering:
 
 - [x] add duplicate/prior-failure-family detection against accumulated Crucible history;
-- [ ] add controlled candidate mutation/crossover provenance;
+- [x] add controlled candidate mutation/crossover provenance;
 - [ ] add sealed holdout materialization with auditable release events;
 - [ ] add target-domain reviewers capable of rejecting analogy families before expensive evaluation;
 - [ ] add provider adapters only after the provider-neutral generator semantics remain stable;
@@ -143,7 +157,7 @@ Next ML-search engineering:
 
 The following work may borrow **software architecture, falsification methods, provenance patterns, observer contracts and candidate-generation heuristics** from other QSOL repositories. Those sources do not become Navier-Stokes evidence by reuse. Mathematical or scientific ideas imported from another domain must still enter through the Analogy Firewall and satisfy the NS domain adapter, theorem boundary and proof barriers.
 
-**PR #9 — Candidate Similarity Screening — IMPLEMENTED IN THIS PR.**
+**PR #9 — Candidate Similarity Screening — IMPLEMENTED.**
 
 - [x] classify candidate origin separately from claim level, adapting the useful editorial separation in `QSOLKCB/synergetics2`;
 - [x] distinguish normalized exact repeats, structural near-matches and prior-failure mechanism-family matches without treating similarity as mathematical equivalence;
@@ -151,12 +165,13 @@ The following work may borrow **software architecture, falsification methods, pr
 - [x] bind screening decisions to content-addressed candidate/failure identities and preserve false-positive review paths;
 - [x] machine-lock `SIMILAR_CANDIDATE != MATHEMATICALLY_EQUIVALENT_CANDIDATE` and `DEAD_FAMILY_MATCH != PROOF_OF_FALSEHOOD`.
 
-**PR #10 — Controlled Mutation & Crossover Engine.**
+**PR #10 — Controlled Mutation & Crossover Engine — IMPLEMENTED IN THIS PR.**
 
-- [ ] borrow the role-separated cognitive-mode idea from `QSOLKCB/QSOL-NEXUS` to define explicit mutation operators rather than generic "try again" prompting;
-- [ ] support transformations such as weaken assumption, repair scaling defect, replace failed estimate, reverse regularity/breakdown perspective, adversarially attack a parent, and combine two surviving parent mechanisms;
-- [ ] preserve parentage, mutation operator, source context, generator receipt and resulting candidate identity in the Crucible Ledger;
-- [ ] forbid mutation/crossover from inheriting parent claim level, evidence status or survival status.
+- [x] borrow the role-separated cognitive-mode idea from `QSOLKCB/QSOL-NEXUS` to define explicit runtime-owned transformation operators rather than generic "try again" prompting;
+- [x] support weaken assumption, repair scaling defect, replace failed estimate, reverse regularity/breakdown perspective, adversarially attack a parent, and combine two same-track surviving parent mechanisms;
+- [x] preserve exact parentage, operator, source context, prompt/output identities, transformation receipt and resulting candidate object identity;
+- [x] forbid transformation/crossover from inheriting parent claim level, evidence status, frozen state or survival status;
+- [x] machine-lock `TRANSFORM_OUTPUT != DOMAIN_EVIDENCE`, `PARENT_CLAIM_LEVEL != CHILD_CLAIM_LEVEL`, `OPERATOR_LABEL != MATHEMATICAL_VALIDATION`, `CROSSOVER != PROOF_SYNTHESIS`, and `TRANSFORM_RUN != LEDGER_COMMIT`.
 
 **PR #11 — Sealed Holdout & Adversarial Evaluation.**
 
@@ -189,7 +204,7 @@ The following work may borrow **software architecture, falsification methods, pr
 - [ ] admit motifs from other speculative/formal QSOL frameworks only as provenance-labelled candidate reservoirs, never by importing their physical interpretation or evidentiary status;
 - [ ] consider a later Lean 4 assurance layer, following the bounded formal-assurance discipline used in `QSOLKCB/UFF` and `QSOLKCB/E8_MUSIC`, to prove selected software/epistemic invariants without presenting formal verification as a Navier-Stokes proof.
 
-Crucible Core is an orchestration/falsification engine, not a truth engine. The Analogy Firewall broadens candidate generation without broadening evidentiary authority. The Content-Addressed Crucible Ledger makes the resulting search history durable without increasing its claim level. The ML Generator permits bounded model proposals without granting the model a write path to research authority. Similarity screening reduces repeated search without deciding mathematical equivalence or falsehood. Cross-repository borrowing may expand search strategy and instrumentation, but it does not bypass target-domain validation. Each future domain adapter must define its own epistemic standard.
+Crucible Core is an orchestration/falsification engine, not a truth engine. The Analogy Firewall broadens candidate generation without broadening evidentiary authority. The Content-Addressed Crucible Ledger makes the resulting search history durable without increasing its claim level. The ML Generator permits bounded model proposals without granting the model a write path to research authority. Similarity screening reduces repeated search without deciding mathematical equivalence or falsehood. Controlled transformation allows lineage-preserving search evolution without inherited epistemic authority. Cross-repository borrowing may expand search strategy and instrumentation, but it does not bypass target-domain validation. Each future domain adapter must define its own epistemic standard.
 
 ## Phase 3 — Competing mechanism search
 
@@ -201,7 +216,7 @@ Use the Crucible frontier to search for sharpened a priori bounds, monotone/coer
 
 Use the same machinery to search for admissible initial-data/forcing families, concentration mechanisms, scaling scenarios or rigorous reductions capable of satisfying Clay C or D. Numerical blow-up signatures remain exploratory until a continuum bridge is proved.
 
-Future ML search should generate candidates on both tracks through the schema-constrained airlock, preserve failed families, use the persistent failure ledger and similarity screening memory to reduce repeated exploration of already-rejected mechanisms, route cross-domain ideas through the Analogy Firewall, and retain every generation/intake/screening/failure/survival decision in auditable history.
+Future ML search should generate candidates on both tracks through the schema-constrained airlock, preserve failed families, use the persistent failure ledger and similarity screening memory to reduce repeated exploration of already-rejected mechanisms, evolve surviving candidates only through provenance-bound transform operators, route cross-domain ideas through the Analogy Firewall, and retain every generation/intake/screening/transformation/failure/survival decision in auditable history.
 
 ## Phase 4 — Proof extraction
 
@@ -209,7 +224,7 @@ Promote only precise candidate lemmas. Attempt analytic proof, symbolic checking
 
 ## Phase 5 — Adversarial review
 
-Try to break every promoted result with edge cases, scaling checks, hidden assumptions, known theorems, alternate discretizations, proof-barrier matching, analogy-authority audits, ledger-provenance audits, generator-authority audits, similarity-screening audits and independent reviewers.
+Try to break every promoted result with edge cases, scaling checks, hidden assumptions, known theorems, alternate discretizations, proof-barrier matching, analogy-authority audits, ledger-provenance audits, generator-authority audits, similarity-screening audits, transform-lineage audits and independent reviewers.
 
 ## Phase 6 — Publication/archive
 

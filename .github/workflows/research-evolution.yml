@@ -1,0 +1,27 @@
+name: PR10 validation
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  validate:
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.13"]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - run: python -m pip install -e ".[test]"
+      - run: python tools/validate_agent_contract.py
+      - run: python tools/validate_crucible_core.py
+      - run: python tools/validate_analogy_firewall.py
+      - run: python tools/validate_crucible_ledger.py
+      - run: python tools/validate_ml_generator.py
+      - run: python tools/validate_similarity_screening.py
+      - run: python tools/validate_candidate_transform.py
+      - run: python -m pytest tests/test_candidate_transform_core.py tests/test_candidate_transform_hardening.py tests/test_transform_codex_regressions.py
