@@ -13,21 +13,33 @@ It is not an independent spatial discretization and is not continuum evidence.
 from __future__ import annotations
 
 import argparse
-import json
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 from itertools import product
-from math import prod
-from typing import Any, Iterable
+import json
+from pathlib import Path
+import platform
+import re
+import sys
+from typing import Any
 
 import mpmath as mp
 
-from .solver import RunConfig, run_taylor_green
+from .artifacts import (
+    _numpy_runtime_configuration,
+    canonical_json_bytes,
+    sha256_bytes,
+    utc_now_iso,
+    write_canonical_json,
+    write_deterministic_npy,
+)
+from .solver import LAB_VERSION, RunConfig, run_taylor_green
 
 REFEREE_VERSION = "0.1.0"
 REFEREE_BACKEND_ID = "mpmath_direct_modal_galerkin_referee"
 SUPPORTED_RESOLUTION = 8
 MIN_DPS = 50
 DEFAULT_HIGH_DPS = 80
+_SHA_RE = re.compile(r"^[0-9a-f]{40}$")
 
 Mode = tuple[int, int, int]
 ModalVector = tuple[mp.mpc, mp.mpc, mp.mpc]
@@ -197,18 +209,34 @@ def modal_enstrophy(state: ModalState) -> mp.mpf:
     return mp.mpf("0.5") * total
 
 
-def _reference_modal_state(config: RunConfig) -> tuple[ModalState, dict[str, Any]]:
-    """Extract normalized retained coefficients from the NumPy/FFT reference path."""
+def _reference_state_is_finite(result: dict[str, Any]) -> bool:
     import numpy as np
 
-    result = run_taylor_green(config)
-    if result["termination_reason"] != "requested_step_count_completed":
-        raise FloatingPointError(
-            f"reference solver did not complete: {result['termination_reason']}"
-        )
+    u_hat = result["final_velocity_hat"]
+    return bool(np.isfinite(u_hat.real).all() and np.isfinite(u_hat.imag).all())
+
+
+def _reference_modal_state(
+    config: RunConfig,
+    reference_result: dict[str, Any] | None = None,
+) -> tuple[ModalState | None, dict[str, Any]]:
+    """Extract comparable reference modes, preserving failed runs instead of raising."""
+    import numpy as np
+
+    result = reference_result if reference_result is not None else run_taylor_green(config)
+    comparable = (
+        result["termination_reason"] == "requested_step_count_completed"
+        and int(result["completed_steps"]) == config.steps
+        and _reference_state_is_finite(result)
+    )
+    if not comparable:
+        return None, result
 
     u_hat = result["final_velocity_hat"]
-    fft_modes = [int(value) for value in np.fft.fftfreq(config.resolution, d=1.0 / config.resolution)]
+    fft_modes = [
+        int(value)
+        for value in np.fft.fftfreq(config.resolution, d=1.0 / config.resolution)
+    ]
     index = {mode: i for i, mode in enumerate(fft_modes)}
     normalization = config.resolution ** 3
     state: ModalState = {}
@@ -247,47 +275,46 @@ def precision_ladder(config: RunConfig, low_dps: int = 50, high_dps: int = 80) -
         }
 
 
+def _validate_provenance(experiment_id: str, source_commit: str, operator_or_agent: str) -> None:
+    if not experiment_id.strip():
+        raise ValueError("experiment_id must be non-empty")
+    if not _SHA_RE.fullmatch(source_commit):
+        raise ValueError("source_commit must be an exact lowercase 40-hex Git commit")
+    if not operator_or_agent.strip():
+        raise ValueError("operator_or_agent must be non-empty")
+
+
 def build_precision_report(
     config: RunConfig,
     *,
+    experiment_id: str,
+    source_commit: str,
+    operator_or_agent: str,
+    created_at_utc: str | None = None,
     low_dps: int = 50,
     high_dps: int = 80,
+    reference_result: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     config.validate()
+    _validate_provenance(experiment_id, source_commit, operator_or_agent)
     if config.resolution != SUPPORTED_RESOLUTION:
         raise ValueError(f"v0.1 referee supports only N={SUPPORTED_RESOLUTION}")
 
-    reference, reference_result = _reference_modal_state(config)
+    created = created_at_utc or utc_now_iso()
+    reference, reference_result = _reference_modal_state(config, reference_result)
     referee = run_precision_referee(config, PrecisionConfig(high_dps))
-    with mp.workdps(high_dps):
-        maximum, rms = _state_differences(reference, referee)
-        ref_energy = modal_kinetic_energy(reference)
-        hp_energy = modal_kinetic_energy(referee)
-        ref_enstrophy = modal_enstrophy(reference)
-        hp_enstrophy = modal_enstrophy(referee)
-        ladder = precision_ladder(config, low_dps=low_dps, high_dps=high_dps)
+    ladder = precision_ladder(config, low_dps=low_dps, high_dps=high_dps)
 
-        return {
-            "schema_version": "0.1.0",
-            "document_type": "qsol_ns_precision_referee_report",
-            "comparison_kind": "fft_reference_vs_direct_modal_arbitrary_precision",
-            "reference_backend": "qsol_ns_periodic_pseudospectral_reference",
-            "referee_backend": REFEREE_BACKEND_ID,
-            "referee_version": REFEREE_VERSION,
-            "mpmath_version": mp.__version__,
-            "scope": {
-                "resolution": config.resolution,
-                "viscosity": config.viscosity,
-                "dt": config.dt,
-                "steps": config.steps,
-                "amplitude": config.amplitude,
-                "forcing": "identically_zero",
-                "initial_data_family": "Taylor-Green_vortex",
-                "retained_mode_count": len(retained_modes(config.resolution)),
-            },
-            "reference_termination_reason": reference_result["termination_reason"],
-            "precision_ladder": ladder,
-            "comparison_metrics": {
+    with mp.workdps(high_dps):
+        hp_energy = modal_kinetic_energy(referee)
+        hp_enstrophy = modal_enstrophy(referee)
+
+        if reference is not None:
+            maximum, rms = _state_differences(reference, referee)
+            ref_energy = modal_kinetic_energy(reference)
+            ref_enstrophy = modal_enstrophy(reference)
+            comparison_status = "comparable"
+            comparison_metrics = {
                 "max_retained_modal_abs_difference": float(maximum),
                 "rms_retained_modal_abs_difference": float(rms),
                 "reference_kinetic_energy": float(ref_energy),
@@ -296,16 +323,214 @@ def build_precision_report(
                 "reference_enstrophy": float(ref_enstrophy),
                 "referee_enstrophy_decimal": mp.nstr(hp_enstrophy, 50),
                 "enstrophy_abs_difference": float(abs(ref_enstrophy - hp_enstrophy)),
-            },
-            "independence": {
-                "independent_arithmetic": True,
-                "independent_fft_path": True,
-                "independent_nonlinear_evaluation": True,
-                "independent_spatial_discretization": False,
-            },
-            "nonclaims": list(NONCLAIMS),
-            "claim_level": "exploratory",
-        }
+            }
+        else:
+            comparison_status = "reference_failed_referee_completed"
+            comparison_metrics = {
+                "max_retained_modal_abs_difference": None,
+                "rms_retained_modal_abs_difference": None,
+                "reference_kinetic_energy": None,
+                "referee_kinetic_energy_decimal": mp.nstr(hp_energy, 50),
+                "kinetic_energy_abs_difference": None,
+                "reference_enstrophy": None,
+                "referee_enstrophy_decimal": mp.nstr(hp_enstrophy, 50),
+                "enstrophy_abs_difference": None,
+            }
+
+    return {
+        "schema_version": "0.1.0",
+        "document_type": "qsol_ns_precision_referee_report",
+        "provenance": {
+            "experiment_id": experiment_id,
+            "source_commit": source_commit,
+            "created_at_utc": created,
+            "operator_or_agent": operator_or_agent,
+        },
+        "comparison_kind": "fft_reference_vs_direct_modal_arbitrary_precision",
+        "comparison_status": comparison_status,
+        "reference_backend": "qsol_ns_periodic_pseudospectral_reference",
+        "referee_backend": REFEREE_BACKEND_ID,
+        "referee_version": REFEREE_VERSION,
+        "mpmath_version": mp.__version__,
+        "scope": {
+            "resolution": config.resolution,
+            "viscosity": config.viscosity,
+            "dt": config.dt,
+            "steps": config.steps,
+            "amplitude": config.amplitude,
+            "forcing": "identically_zero",
+            "initial_data_family": "Taylor-Green_vortex",
+            "retained_mode_count": len(retained_modes(config.resolution)),
+        },
+        "reference_run": {
+            "termination_reason": reference_result["termination_reason"],
+            "completed_steps": int(reference_result["completed_steps"]),
+            "requested_steps": config.steps,
+            "warnings_or_errors": list(reference_result["warnings_or_errors"]),
+            "final_state_finite": _reference_state_is_finite(reference_result),
+        },
+        "referee_run": {
+            "termination_reason": "requested_step_count_completed",
+            "completed_steps": config.steps,
+            "requested_steps": config.steps,
+            "warnings_or_errors": [],
+        },
+        "precision_ladder": ladder,
+        "comparison_metrics": comparison_metrics,
+        "independence": {
+            "independent_arithmetic": True,
+            "independent_fft_path": True,
+            "independent_nonlinear_evaluation": True,
+            "independent_spatial_discretization": False,
+        },
+        "nonclaims": list(NONCLAIMS),
+        "claim_level": "exploratory",
+    }
+
+
+def _reference_run_payload(result: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "lab_version": result["lab_version"],
+        "config": result["config"],
+        "diagnostics": result["diagnostics"],
+        "balance_history": result["balance_history"],
+        "termination_reason": result["termination_reason"],
+        "warnings_or_errors": result["warnings_or_errors"],
+        "completed_steps": result["completed_steps"],
+    }
+
+
+def _build_precision_manifest(
+    *,
+    output_dir: Path,
+    config: RunConfig,
+    report: dict[str, Any],
+    low_dps: int,
+    high_dps: int,
+    output_hashes: dict[str, str],
+) -> dict[str, Any]:
+    import numpy as np
+
+    provenance = report["provenance"]
+    numpy_config, hardware = _numpy_runtime_configuration()
+    input_identity = {
+        "config": asdict(config),
+        "low_dps": low_dps,
+        "high_dps": high_dps,
+    }
+    warnings = list(report["reference_run"]["warnings_or_errors"])
+
+    return {
+        "experiment_id": provenance["experiment_id"],
+        "source_commit": provenance["source_commit"],
+        "created_at_utc": provenance["created_at_utc"],
+        "operator_or_agent": provenance["operator_or_agent"],
+        "purpose": "independent_precision_referee_comparison",
+        "hypothesis": "arithmetic_or_implementation_disagreement_is_detected_and_failed_reference_runs_are_preserved",
+        "claim_level": "exploratory",
+        "singularity_oriented": False,
+        "spatial_domain": "[0,2pi)^3_periodic",
+        "boundary_conditions": "periodic_velocity_and_pressure",
+        "initial_velocity_field_definition": f"Taylor-Green vortex amplitude={config.amplitude}",
+        "divergence_free_admissibility": "analytic_modal_construction_and_reference_spectral_projection_checked",
+        "viscosity": config.viscosity,
+        "forcing": "identically_zero",
+        "scaling_convention": "dimensionless_2pi_periodic_cube",
+        "measured_solution_quantity": [
+            "retained_modal_difference",
+            "kinetic_energy",
+            "enstrophy",
+            "precision_ladder",
+            "reference_failure_status",
+        ],
+        "solver": "qsol_ns_precision_referee_comparison",
+        "solver_version": REFEREE_VERSION,
+        "spatial_discretization": "same_strict_2over3_retained_Fourier_system_two_implementation_paths",
+        "time_integrator": "classical_RK4_fixed_step",
+        "time_step_policy": "fixed",
+        "resolution": [config.resolution, config.resolution, config.resolution],
+        "precision": f"float64_complex128_reference_vs_mpmath_{low_dps}_to_{high_dps}_decimal_digits",
+        "tolerances": {"comparison_metrics_are_diagnostics_not_continuum_proof_thresholds": True},
+        "filtering_regularization": "strict_2over3_spectral_retained_modes_only",
+        "interpolation_remeshing": None,
+        "random_seed_or_null": None,
+        "operating_system_or_container_identity": platform.platform(),
+        "compiler_or_interpreter": sys.version.splitlines()[0],
+        "dependency_lock_or_exact_versions": {
+            "python": platform.python_version(),
+            "numpy": np.__version__,
+            "numpy_build_configuration": numpy_config,
+            "mpmath": mp.__version__,
+        },
+        "numerics_relevant_hardware_features": hardware,
+        "thread_or_process_count": 1,
+        "input_hashes": {"comparison_config": sha256_bytes(canonical_json_bytes(input_identity))},
+        "output_hashes": output_hashes,
+        "diagnostics": {
+            "comparison_status": report["comparison_status"],
+            "reference_run": report["reference_run"],
+            "referee_run": report["referee_run"],
+            "comparison_metrics": report["comparison_metrics"],
+            "precision_ladder": report["precision_ladder"],
+            "evidence_boundary": "finite_dimensional_precision_check_not_continuum_proof",
+        },
+        "termination_reason": report["comparison_status"],
+        "warnings_or_errors": warnings,
+        "wall_clock_independent_step_counts": int(report["referee_run"]["completed_steps"]),
+        "raw_outputs_or_content_addressed_pointer": "local_directory:" + str(output_dir),
+    }
+
+
+def write_precision_artifacts(
+    *,
+    output_dir: Path,
+    experiment_id: str,
+    source_commit: str,
+    operator_or_agent: str,
+    config: RunConfig,
+    low_dps: int = 50,
+    high_dps: int = 80,
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    """Write a provenance-complete referee evidence bundle, including failed references."""
+    _validate_provenance(experiment_id, source_commit, operator_or_agent)
+    created = utc_now_iso()
+    reference_result = run_taylor_green(config)
+    report = build_precision_report(
+        config,
+        experiment_id=experiment_id,
+        source_commit=source_commit,
+        operator_or_agent=operator_or_agent,
+        created_at_utc=created,
+        low_dps=low_dps,
+        high_dps=high_dps,
+        reference_result=reference_result,
+    )
+
+    output_dir.mkdir(parents=True, exist_ok=False)
+    report_hash = write_canonical_json(output_dir / "precision_report.json", report)
+    reference_run_hash = write_canonical_json(
+        output_dir / "reference_run.json",
+        _reference_run_payload(reference_result),
+    )
+    reference_velocity_hash = write_deterministic_npy(
+        output_dir / "reference_final_velocity.npy",
+        reference_result["final_velocity"],
+    )
+    output_hashes = {
+        "precision_report.json": report_hash,
+        "reference_run.json": reference_run_hash,
+        "reference_final_velocity.npy": reference_velocity_hash,
+    }
+    manifest = _build_precision_manifest(
+        output_dir=output_dir,
+        config=config,
+        report=report,
+        low_dps=low_dps,
+        high_dps=high_dps,
+        output_hashes=output_hashes,
+    )
+    write_canonical_json(output_dir / "manifest.json", manifest)
+    return manifest, report
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -316,7 +541,14 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--amplitude", type=float, default=1.0)
     parser.add_argument("--low-dps", type=int, default=50)
     parser.add_argument("--high-dps", type=int, default=80)
+    parser.add_argument("--experiment-id", required=True)
+    parser.add_argument("--source-commit", required=True)
+    parser.add_argument("--operator-or-agent", required=True)
+    parser.add_argument("--output-dir", type=Path, required=True)
     args = parser.parse_args(argv)
+
+    if not _SHA_RE.fullmatch(args.source_commit):
+        raise SystemExit("--source-commit must be an exact lowercase 40-hex Git commit")
 
     config = RunConfig(
         resolution=SUPPORTED_RESOLUTION,
@@ -326,8 +558,27 @@ def main(argv: list[str] | None = None) -> int:
         amplitude=args.amplitude,
         diagnostic_stride=1,
     )
-    report = build_precision_report(config, low_dps=args.low_dps, high_dps=args.high_dps)
-    print(json.dumps(report, sort_keys=True, indent=2, allow_nan=False))
+    manifest, report = write_precision_artifacts(
+        output_dir=args.output_dir,
+        experiment_id=args.experiment_id,
+        source_commit=args.source_commit,
+        operator_or_agent=args.operator_or_agent,
+        config=config,
+        low_dps=args.low_dps,
+        high_dps=args.high_dps,
+    )
+    print(
+        json.dumps(
+            {
+                "experiment_id": manifest["experiment_id"],
+                "comparison_status": report["comparison_status"],
+                "output_dir": str(args.output_dir),
+                "claim_level": report["claim_level"],
+            },
+            sort_keys=True,
+            allow_nan=False,
+        )
+    )
     return 0
 
 
