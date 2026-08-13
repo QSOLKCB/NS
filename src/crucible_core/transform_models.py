@@ -16,7 +16,10 @@ class TransformParent:
     candidate: Candidate
     candidate_object_id: str
     def validate(self)->None:
-        CandidateReference(self.candidate,self.candidate_object_id).validate()
+        try:
+            CandidateReference(self.candidate,self.candidate_object_id).validate()
+        except ValueError as exc:
+            raise TransformError("parent payload does not match its content-addressed ledger object ID") from exc
         target_track(self.candidate)
         if any(x.startswith(("analogy_source=","mapping_class=")) or x=="cross_domain_transfer_requires_target_domain_validation" for x in self.candidate.assumptions):
             raise TransformError("analogy-derived parent requires an explicit firewall-aware transform route")
@@ -29,7 +32,11 @@ class TransformFailure:
     failure: FailureRecord
     failure_object_id: str
     def validate(self)->None:
-        self.failure.validate(); sha256(self.failure_object_id.removeprefix("sha256:"),"failure object digest")
+        try:
+            self.failure.validate()
+        except ValueError as exc:
+            raise TransformError("invalid parent failure payload") from exc
+        sha256(self.failure_object_id.removeprefix("sha256:"),"failure object digest")
         if self.failure_object_id!=ledger_object_id("failure",self.failure.to_dict()): raise TransformError("failure payload does not match content-addressed ledger object ID")
     def to_dict(self)->dict[str,Any]:
         self.validate(); f=self.failure
