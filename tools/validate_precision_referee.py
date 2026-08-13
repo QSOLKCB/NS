@@ -8,8 +8,9 @@ import copy
 import json
 from decimal import Decimal
 from pathlib import Path
+import tomllib
 
-from jsonschema import Draft202012Validator
+from jsonschema import Draft202012Validator, FormatChecker
 from jsonschema.exceptions import ValidationError
 
 from ns_lab.precision_referee import (
@@ -26,6 +27,7 @@ CONTRACT_PATH = RESEARCH / "precision_referee_contract.json"
 CONTRACT_SCHEMA_PATH = RESEARCH / "schemas" / "precision_referee_contract.schema.json"
 REPORT_SCHEMA_PATH = RESEARCH / "schemas" / "precision_referee_report.schema.json"
 LAB_CONTRACT_PATH = RESEARCH / "lab_contract.json"
+PYPROJECT_PATH = ROOT / "pyproject.toml"
 
 
 def load(path: Path) -> dict:
@@ -61,6 +63,15 @@ def negative_probes(contract: dict, validator: Draft202012Validator) -> None:
     reject(validator, mutated, "precision-referee nonclaim removed")
 
 
+def validate_default_runtime_dependency() -> None:
+    pyproject = tomllib.loads(PYPROJECT_PATH.read_text(encoding="utf-8"))
+    dependencies = pyproject["project"]["dependencies"]
+    if not any(str(item).lower().startswith("mpmath") for item in dependencies):
+        raise SystemExit(
+            "qsol-ns-precision-referee is exposed by default but mpmath is not a default runtime dependency"
+        )
+
+
 def main() -> None:
     contract = load(CONTRACT_PATH)
     contract_schema = load(CONTRACT_SCHEMA_PATH)
@@ -71,7 +82,10 @@ def main() -> None:
     contract_validator = Draft202012Validator(contract_schema)
     contract_validator.validate(contract)
     Draft202012Validator.check_schema(report_schema)
-    report_validator = Draft202012Validator(report_schema)
+    report_validator = Draft202012Validator(
+        report_schema,
+        format_checker=FormatChecker(),
+    )
 
     if contract["backend_id"] != REFEREE_BACKEND_ID:
         raise SystemExit("precision referee backend ID drift")
@@ -93,6 +107,8 @@ def main() -> None:
     if lab["evidence_policy"]["singularity_oriented_promotion_enabled"]:
         raise SystemExit("lab improperly enabled singularity-oriented promotion")
 
+    validate_default_runtime_dependency()
+
     config = RunConfig(
         resolution=contract["scope"]["resolution"],
         viscosity=0.01,
@@ -103,20 +119,28 @@ def main() -> None:
     )
     report = build_precision_report(
         config,
+        experiment_id="VALIDATE_PRECISION_REFEREE",
+        source_commit="0" * 40,
+        operator_or_agent="validate_precision_referee",
+        created_at_utc="2026-01-01T00:00:00Z",
         low_dps=contract["precision_policy"]["default_low_dps"],
         high_dps=contract["precision_policy"]["default_high_dps"],
     )
     report_validator.validate(report)
 
-    if (
-        report["comparison_metrics"]["max_retained_modal_abs_difference"]
-        >= contract["acceptance"]["max_reference_modal_abs_difference"]
-    ):
+    if report["comparison_status"] != "comparable":
+        raise SystemExit("normal precision-referee validation case was not comparable")
+    max_difference = report["comparison_metrics"]["max_retained_modal_abs_difference"]
+    if max_difference is None or max_difference >= contract["acceptance"]["max_reference_modal_abs_difference"]:
         raise SystemExit("reference/referee modal agreement exceeded contract tolerance")
     if Decimal(report["precision_ladder"]["max_modal_abs_difference_decimal"]) >= Decimal(
         contract["acceptance"]["max_precision_ladder_modal_abs_difference_decimal"]
     ):
         raise SystemExit("precision ladder failed arbitrary-precision self-convergence threshold")
+
+    mutated_report = copy.deepcopy(report)
+    del mutated_report["provenance"]["source_commit"]
+    reject(report_validator, mutated_report, "report source provenance removed")
 
     negative_probes(contract, contract_validator)
     print(
