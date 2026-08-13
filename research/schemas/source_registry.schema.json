@@ -23,7 +23,11 @@
         "title": {"type": "string", "minLength": 1},
         "publisher_or_venue": {"type": "string", "minLength": 1},
         "doi": {"type": ["string", "null"]},
-        "url": {"type": "string", "format": "uri"},
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "pattern": "^https://[A-Za-z0-9.-]+(?:/|$)"
+        },
         "role": {"type": "string", "minLength": 1},
         "notes": {"type": "string", "minLength": 1}
       },
