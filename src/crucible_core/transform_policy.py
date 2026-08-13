@@ -6,12 +6,14 @@ from typing import Any
 from .ledger import LedgerReplay
 from .models import Candidate
 from .transform_common import TRANSFORM_VERSION, TransformError, digest, ledger_object_id, safe_id, semantic_assumptions
+from .transform_hardening import untrusted_text_reason
 from .transform_models import TransformBackend, TransformContextPacket, TransformProposal
 
 REQUIRED={"proposal_id","target_hypothesis","precise_statement","assumptions","claimed_dependencies","suggested_tests","possible_failure_modes","parent_assumptions_removed","addressed_failure_ids","operator_notes"}
 FORBIDDEN={"claim_level","claim_status","evidence_status","proof_status","proved","solves_clay","winner","confidence","confidence_score","truth_probability"}
 CONTEXT_OWNED={"operator","parent_candidate_ids","parent_candidate_object_ids","generation_method","status","frozen"}
 LISTS=("assumptions","claimed_dependencies","suggested_tests","possible_failure_modes","parent_assumptions_removed","addressed_failure_ids")
+TEXTS=("proposal_id","target_hypothesis","precise_statement","operator_notes")
 
 def validate_context(context:TransformContextPacket,replay:LedgerReplay,*,domain_id:str,hypothesis_set_id:str,allowed:frozenset[str],barriers:frozenset[str],known:frozenset[str],frontier:frozenset[str],theorems:frozenset[str])->None:
     context.validate()
@@ -37,6 +39,10 @@ def parse_proposal(raw:str)->tuple[TransformProposal|None,tuple[str,...],str]:
     if keys!=REQUIRED:reasons.append("schema_failure")
     if reasons:return None,tuple(sorted(set(reasons))),"parsed"
     if any(not isinstance(value[k],list) or any(not isinstance(x,str) for x in value[k]) for k in LISTS):return None,("schema_failure",),"parsed"
+    if any(not isinstance(value[k],str) for k in TEXTS):return None,("schema_failure",),"parsed"
+    supplied=[value[k] for k in TEXTS]+[x for k in LISTS for x in value[k]]
+    text_reasons={r for x in supplied if (r:=untrusted_text_reason(x)) is not None}
+    if text_reasons:return None,tuple(sorted(text_reasons)),"parsed"
     try:
         p=TransformProposal(value["proposal_id"],value["target_hypothesis"],value["precise_statement"],tuple(value["assumptions"]),tuple(value["claimed_dependencies"]),tuple(value["suggested_tests"]),tuple(value["possible_failure_modes"]),tuple(value["parent_assumptions_removed"]),tuple(value["addressed_failure_ids"]),value["operator_notes"]);p.validate();return p,(),"parsed"
     except TransformError as exc:
