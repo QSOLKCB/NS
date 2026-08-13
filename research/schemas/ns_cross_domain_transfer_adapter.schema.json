@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/QSOLKCB/NS/blob/main/research/schemas/ns_cross_domain_transfer_adapter.schema.json",
+  "title": "QSOL NS Cross-Domain Transfer Adapter",
+  "type": "object",
+  "required": ["schema_version", "document_type", "license", "adapter_version", "target_domain", "firewall_contract", "transfer_registry", "crucible_adapter", "epistemic_authority", "candidate_intake", "target_revalidation", "eligible_registry_ids", "negative_control_registry_ids", "required_nonclaims"],
+  "properties": {
+    "schema_version": {"const": "0.1.0"},
+    "document_type": {"const": "qsol_ns_cross_domain_transfer_adapter"},
+    "license": {"const": "Apache-2.0"},
+    "adapter_version": {"const": "0.1.0"},
+    "target_domain": {"const": "navier_stokes_3d_incompressible"},
+    "firewall_contract": {"const": "research/analogy_firewall_contract.json"},
+    "transfer_registry": {"const": "research/cross_domain_transfer_registry.json"},
+    "crucible_adapter": {"const": "research/ns_crucible_adapter.json"},
+    "epistemic_authority": {"const": {"owner": "NS_domain_adapter", "analogy_registry_is_ns_evidence": false, "analogy_can_discharge_proof_barrier": false, "analogy_can_change_claim_level": false, "target_validation_required": true}},
+    "candidate_intake": {"const": {"allowed_mapping_classes": ["exact_correspondence", "operator_correspondence", "structural_analogy", "heuristic_analogy"], "blocked_positive_mapping_classes": ["visual_resemblance", "explicit_non_correspondence"], "initial_claim_level": "exploratory", "must_enter_crucible_frontier": true, "must_preserve_analogy_id_and_mapping_class_in_provenance": true}},
+    "target_revalidation": {"const": {"proof_barrier_registry": "research/proof_barriers.json", "all_registered_proof_barriers_reapply": true, "theorem_registry": "research/theorem_registry.json", "clay_target": "research/clay_target.json", "prior_art_check_required_before_novelty_claim": true, "equation_domain_forcing_correspondence_required": true}},
+    "eligible_registry_ids": {"const": ["GENERATIVE_DIFFUSION_LAPLACIAN_TO_NS_VISCOSITY", "SCORE_FIELD_TO_NS_VELOCITY_FIELD", "PROBABILITY_CONSERVATION_TO_NS_INCOMPRESSIBILITY"]},
+    "negative_control_registry_ids": {"const": ["LASER_SPECKLE_NOT_FLUID_FLOW", "DISPLAY_ARTIFACTS_NOT_FLUID_FLOW"]},
+    "required_nonclaims": {"const": ["operator_correspondence_does_not_raise_ns_evidence_status", "heuristic_analogy_does_not_establish_ns_mechanism", "negative_control_does_not_prove_competing_mechanism", "analogy_derived_candidate_starts_exploratory", "all_ns_proof_barriers_remain_in_force"]}
+  },
+  "additionalProperties": false
+}
