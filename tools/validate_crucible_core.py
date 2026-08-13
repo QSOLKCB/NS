@@ -52,8 +52,13 @@ def executable_state_machine_probe(adapter: dict, agents: dict) -> None:
     domain = adapter["domain_id"]
     hypothesis = adapter["primary_hypothesis_set"]
     tracks = hypothesis["tracks"]
+    severity_map = adapter["constraint_bindings"]["constraint_severities"]
 
-    crucible = Crucible(domain_id=domain, allowed_claim_levels=levels)
+    crucible = Crucible(
+        domain_id=domain,
+        allowed_claim_levels=levels,
+        constraint_severities=severity_map,
+    )
     for track in tracks:
         crucible.register_candidate(
             Candidate(
@@ -106,17 +111,58 @@ def executable_state_machine_probe(adapter: dict, agents: dict) -> None:
         reproducible=True,
     )
     crucible.attach_evidence(challenge)
+
+    # A domain-declared hard barrier may not be softened by the caller.
+    softened = ConstraintResult(
+        result_id="probe-softened-barrier",
+        domain_id=domain,
+        candidate_id=tracks[1]["track_id"],
+        constraint_id="NUMERICAL_CONTINUUM_GAP",
+        outcome="fail",
+        severity="soft",
+        evidence_ids=("probe-barrier-evidence",),
+        explanation="hostile probe attempts to soften a hard NS proof barrier",
+    )
+    try:
+        crucible.record_constraint_result(softened)
+    except CrucibleStateError:
+        pass
+    else:
+        raise SystemExit("Crucible accepted caller-softened NS proof barrier")
+
+    hard_result = ConstraintResult(
+        result_id="probe-hard-failure",
+        domain_id=domain,
+        candidate_id=tracks[1]["track_id"],
+        constraint_id="NUMERICAL_CONTINUUM_GAP",
+        outcome="fail",
+        severity="hard",
+        evidence_ids=("probe-barrier-evidence",),
+        explanation="validator deliberately exercises append-only failure memory",
+    )
+
+    # Failure recording must never become a claim-promotion side channel.
+    try:
+        crucible.record_constraint_result(
+            hard_result,
+            failure_id="probe-promotion-attempt",
+            failure_class="discrete_continuum_gap",
+            reusable_lesson="a hard failure cannot promote a claim",
+            claim_level_after="public_solution_claim",
+            recorded_by="validate_crucible_core.py",
+        )
+    except CrucibleStateError:
+        pass
+    else:
+        raise SystemExit("Crucible allowed failure-driven claim promotion")
+    if any(
+        item["result_id"] == "probe-hard-failure"
+        for item in crucible.export_state()["constraint_results"]
+    ):
+        raise SystemExit("failed failure-validation transaction mutated constraint state")
+
     failure = crucible.record_constraint_result(
-        ConstraintResult(
-            result_id="probe-hard-failure",
-            domain_id=domain,
-            candidate_id=tracks[1]["track_id"],
-            constraint_id="NUMERICAL_CONTINUUM_GAP",
-            outcome="fail",
-            severity="hard",
-            evidence_ids=("probe-barrier-evidence",),
-            explanation="validator deliberately exercises append-only failure memory",
-        ),
+        hard_result,
         failure_id="probe-failure-record",
         failure_class="discrete_continuum_gap",
         reusable_lesson="numerical signature requires an explicit rigorous continuum bridge",
@@ -125,11 +171,14 @@ def executable_state_machine_probe(adapter: dict, agents: dict) -> None:
     )
     if failure is None or len(crucible.failure_ledger()) != 1:
         raise SystemExit("Crucible hard failure was not preserved in failure ledger")
+
     state = crucible.export_state()
     if state["universal_confidence_score"] is not None:
         raise SystemExit("Crucible unexpectedly emitted a universal confidence score")
     if state["hypothesis_sets"][0]["preferred_candidate_id"] is not None:
         raise SystemExit("Crucible selected a winner without domain authority")
+    if state["constraint_severities"] != dict(sorted(severity_map.items())):
+        raise SystemExit("Crucible did not preserve domain constraint severities in exported state")
 
 
 def main() -> None:
@@ -166,11 +215,21 @@ def main() -> None:
         raise SystemExit("NS primary competition may not have a default winner")
 
     registry_barriers = [item["barrier_id"] for item in barriers["barriers"]]
-    adapter_barriers = adapter["constraint_bindings"]["proof_barrier_ids"]
+    constraint_bindings = adapter["constraint_bindings"]
+    adapter_barriers = constraint_bindings["proof_barrier_ids"]
     if adapter_barriers != registry_barriers:
         raise SystemExit("NS Crucible adapter proof barriers do not exactly match registry order")
 
-    if adapter["evaluator_bindings"]["numerical_evidence_maximum_automatic_claim_level"] != agents["claim_promotion"]["numerics_can_promote_to"]:
+    severity_map = constraint_bindings["constraint_severities"]
+    if set(severity_map) != set(registry_barriers):
+        raise SystemExit("NS Crucible constraint severity map does not exactly cover proof barriers")
+    if any(severity_map[barrier_id] != "hard" for barrier_id in registry_barriers):
+        raise SystemExit("every registered NS proof barrier must remain a hard screening obligation")
+
+    if (
+        adapter["evaluator_bindings"]["numerical_evidence_maximum_automatic_claim_level"]
+        != agents["claim_promotion"]["numerics_can_promote_to"]
+    ):
         raise SystemExit("NS Crucible numerical evidence ceiling drift")
     if adapter["holdout_policy"]["holdout_success_changes_claim_level"]:
         raise SystemExit("holdout success may not silently promote an NS claim")
@@ -198,6 +257,10 @@ def main() -> None:
     mutated = copy.deepcopy(adapter)
     mutated["holdout_policy"]["holdout_success_changes_claim_level"] = True
     reject(adapter_validator, mutated, "holdout silently promotes claim")
+
+    mutated = copy.deepcopy(adapter)
+    mutated["constraint_bindings"]["constraint_severities"]["NUMERICAL_CONTINUUM_GAP"] = "soft"
+    reject(adapter_validator, mutated, "hard NS proof barrier severity softened")
 
     executable_state_machine_probe(adapter, agents)
 

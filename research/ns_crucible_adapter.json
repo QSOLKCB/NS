@@ -27,12 +27,18 @@
       {
         "track_id": "NS_GLOBAL_REGULARITY",
         "statement": "global smoothness route",
-        "official_formulations": ["A", "B"]
+        "official_formulations": [
+          "A",
+          "B"
+        ]
       },
       {
         "track_id": "NS_FINITE_TIME_BREAKDOWN",
         "statement": "finite-time breakdown route",
-        "official_formulations": ["C", "D"]
+        "official_formulations": [
+          "C",
+          "D"
+        ]
       }
     ]
   },
@@ -53,6 +59,21 @@
       "FORMAL_ENCODING_NOT_MATHEMATICAL_CORRESPONDENCE",
       "SPECIAL_FAMILY_QUANTIFIER_INVERSION"
     ],
+    "constraint_severities": {
+      "WEAK_EXISTENCE_NOT_SMOOTHNESS": "hard",
+      "CONDITIONAL_CRITERION_NOT_APRIORI_BOUND": "hard",
+      "PARTIAL_REGULARITY_NOT_EMPTY_SINGULAR_SET": "hard",
+      "SELF_SIMILAR_EXCLUSION_NOT_GENERAL_NO_BLOWUP": "hard",
+      "SMALL_DATA_NOT_ARBITRARY_DATA": "hard",
+      "DOMAIN_SUBSTITUTION_R3_PERIODIC": "hard",
+      "FORCING_SUBSTITUTION": "hard",
+      "MODIFIED_EQUATION_NOT_CANONICAL_NS": "hard",
+      "NUMERICAL_CONTINUUM_GAP": "hard",
+      "CIRCULAR_REGULARITY": "hard",
+      "UNJUSTIFIED_LIMIT_INTERCHANGE": "hard",
+      "FORMAL_ENCODING_NOT_MATHEMATICAL_CORRESPONDENCE": "hard",
+      "SPECIAL_FAMILY_QUANTIFIER_INVERSION": "hard"
+    },
     "bridge_or_weaken_rule": "crossing a registered proof barrier requires an explicit bridge theorem or a weakened claim"
   },
   "evaluator_bindings": {

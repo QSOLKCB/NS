@@ -3,7 +3,21 @@
   "$id": "https://github.com/QSOLKCB/NS/blob/main/research/schemas/ns_crucible_adapter.schema.json",
   "title": "QSOL NS Crucible domain adapter",
   "type": "object",
-  "required": ["schema_version", "document_type", "license", "adapter_version", "domain_id", "core_contract", "epistemic_standard", "claim_authority", "primary_hypothesis_set", "constraint_bindings", "evaluator_bindings", "holdout_policy", "required_nonclaims"],
+  "required": [
+    "schema_version",
+    "document_type",
+    "license",
+    "adapter_version",
+    "domain_id",
+    "core_contract",
+    "epistemic_standard",
+    "claim_authority",
+    "primary_hypothesis_set",
+    "constraint_bindings",
+    "evaluator_bindings",
+    "holdout_policy",
+    "required_nonclaims"
+  ],
   "properties": {
     "schema_version": {"const": "0.1.0"},
     "document_type": {"const": "qsol_ns_crucible_domain_adapter"},
@@ -11,13 +25,105 @@
     "adapter_version": {"const": "0.1.0"},
     "domain_id": {"const": "navier_stokes_3d_incompressible"},
     "core_contract": {"const": "research/crucible_contract.json"},
-    "epistemic_standard": {"const": {"owner": "NS_domain_adapter", "statement": "mathematical proof with exact correspondence to an official Clay formulation; numerical and formal tools have only their separately declared authority", "target_registry": "research/clay_target.json", "theorem_registry": "research/theorem_registry.json", "proof_barrier_registry": "research/proof_barriers.json", "claim_levels": "AGENTS.md#claim_levels"}},
-    "claim_authority": {"const": {"core_may_promote_claim": false, "core_may_assign_public_solution_claim": false, "automatic_winner_selection": false, "existing_claim_level_policy_remains_authoritative": true}},
-    "primary_hypothesis_set": {"const": {"hypothesis_set_id": "NS_PRIMARY_COMPETITION", "selection_state": "unresolved", "preferred_candidate_id": null, "tracks": [{"track_id": "NS_GLOBAL_REGULARITY", "statement": "global smoothness route", "official_formulations": ["A", "B"]}, {"track_id": "NS_FINITE_TIME_BREAKDOWN", "statement": "finite-time breakdown route", "official_formulations": ["C", "D"]}]}},
-    "constraint_bindings": {"const": {"all_registered_proof_barriers_are_hard_screening_obligations": true, "proof_barrier_ids": ["WEAK_EXISTENCE_NOT_SMOOTHNESS", "CONDITIONAL_CRITERION_NOT_APRIORI_BOUND", "PARTIAL_REGULARITY_NOT_EMPTY_SINGULAR_SET", "SELF_SIMILAR_EXCLUSION_NOT_GENERAL_NO_BLOWUP", "SMALL_DATA_NOT_ARBITRARY_DATA", "DOMAIN_SUBSTITUTION_R3_PERIODIC", "FORCING_SUBSTITUTION", "MODIFIED_EQUATION_NOT_CANONICAL_NS", "NUMERICAL_CONTINUUM_GAP", "CIRCULAR_REGULARITY", "UNJUSTIFIED_LIMIT_INTERCHANGE", "FORMAL_ENCODING_NOT_MATHEMATICAL_CORRESPONDENCE", "SPECIAL_FAMILY_QUANTIFIER_INVERSION"], "bridge_or_weaken_rule": "crossing a registered proof barrier requires an explicit bridge theorem or a weakened claim"}},
-    "evaluator_bindings": {"const": {"deterministic_lab_contract": "research/lab_contract.json", "precision_referee_contract": "research/precision_referee_contract.json", "numerical_evidence_maximum_automatic_claim_level": "reproduced_numerical", "numerical_failure_is_mathematical_singularity": false, "precision_agreement_is_continuum_proof": false}},
-    "holdout_policy": {"const": {"required_for_mathematical_proof": false, "permitted_for_ml_candidate_screening": true, "candidate_must_be_frozen_before_holdout_evaluation": true, "holdout_success_changes_claim_level": false}},
-    "required_nonclaims": {"const": ["regularity_track_survival_does_not_prove_global_regularity", "breakdown_track_survival_does_not_prove_finite_time_singularity", "failure_of_one_track_does_not_automatically_prove_the_other", "ml_candidate_generation_does_not_change_claim_level", "crucible_core_does_not_replace_clay_correspondence"]}
+    "epistemic_standard": {
+      "const": {
+        "owner": "NS_domain_adapter",
+        "statement": "mathematical proof with exact correspondence to an official Clay formulation; numerical and formal tools have only their separately declared authority",
+        "target_registry": "research/clay_target.json",
+        "theorem_registry": "research/theorem_registry.json",
+        "proof_barrier_registry": "research/proof_barriers.json",
+        "claim_levels": "AGENTS.md#claim_levels"
+      }
+    },
+    "claim_authority": {
+      "const": {
+        "core_may_promote_claim": false,
+        "core_may_assign_public_solution_claim": false,
+        "automatic_winner_selection": false,
+        "existing_claim_level_policy_remains_authoritative": true
+      }
+    },
+    "primary_hypothesis_set": {
+      "const": {
+        "hypothesis_set_id": "NS_PRIMARY_COMPETITION",
+        "selection_state": "unresolved",
+        "preferred_candidate_id": null,
+        "tracks": [
+          {
+            "track_id": "NS_GLOBAL_REGULARITY",
+            "statement": "global smoothness route",
+            "official_formulations": ["A", "B"]
+          },
+          {
+            "track_id": "NS_FINITE_TIME_BREAKDOWN",
+            "statement": "finite-time breakdown route",
+            "official_formulations": ["C", "D"]
+          }
+        ]
+      }
+    },
+    "constraint_bindings": {
+      "const": {
+        "all_registered_proof_barriers_are_hard_screening_obligations": true,
+        "proof_barrier_ids": [
+          "WEAK_EXISTENCE_NOT_SMOOTHNESS",
+          "CONDITIONAL_CRITERION_NOT_APRIORI_BOUND",
+          "PARTIAL_REGULARITY_NOT_EMPTY_SINGULAR_SET",
+          "SELF_SIMILAR_EXCLUSION_NOT_GENERAL_NO_BLOWUP",
+          "SMALL_DATA_NOT_ARBITRARY_DATA",
+          "DOMAIN_SUBSTITUTION_R3_PERIODIC",
+          "FORCING_SUBSTITUTION",
+          "MODIFIED_EQUATION_NOT_CANONICAL_NS",
+          "NUMERICAL_CONTINUUM_GAP",
+          "CIRCULAR_REGULARITY",
+          "UNJUSTIFIED_LIMIT_INTERCHANGE",
+          "FORMAL_ENCODING_NOT_MATHEMATICAL_CORRESPONDENCE",
+          "SPECIAL_FAMILY_QUANTIFIER_INVERSION"
+        ],
+        "constraint_severities": {
+          "WEAK_EXISTENCE_NOT_SMOOTHNESS": "hard",
+          "CONDITIONAL_CRITERION_NOT_APRIORI_BOUND": "hard",
+          "PARTIAL_REGULARITY_NOT_EMPTY_SINGULAR_SET": "hard",
+          "SELF_SIMILAR_EXCLUSION_NOT_GENERAL_NO_BLOWUP": "hard",
+          "SMALL_DATA_NOT_ARBITRARY_DATA": "hard",
+          "DOMAIN_SUBSTITUTION_R3_PERIODIC": "hard",
+          "FORCING_SUBSTITUTION": "hard",
+          "MODIFIED_EQUATION_NOT_CANONICAL_NS": "hard",
+          "NUMERICAL_CONTINUUM_GAP": "hard",
+          "CIRCULAR_REGULARITY": "hard",
+          "UNJUSTIFIED_LIMIT_INTERCHANGE": "hard",
+          "FORMAL_ENCODING_NOT_MATHEMATICAL_CORRESPONDENCE": "hard",
+          "SPECIAL_FAMILY_QUANTIFIER_INVERSION": "hard"
+        },
+        "bridge_or_weaken_rule": "crossing a registered proof barrier requires an explicit bridge theorem or a weakened claim"
+      }
+    },
+    "evaluator_bindings": {
+      "const": {
+        "deterministic_lab_contract": "research/lab_contract.json",
+        "precision_referee_contract": "research/precision_referee_contract.json",
+        "numerical_evidence_maximum_automatic_claim_level": "reproduced_numerical",
+        "numerical_failure_is_mathematical_singularity": false,
+        "precision_agreement_is_continuum_proof": false
+      }
+    },
+    "holdout_policy": {
+      "const": {
+        "required_for_mathematical_proof": false,
+        "permitted_for_ml_candidate_screening": true,
+        "candidate_must_be_frozen_before_holdout_evaluation": true,
+        "holdout_success_changes_claim_level": false
+      }
+    },
+    "required_nonclaims": {
+      "const": [
+        "regularity_track_survival_does_not_prove_global_regularity",
+        "breakdown_track_survival_does_not_prove_finite_time_singularity",
+        "failure_of_one_track_does_not_automatically_prove_the_other",
+        "ml_candidate_generation_does_not_change_claim_level",
+        "crucible_core_does_not_replace_clay_correspondence"
+      ]
+    }
   },
   "additionalProperties": false
 }

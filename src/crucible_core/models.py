@@ -54,6 +54,12 @@ class Candidate:
         if self.status == "rejected_by_domain_constraint" and not self.frozen:
             raise ValueError("rejected candidates must remain frozen")
 
+    def validate_for_registration(self) -> None:
+        """Reject imported terminal state unless a future state-import API restores its ledger."""
+        self.validate()
+        if self.status != "active" or self.frozen:
+            raise ValueError("candidate registration requires active status and frozen=false")
+
     def freeze(self) -> "Candidate":
         self.validate()
         if self.status == "rejected_by_domain_constraint":
