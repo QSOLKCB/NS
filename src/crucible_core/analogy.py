@@ -123,8 +123,12 @@ class AnalogyFirewall:
     def __init__(self, *, target_domain: str, initial_claim_level: str = "exploratory") -> None:
         _require_text(target_domain, "target_domain")
         _require_text(initial_claim_level, "initial_claim_level")
+        if initial_claim_level != "exploratory":
+            raise AnalogyFirewallError(
+                "analogy-derived candidates must start at exploratory claim level"
+            )
         self.target_domain = target_domain
-        self.initial_claim_level = initial_claim_level
+        self.initial_claim_level = "exploratory"
         self._records: dict[str, AnalogyRecord] = {}
 
     def register(self, record: AnalogyRecord) -> None:
@@ -136,6 +140,10 @@ class AnalogyFirewall:
     def authorize_use(self, analogy_id: str, use: str) -> None:
         _require_text(use, "use")
         record = self._require_record(analogy_id)
+        if record.target_domain != self.target_domain:
+            raise AnalogyFirewallError(
+                "analogy target domain does not match this firewall target"
+            )
         if use in _GLOBALLY_FORBIDDEN_USES:
             raise AnalogyFirewallError(
                 f"analogy firewall forbids {use}; target-domain validation is required"
@@ -164,10 +172,6 @@ class AnalogyFirewall:
     ) -> Candidate:
         """Create an exploratory target-domain candidate from an authorized analogy."""
         record = self._require_record(analogy_id)
-        if record.target_domain != self.target_domain:
-            raise AnalogyFirewallError(
-                "analogy target domain does not match this firewall target"
-            )
         self.authorize_use(analogy_id, "candidate_generation")
         inherited = (
             f"analogy_source={analogy_id}",
@@ -179,7 +183,7 @@ class AnalogyFirewall:
             domain_id=self.target_domain,
             hypothesis_set_id=hypothesis_set_id,
             hypothesis=hypothesis,
-            claim_level=self.initial_claim_level,
+            claim_level="exploratory",
             generation_method=f"cross_domain_transfer:{analogy_id}:{generation_method}",
             parent_candidate_ids=parent_candidate_ids,
             assumptions=tuple(assumptions) + inherited,
@@ -206,7 +210,7 @@ class AnalogyFirewall:
             "target_domain_validation_required": True,
             "source_proof_status_inherited": False,
             "source_evidence_status_inherited": False,
-            "initial_claim_level": self.initial_claim_level,
+            "initial_claim_level": "exploratory",
         }
 
     def _require_record(self, analogy_id: str) -> AnalogyRecord:
