@@ -19,14 +19,17 @@ def load(name):
 
 contract = load("duplicate_detector_contract.json")
 adapter = load("ns_duplicate_detector_adapter.json")
+hardening = load("screening_memory_hardening_contract.json")
 contract_schema = load("schemas/duplicate_detector_contract.schema.json")
 adapter_schema = load("schemas/ns_duplicate_detector_adapter.schema.json")
+hardening_schema = load("schemas/screening_memory_hardening_contract.schema.json")
 ns_adapter = load("ns_crucible_adapter.json")
 
-Draft202012Validator.check_schema(contract_schema)
-Draft202012Validator.check_schema(adapter_schema)
+for schema in (contract_schema, adapter_schema, hardening_schema):
+    Draft202012Validator.check_schema(schema)
 Draft202012Validator(contract_schema).validate(contract)
 Draft202012Validator(adapter_schema).validate(adapter)
+Draft202012Validator(hardening_schema).validate(hardening)
 
 if cc.DUPLICATE_DETECTOR_VERSION != contract["detector_version"]:
     raise SystemExit("screening version mismatch")
@@ -39,6 +42,8 @@ if adapter["calibration"]["status"] != "local_screening_parameters_not_universal
     raise SystemExit("screening thresholds lost local-calibration status")
 if any(adapter["epistemic_authority"].values()):
     raise SystemExit("screening adapter gained epistemic authority")
+if not all(hardening["requirements"].values()):
+    raise SystemExit("screening memory hardening contract weakened")
 
 Detector = getattr(cc, "Duplicate" + "Dead" + "Family" + "Detector")
 gate = Detector(
@@ -66,5 +71,6 @@ print(
     "similarity screening validation: PASS "
     f"(version={cc.DUPLICATE_DETECTOR_VERSION}, tracks={len(tracks)}, "
     f"structural_threshold={adapter['calibration']['structural_similarity_threshold']}, "
-    f"dead_family_threshold={adapter['calibration']['dead_family_similarity_threshold']})"
+    f"dead_family_threshold={adapter['calibration']['dead_family_similarity_threshold']}, "
+    "review_hardening=7)"
 )
