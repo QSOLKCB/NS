@@ -1,0 +1,70 @@
+# SPDX-License-Identifier: Apache-2.0
+name: Precision referee validation
+
+on:
+  pull_request:
+    paths:
+      - "AGENTS.md"
+      - "pyproject.toml"
+      - "src/ns_lab/precision_referee.py"
+      - "src/ns_lab/solver.py"
+      - "src/ns_lab/spectral.py"
+      - "tests/test_precision_referee.py"
+      - "research/lab_contract.json"
+      - "research/schemas/lab_contract.schema.json"
+      - "research/precision_referee_contract.json"
+      - "research/schemas/precision_referee_contract.schema.json"
+      - "research/schemas/precision_referee_report.schema.json"
+      - "tools/validate_precision_referee.py"
+      - ".github/workflows/precision-referee.yml"
+      - "docs/PRECISION_REFEREE_V0_1.md"
+      - "docs/SWEEP_PROTOCOL.md"
+  push:
+    branches:
+      - main
+    paths:
+      - "pyproject.toml"
+      - "src/ns_lab/precision_referee.py"
+      - "src/ns_lab/solver.py"
+      - "src/ns_lab/spectral.py"
+      - "research/lab_contract.json"
+      - "research/precision_referee_contract.json"
+      - "research/schemas/precision_referee_contract.schema.json"
+      - "research/schemas/precision_referee_report.schema.json"
+      - "tools/validate_precision_referee.py"
+      - ".github/workflows/precision-referee.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.13"]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install laboratory, precision and test dependencies
+        run: python -m pip install -e ".[test,precision]"
+      - name: Validate precision referee machine contract
+        run: python tools/validate_precision_referee.py
+      - name: Run precision referee tests
+        run: python -m pytest tests/test_precision_referee.py
+      - name: Run precision referee CLI smoke case
+        run: qsol-ns-precision-referee --viscosity 0.01 --dt 0.001 --steps 1 --low-dps 50 --high-dps 80 > /tmp/qsol-ns-precision-report.json
+      - name: Validate CLI report JSON
+        shell: python
+        run: |
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator
+          root = Path.cwd()
+          schema = json.loads((root / "research/schemas/precision_referee_report.schema.json").read_text())
+          report = json.loads(Path("/tmp/qsol-ns-precision-report.json").read_text())
+          Draft202012Validator.check_schema(schema)
+          Draft202012Validator(schema).validate(report)
+          print("Precision referee CLI report: PASS")
