@@ -1,0 +1,21 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"https://github.com/QSOLKCB/NS/blob/main/research/schemas/ns_candidate_transform_adapter.schema.json",
+  "type":"object",
+  "required":["schema_version","document_type","license","adapter_version","transform_contract","domain_id","hypothesis_set_id","allowed_target_hypotheses","operator_bindings","registry_bindings","context_policy","epistemic_authority"],
+  "properties":{
+    "schema_version":{"const":"0.1.0"},
+    "document_type":{"const":"qsol_ns_candidate_transform_adapter"},
+    "license":{"const":"Apache-2.0"},
+    "adapter_version":{"const":"0.1.0"},
+    "transform_contract":{"const":"research/candidate_transform_contract.json"},
+    "domain_id":{"const":"navier_stokes_3d_incompressible"},
+    "hypothesis_set_id":{"const":"NS_PRIMARY_COMPETITION"},
+    "allowed_target_hypotheses":{"const":["NS_GLOBAL_REGULARITY","NS_FINITE_TIME_BREAKDOWN"]},
+    "operator_bindings":{"type":"object","minProperties":6},
+    "registry_bindings":{"type":"object"},
+    "context_policy":{"type":"object"},
+    "epistemic_authority":{"type":"object"}
+  },
+  "additionalProperties":false
+}

@@ -1,0 +1,22 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"https://github.com/QSOLKCB/NS/blob/main/research/schemas/candidate_transform_contract.schema.json",
+  "type":"object",
+  "required":["schema_version","document_type","license","transform_version","purpose","operators","parent_policy","operator_policy","child_policy","receipt_policy","commit_policy","authority","invariants"],
+  "properties":{
+    "schema_version":{"const":"0.1.0"},
+    "document_type":{"const":"qsol_candidate_transform_contract"},
+    "license":{"const":"Apache-2.0"},
+    "transform_version":{"const":"0.1.0"},
+    "purpose":{"type":"string","minLength":1},
+    "operators":{"const":["weaken_assumption","repair_scaling_defect","replace_failed_estimate","reverse_track_perspective","adversarial_attack","crossover_survivors"]},
+    "parent_policy":{"type":"object"},
+    "operator_policy":{"type":"object"},
+    "child_policy":{"type":"object"},
+    "receipt_policy":{"type":"object"},
+    "commit_policy":{"type":"object"},
+    "authority":{"type":"object"},
+    "invariants":{"type":"array","minItems":8,"uniqueItems":true,"items":{"type":"string","minLength":1}}
+  },
+  "additionalProperties":false
+}

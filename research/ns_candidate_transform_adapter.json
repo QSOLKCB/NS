@@ -1,0 +1,40 @@
+{
+  "schema_version": "0.1.0",
+  "document_type": "qsol_ns_candidate_transform_adapter",
+  "license": "Apache-2.0",
+  "adapter_version": "0.1.0",
+  "transform_contract": "research/candidate_transform_contract.json",
+  "domain_id": "navier_stokes_3d_incompressible",
+  "hypothesis_set_id": "NS_PRIMARY_COMPETITION",
+  "allowed_target_hypotheses": ["NS_GLOBAL_REGULARITY","NS_FINITE_TIME_BREAKDOWN"],
+  "operator_bindings": {
+    "weaken_assumption": {"parent_count": 1, "track_policy": "preserve"},
+    "repair_scaling_defect": {"parent_count": 1, "track_policy": "preserve"},
+    "replace_failed_estimate": {"parent_count": 1, "track_policy": "preserve", "failure_provenance_required": true},
+    "reverse_track_perspective": {"parent_count": 1, "track_policy": "change"},
+    "adversarial_attack": {"parent_count": 1, "track_policy": "preserve"},
+    "crossover_survivors": {"parent_count": 2, "track_policy": "same_parent_track"}
+  },
+  "registry_bindings": {
+    "theorem_registry": "research/theorem_registry.json",
+    "proof_barrier_registry": "research/proof_barriers.json",
+    "crucible_adapter": "research/ns_crucible_adapter.json",
+    "ledger_contract": "research/crucible_ledger_contract.json",
+    "analogy_firewall_contract": "research/analogy_firewall_contract.json"
+  },
+  "context_policy": {
+    "must_bind_exact_source_commit": true,
+    "must_bind_exact_ledger_head": true,
+    "must_include_all_registered_proof_barrier_ids": true,
+    "frontier_must_match_engine_snapshot": true,
+    "parents_must_match_verified_ledger_refs": true,
+    "failures_must_match_verified_ledger_refs": true
+  },
+  "epistemic_authority": {
+    "transform_is_ns_evidence": false,
+    "transform_can_discharge_proof_barrier": false,
+    "transform_can_change_claim_level": false,
+    "transform_can_select_track_winner": false,
+    "operator_label_validates_mathematics": false
+  }
+}

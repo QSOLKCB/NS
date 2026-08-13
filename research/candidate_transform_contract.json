@@ -1,0 +1,67 @@
+{
+  "schema_version": "0.1.0",
+  "document_type": "qsol_candidate_transform_contract",
+  "license": "Apache-2.0",
+  "transform_version": "0.1.0",
+  "purpose": "controlled role-separated candidate transformation and crossover with immutable lineage and no inherited epistemic authority",
+  "operators": ["weaken_assumption","repair_scaling_defect","replace_failed_estimate","reverse_track_perspective","adversarial_attack","crossover_survivors"],
+  "parent_policy": {
+    "runtime_owns_operator_and_parent_selection": true,
+    "all_parents_must_be_on_frozen_context_frontier": true,
+    "parent_payloads_must_match_content_addressed_ledger_ids": true,
+    "single_parent_for_non_crossover": true,
+    "crossover_requires_exactly_two_parents": true,
+    "crossover_requires_same_track_parents": true,
+    "analogy_derived_parent_requires_explicit_firewall_aware_route": true
+  },
+  "operator_policy": {
+    "weaken_assumption_requires_declared_parent_assumption_removal": true,
+    "replace_failed_estimate_requires_failure_provenance": true,
+    "reverse_track_perspective_requires_track_change": true,
+    "other_single_parent_operators_preserve_track": true,
+    "operator_label_is_mathematical_validation": false
+  },
+  "child_policy": {
+    "initial_claim_level": "exploratory",
+    "initial_status": "active",
+    "initial_frozen": false,
+    "parent_candidate_ids_are_context_owned": true,
+    "parent_claim_level_inherited": false,
+    "parent_evidence_inherited": false,
+    "parent_survival_status_inherited": false,
+    "model_may_write_engine_provenance_fields": false
+  },
+  "receipt_policy": {
+    "context_sha256_preserved": true,
+    "operator_preserved": true,
+    "parent_object_ids_preserved": true,
+    "prompt_template_sha256_preserved": true,
+    "raw_output_sha256_preserved": true,
+    "attempt_journal_content_addressed": true,
+    "attempt_journal_sha_chained": true,
+    "attempt_event_provenance_requires_actor_source_commit_and_utc": true,
+    "single_writer_process_only_v0_1": true
+  },
+  "commit_policy": {
+    "model_facing_run_may_mutate_crucible_ledger": false,
+    "accepted_candidate_requires_explicit_commit": true,
+    "ledger_context_must_still_match_at_commit": true,
+    "predicted_and_persisted_candidate_object_ids_must_match": true
+  },
+  "authority": {
+    "transform_output_is_domain_evidence": false,
+    "transform_may_promote_claim": false,
+    "transform_may_select_winner": false,
+    "crossover_is_proof_synthesis": false
+  },
+  "invariants": [
+    "TRANSFORM_OUTPUT != DOMAIN_EVIDENCE",
+    "TRANSFORM_CHILD != PARENT_AUTHORITY",
+    "PARENT_CLAIM_LEVEL != CHILD_CLAIM_LEVEL",
+    "PARENT_EVIDENCE != CHILD_EVIDENCE",
+    "PARENT_SURVIVAL != CHILD_SURVIVAL",
+    "OPERATOR_LABEL != MATHEMATICAL_VALIDATION",
+    "CROSSOVER != PROOF_SYNTHESIS",
+    "TRANSFORM_RUN != LEDGER_COMMIT"
+  ]
+}
