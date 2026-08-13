@@ -1,0 +1,50 @@
+{
+  "schema_version": "1.0.0",
+  "document_type": "qsol_ns_baseline_identity_registry",
+  "license": "Apache-2.0",
+  "policy": "These identities are baseline analytic/numerical diagnostics under their stated smoothness, boundary and forcing assumptions. Passing them does not establish global regularity; failing them in a numerical run may indicate discretization or implementation error before it indicates continuum pathology.",
+  "identities": [
+    {
+      "identity_id": "BASE_INCOMPRESSIBILITY",
+      "name": "Incompressibility constraint",
+      "statement": "div u = 0",
+      "assumptions": ["incompressible_Navier_Stokes"],
+      "phase2_diagnostic": "Track divergence norms and projection residuals; significant growth is a solver-validity warning, not evidence of physical singularity."
+    },
+    {
+      "identity_id": "BASE_NS_SCALING",
+      "name": "Three-dimensional Navier-Stokes scaling",
+      "statement": "If (u,p) solves the unforced equations, then u_lambda(x,t)=lambda u(lambda x, lambda^2 t) and p_lambda(x,t)=lambda^2 p(lambda x, lambda^2 t) solve the correspondingly scaled equations.",
+      "assumptions": ["canonical_equations", "unforced_or_forcing_scaled_consistently", "domain_compatible_with_scaling"],
+      "phase2_diagnostic": "Use scaling dimensions to classify candidate norms and to catch dimensionally inconsistent diagnostics."
+    },
+    {
+      "identity_id": "BASE_SMOOTH_ENERGY_EQUALITY",
+      "name": "Smooth unforced kinetic-energy equality",
+      "statement": "(1/2)d/dt ||u||_L2^2 + nu ||grad u||_L2^2 = 0",
+      "assumptions": ["sufficiently_smooth_solution", "f_equals_zero", "R3_decay_or_periodic_boundary_cancellation", "div_u_equals_zero"],
+      "phase2_diagnostic": "Compare discrete energy change with viscous dissipation and report balance residual; a residual is a numerical diagnostic, not a proof of or against singularity."
+    },
+    {
+      "identity_id": "BASE_VORTICITY_EQUATION",
+      "name": "Vorticity evolution",
+      "statement": "partial_t omega + (u dot grad)omega = (omega dot grad)u + nu Delta omega + curl f, where omega=curl u",
+      "assumptions": ["sufficiently_smooth_solution", "canonical_incompressible_equations"],
+      "phase2_diagnostic": "Separate advection, vortex stretching, viscous diffusion and forcing contributions; do not infer blow-up from large stretching alone."
+    },
+    {
+      "identity_id": "BASE_SMOOTH_ENSTROPHY_BALANCE",
+      "name": "Smooth unforced enstrophy balance",
+      "statement": "(1/2)d/dt ||omega||_L2^2 + nu ||grad omega||_L2^2 = integral omega_i partial_i u_j omega_j dx",
+      "assumptions": ["three_dimensions", "sufficiently_smooth_solution", "f_equals_zero", "R3_decay_or_periodic_boundary_cancellation", "div_u_equals_zero"],
+      "phase2_diagnostic": "Track enstrophy, palinstrophy/dissipation and vortex-stretching production with a balance residual; loss of discrete balance is first a numerical warning."
+    },
+    {
+      "identity_id": "BASE_PRESSURE_POISSON",
+      "name": "Pressure Poisson relation",
+      "statement": "-Delta p = partial_i partial_j (u_i u_j) - div f; for divergence-free forcing this reduces to -Delta p = partial_i partial_j (u_i u_j)",
+      "assumptions": ["sufficiently_smooth_solution", "div_u_equals_zero", "canonical_equations"],
+      "phase2_diagnostic": "Check pressure reconstruction residual against the velocity field and forcing convention used by the solver."
+    }
+  ]
+}
