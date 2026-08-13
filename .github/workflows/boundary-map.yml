@@ -1,0 +1,37 @@
+# SPDX-License-Identifier: Apache-2.0
+name: Known-boundary validation
+
+on:
+  pull_request:
+    paths:
+      - "research/**"
+      - "docs/KNOWN_BOUNDARY.md"
+      - "docs/PROOF_BARRIERS.md"
+      - "docs/BASELINE_IDENTITIES.md"
+      - "docs/PROBLEM_STATEMENT.md"
+      - "docs/LITERATURE_MAP.md"
+      - "tools/validate_boundary_map.py"
+      - ".github/workflows/boundary-map.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "research/**"
+      - "tools/validate_boundary_map.py"
+      - ".github/workflows/boundary-map.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install validator dependency
+        run: python -m pip install "jsonschema>=4.23,<5"
+      - name: Validate known-boundary registries
+        run: python tools/validate_boundary_map.py
