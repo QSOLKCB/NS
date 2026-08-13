@@ -1,5 +1,5 @@
 {
-  "schema_version": "0.1.0",
+  "schema_version": "0.2.0",
   "document_type": "qsol_ns_periodic_reference_lab_contract",
   "license": "Apache-2.0",
   "solver_id": "qsol_ns_periodic_pseudospectral_reference",
@@ -39,6 +39,14 @@
     {"identity_id": "BASE_SMOOTH_ENSTROPHY_BALANCE", "implementation": "ns_lab.diagnostics.balance_residuals:enstrophy_balance_residual"},
     {"identity_id": "BASE_PRESSURE_POISSON", "implementation": "ns_lab.diagnostics.pressure_poisson_residual_l2"}
   ],
+  "precision_referee": {
+    "contract": "research/precision_referee_contract.json",
+    "available_for_reference_family": true,
+    "independent_arithmetic": true,
+    "independent_nonlinear_evaluation": true,
+    "independent_spatial_discretization": false,
+    "scalable_mechanism_search_backend": false
+  },
   "required_run_outputs": ["manifest.json", "diagnostics.json", "final_velocity.npy"],
   "required_sensitivity_before_reproduced_numerical": ["rerun_same_inputs", "timestep_comparison", "resolution_comparison"],
   "required_sensitivity_before_any_singularity_oriented_use": ["rerun_same_inputs", "timestep_comparison", "resolution_comparison", "precision_comparison", "competing_numerical_failure_explanation"]
