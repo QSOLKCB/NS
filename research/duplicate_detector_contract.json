@@ -25,8 +25,10 @@
   ],
   "screening_policy": {
     "cross_track_comparison_forbidden": true,
+    "explicit_target_track_required": true,
     "failure_backing_required_for_dead_family": true,
     "flagged_candidate_requires_review": true,
+    "report_flags_matches_scores_and_primary_must_be_coherent": true,
     "automatic_candidate_rejection": false,
     "similarity_establishes_mathematical_equivalence": false,
     "dead_family_match_proves_falsehood": false,
@@ -41,7 +43,12 @@
     "append_only_sha_chain": true,
     "immutable_logical_refs": true,
     "candidate_refs_must_match_verified_crucible_ledger": true,
+    "candidate_payload_must_match_content_addressed_id": true,
     "failure_refs_must_match_verified_crucible_ledger": true,
+    "failure_payload_must_match_content_addressed_id": true,
+    "event_provenance_requires_actor_source_commit_and_utc": true,
+    "missing_derived_refs_recoverable_from_verified_log": true,
+    "single_writer_process_only_v0_1": true,
     "screening_memory_is_domain_evidence": false
   },
   "invariants": [
