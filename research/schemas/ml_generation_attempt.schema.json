@@ -22,16 +22,16 @@
     "authority"
   ],
   "properties": {
-    "attempt_id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"},
+    "attempt_id": {"type": "string", "maxLength": 128, "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"},
     "generator_version": {"const": "0.1.0"},
-    "backend_id": {"type": "string", "minLength": 1},
-    "model_id": {"type": "string", "minLength": 1},
+    "backend_id": {"type": "string", "minLength": 1, "maxLength": 128},
+    "model_id": {"type": "string", "minLength": 1, "maxLength": 128},
     "prompt_template_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "context_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "context": {"oneOf": [{"type": "null"}, {"$ref": "ml_generator_context.schema.json"}]},
     "raw_output_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "raw_output": {"type": "string"},
-    "parse_status": {"enum": ["parsed", "not_parsed"]},
+    "parse_status": {"enum": ["not_attempted", "not_parsed", "parsed"]},
     "validation_status": {"enum": ["accepted", "rejected"]},
     "rejection_reasons": {
       "type": "array",
@@ -45,11 +45,14 @@
           "forbidden_authority_language",
           "unknown_hypothesis",
           "unknown_parent",
+          "parent_not_in_context",
           "unknown_theorem_dependency",
+          "theorem_dependency_not_in_context",
           "unregistered_analogy",
           "analogy_requires_firewall_route",
           "duplicate_candidate_id",
           "invalid_context",
+          "provider_failure",
           "candidate_validation_failure"
         ]
       }
