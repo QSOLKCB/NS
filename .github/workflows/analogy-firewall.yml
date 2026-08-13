@@ -1,0 +1,67 @@
+# SPDX-License-Identifier: Apache-2.0
+name: Analogy Firewall validation
+
+on:
+  pull_request:
+    paths:
+      - "AGENTS.md"
+      - "AGENTS.schema.json"
+      - "src/crucible_core/analogy.py"
+      - "src/crucible_core/__init__.py"
+      - "tests/test_analogy_firewall.py"
+      - "research/analogy_firewall_contract.json"
+      - "research/cross_domain_transfer_registry.json"
+      - "research/ns_cross_domain_transfer_adapter.json"
+      - "research/ns_crucible_adapter.json"
+      - "research/proof_barriers.json"
+      - "research/clay_target.json"
+      - "research/schemas/analogy_*.schema.json"
+      - "research/schemas/cross_domain_transfer_registry.schema.json"
+      - "research/schemas/ns_cross_domain_transfer_adapter.schema.json"
+      - "tools/validate_analogy_firewall.py"
+      - "tools/validate_agent_contract.py"
+      - ".github/workflows/analogy-firewall.yml"
+      - "docs/ANALOGY_FIREWALL_V0_1.md"
+      - "docs/NS_CROSS_DOMAIN_TRANSFER_ADAPTER.md"
+  push:
+    branches:
+      - main
+    paths:
+      - "AGENTS.md"
+      - "AGENTS.schema.json"
+      - "src/crucible_core/analogy.py"
+      - "src/crucible_core/__init__.py"
+      - "research/analogy_firewall_contract.json"
+      - "research/cross_domain_transfer_registry.json"
+      - "research/ns_cross_domain_transfer_adapter.json"
+      - "research/schemas/analogy_*.schema.json"
+      - "research/schemas/cross_domain_transfer_registry.schema.json"
+      - "research/schemas/ns_cross_domain_transfer_adapter.schema.json"
+      - "tools/validate_analogy_firewall.py"
+      - "tools/validate_agent_contract.py"
+      - ".github/workflows/analogy-firewall.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.13"]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install laboratory and test dependencies
+        run: python -m pip install -e ".[test]"
+      - name: Validate agent contract
+        run: python tools/validate_agent_contract.py
+      - name: Validate Crucible Core and NS adapter
+        run: python tools/validate_crucible_core.py
+      - name: Validate Analogy Firewall
+        run: python tools/validate_analogy_firewall.py
+      - name: Run Analogy Firewall regressions
+        run: python -m pytest tests/test_analogy_firewall.py
