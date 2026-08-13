@@ -6,6 +6,7 @@ on:
     paths:
       - "AGENTS.md"
       - "AGENTS.schema.json"
+      - "pr6.md"
       - "src/crucible_core/analogy.py"
       - "src/crucible_core/__init__.py"
       - "tests/test_analogy_firewall.py"
@@ -29,6 +30,7 @@ on:
     paths:
       - "AGENTS.md"
       - "AGENTS.schema.json"
+      - "pr6.md"
       - "src/crucible_core/analogy.py"
       - "src/crucible_core/__init__.py"
       - "research/analogy_firewall_contract.json"
