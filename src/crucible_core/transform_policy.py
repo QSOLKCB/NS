@@ -42,6 +42,7 @@ def parse_proposal(raw:str)->tuple[TransformProposal|None,tuple[str,...],str]:
     except TransformError as exc:
         if "authority language" in str(exc):return None,("forbidden_authority_language",),"parsed"
         if "engine-owned provenance" in str(exc):return None,("reserved_assumption",),"parsed"
+        if "valid UTF-8" in str(exc):return None,("invalid_utf8",),"parsed"
         return None,("schema_failure",),"parsed"
 
 def proposal_reasons(p:TransformProposal,context:TransformContextPacket,*,known:frozenset[str],theorems:frozenset[str])->tuple[str,...]:
