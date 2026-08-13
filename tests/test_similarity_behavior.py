@@ -1,4 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
+import json
 from dataclasses import replace
 import pytest
 import crucible_core as cc
@@ -30,3 +31,36 @@ def test_authority_and_threshold_mutations_fail(tmp_path):
     for bad in (replace(r,automatic_rejection=True),replace(r,mathematical_equivalence_established=True),replace(r,claim_level_effect="promote")):
         with pytest.raises(cc.DuplicateDetectorError): bad.validate()
     with pytest.raises(cc.DuplicateDetectorError): cc.DuplicateDeadFamilyDetector(structural_threshold=0,dead_family_threshold=.6,minimum_shared_tokens=3)
+
+def test_candidate_payload_must_match_content_addressed_object(tmp_path):
+    l=cc.ContentAddressedLedger(tmp_path/"l"); ref=persist(l,cand("same","Original mechanism.")); bad=cc.CandidateReference(replace(ref.candidate,hypothesis="Modified mechanism."),ref.candidate_object_id)
+    with pytest.raises(cc.DuplicateDetectorError): bad.validate()
+def test_failure_payload_must_match_failure_object(tmp_path):
+    l=cc.ContentAddressedLedger(tmp_path/"l"); a=persist(l,cand("a","A mechanism.")); persist(l,cand("b","B mechanism.")); fa=fail("a"); wrong=l.persist_failure(fail("b"),**P)
+    with pytest.raises(cc.DuplicateDetectorError): cc.DeadFamilyRecord.from_failure_candidate(family_id="mismatch",candidate=a.candidate,candidate_object_id=a.candidate_object_id,failures=(fa,),failure_object_ids=(wrong,))
+def test_report_classification_must_match_flags_and_matches(tmp_path):
+    l=cc.ContentAddressedLedger(tmp_path/"l"); q=persist(l,cand("q","One mechanism.")); r=gate().screen(report_id="coherent",candidate=q,origin=origin(q),prior_candidates=(),dead_families=())
+    with pytest.raises(cc.DuplicateDetectorError): replace(r,primary_classification="exact_duplicate").validate()
+    with pytest.raises(cc.DuplicateDetectorError): replace(r,flags=("exact_duplicate",),review_required=True).validate()
+def test_missing_target_track_is_rejected(tmp_path):
+    l=cc.ContentAddressedLedger(tmp_path/"l"); q=persist(l,cand("q","Unclassified.",None)); p=persist(l,cand("p","Unclassified.",None))
+    with pytest.raises(cc.DuplicateDetectorError): gate().screen(report_id="trackless",candidate=q,origin=origin(q),prior_candidates=(p,),dead_families=())
+def test_screening_event_provenance_and_bad_provenance(tmp_path):
+    l=cc.ContentAddressedLedger(tmp_path/"l"); ref=persist(l,cand("q","One mechanism.")); root=tmp_path/"s"
+    with cc.DuplicateScreeningJournal(root) as j:
+        j.record_origin(origin(ref),ledger_replay=l.verify(),**P); event=json.loads(j.log_path.read_text()); assert (event["actor"],event["source_commit"],event["recorded_at_utc"])==("unit-test",C,T)
+    with cc.DuplicateScreeningJournal(tmp_path/"bad") as j:
+        with pytest.raises(cc.DuplicateMemoryError): j.record_origin(origin(ref),ledger_replay=l.verify(),actor="unit-test",source_commit="bad",recorded_at_utc=T)
+def test_missing_ref_recovers_from_fsynced_event(tmp_path):
+    l=cc.ContentAddressedLedger(tmp_path/"l"); ref=persist(l,cand("q","One mechanism.")); root=tmp_path/"s"; j=cc.DuplicateScreeningJournal(root); original=j._materialize_ref
+    def fail_ref(event): raise OSError("simulated ref publication failure")
+    j._materialize_ref=fail_ref
+    with pytest.raises(OSError): j.record_origin(origin(ref),ledger_replay=l.verify(),**P)
+    j._materialize_ref=original; j.close()
+    with cc.DuplicateScreeningJournal(root) as recovered:
+        count,_,refs=recovered.verify(); assert count==1 and "origin_classification:origin-q" in refs
+def test_second_writer_is_rejected(tmp_path):
+    root=tmp_path/"s"; first=cc.DuplicateScreeningJournal(root)
+    try:
+        with pytest.raises(cc.DuplicateMemoryError): cc.DuplicateScreeningJournal(root)
+    finally: first.close()
