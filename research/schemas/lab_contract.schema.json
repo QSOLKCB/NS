@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/QSOLKCB/NS/blob/main/research/schemas/lab_contract.schema.json",
+  "title": "QSOL NS periodic reference lab contract",
+  "type": "object",
+  "required": ["schema_version", "document_type", "license", "solver_id", "solver_version", "scope", "evidence_policy", "determinism", "baseline_identity_bindings", "required_run_outputs", "required_sensitivity_before_reproduced_numerical", "required_sensitivity_before_any_singularity_oriented_use"],
+  "properties": {
+    "schema_version": {"const": "0.1.0"},
+    "document_type": {"const": "qsol_ns_periodic_reference_lab_contract"},
+    "license": {"const": "Apache-2.0"},
+    "solver_id": {"const": "qsol_ns_periodic_pseudospectral_reference"},
+    "solver_version": {"const": "0.1.0"},
+    "scope": {
+      "const": {
+        "dimension": 3,
+        "domain": "[0,2pi)^3_periodic",
+        "boundary_conditions": "periodic_velocity_and_pressure",
+        "forcing": "identically_zero",
+        "viscosity": "strictly_positive",
+        "initial_data_family": "Taylor-Green_vortex",
+        "precision": "float64_complex128",
+        "spatial_method": "Fourier_pseudospectral_2over3_dealiasing",
+        "time_method": "classical_RK4_fixed_step"
+      }
+    },
+    "evidence_policy": {
+      "const": {
+        "default_claim_level": "exploratory",
+        "maximum_automatic_claim_level": "reproduced_numerical",
+        "singularity_oriented_promotion_enabled": false,
+        "numerical_signature_is_proof": false,
+        "solver_failure_is_singularity": false,
+        "single_resolution_is_sufficient_for_blowup_claim": false
+      }
+    },
+    "determinism": {
+      "const": {
+        "randomness": "none",
+        "fixed_step_order": true,
+        "canonical_json": true,
+        "raw_array_format": "npy_allow_pickle_false",
+        "replay_expectation": "same_environment_same_inputs_same_output_hashes",
+        "cross_platform_bitwise_identity_promised": false
+      }
+    },
+    "baseline_identity_bindings": {
+      "type": "array", "minItems": 6, "maxItems": 6, "uniqueItems": true,
+      "items": {
+        "type": "object", "required": ["identity_id", "implementation"],
+        "properties": {
+          "identity_id": {"type": "string", "pattern": "^BASE_[A-Z0-9_]+$"},
+          "implementation": {"type": "string", "minLength": 1}
+        },
+        "additionalProperties": false
+      }
+    },
+    "required_run_outputs": {"const": ["manifest.json", "diagnostics.json", "final_velocity.npy"]},
+    "required_sensitivity_before_reproduced_numerical": {"const": ["rerun_same_inputs", "timestep_comparison", "resolution_comparison"]},
+    "required_sensitivity_before_any_singularity_oriented_use": {"const": ["rerun_same_inputs", "timestep_comparison", "resolution_comparison", "precision_comparison", "competing_numerical_failure_explanation"]}
+  },
+  "additionalProperties": false
+}
