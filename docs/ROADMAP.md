@@ -26,15 +26,15 @@ Initial PR #2 foundation:
 - [ ] map rigorous/computer-assisted PDE verification methods;
 - [ ] maintain a queue of unresolved source checks and errata.
 
-Phase 1 remains iterative while Phase 2 engineering begins. The initial registry is a conservative spine, not an exhaustive literature claim.
+Phase 1 remains iterative while Phase 2 engineering continues. The initial registry is a conservative spine, not an exhaustive literature claim.
 
 ## Phase 2 — Deterministic PDE laboratory — IN PROGRESS
 
 PR #3 v0.1 foundation:
 
 - [x] implement a narrow periodic pseudo-spectral reference solver;
-- [x] use deterministic Taylor–Green initial data;
-- [x] add 2/3 de-aliasing and spectral divergence-free projection;
+- [x] use deterministic Taylor-Green initial data;
+- [x] add strict 2/3 de-aliasing and spectral divergence-free projection;
 - [x] use fixed-step RK4 with explicit solver/version identity;
 - [x] turn all six baseline identities into executable diagnostic bindings;
 - [x] emit exact experiment manifests and content hashes;
@@ -42,15 +42,26 @@ PR #3 v0.1 foundation:
 - [x] add identical-input replay tests;
 - [x] add timestep and resolution comparison helpers;
 - [x] add numerical-failure and sweep policies;
-- [x] machine-disable singularity-oriented promotion while independent precision comparison is unavailable;
-- [x] add Python 3.11/3.13 CI for contract, tests and reference smoke run;
-- [ ] add an independent higher-precision backend;
+- [x] machine-disable singularity-oriented promotion while validation remains insufficient for mechanism-search claims;
+- [x] add Python 3.11/3.13 CI for contract, tests and reference smoke run.
+
+PR #4 precision-referee foundation:
+
+- [x] add an independent arbitrary-precision arithmetic path for the `N=8` Taylor-Green reference family;
+- [x] construct referee initial Fourier coefficients analytically rather than by FFT;
+- [x] evaluate the nonlinear term by direct retained-mode convolution;
+- [x] add a 50-to-80-decimal-digit precision ladder;
+- [x] compare retained coefficients, kinetic energy and enstrophy against the NumPy/FFT reference path;
+- [x] machine-lock the distinction between independent arithmetic/evaluation and independent spatial discretization;
+- [x] keep singularity-oriented promotion disabled despite successful low-resolution precision comparison;
+- [x] add hostile-mutation validation and Python 3.11/3.13 precision-referee CI;
+- [ ] scale independent precision checks beyond the low-resolution reference family;
 - [ ] add alternate initial-data families with exact admissibility records;
-- [ ] add independent solver implementation for cross-method comparison;
+- [ ] add an independent solver implementation using a genuinely different spatial/numerical method for cross-method comparison;
 - [ ] add spectral-transfer and scale-local diagnostics beyond the v0.1 baseline;
 - [ ] add longer-run checkpoint/restart with content-addressed state identity.
 
-The v0.1 laboratory is an exploratory/reproducibility instrument, not a proof engine.
+The laboratory and referee are exploratory/reproducibility instruments, not proof engines.
 
 ## Phase 3 — Competing mechanism search
 
