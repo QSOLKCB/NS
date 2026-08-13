@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/QSOLKCB/NS/blob/main/research/schemas/precision_referee_report.schema.json",
+  "title": "QSOL NS precision referee report",
+  "type": "object",
+  "required": ["schema_version", "document_type", "comparison_kind", "reference_backend", "referee_backend", "referee_version", "mpmath_version", "scope", "reference_termination_reason", "precision_ladder", "comparison_metrics", "independence", "nonclaims", "claim_level"],
+  "properties": {
+    "schema_version": {"const": "0.1.0"},
+    "document_type": {"const": "qsol_ns_precision_referee_report"},
+    "comparison_kind": {"const": "fft_reference_vs_direct_modal_arbitrary_precision"},
+    "reference_backend": {"const": "qsol_ns_periodic_pseudospectral_reference"},
+    "referee_backend": {"const": "mpmath_direct_modal_galerkin_referee"},
+    "referee_version": {"const": "0.1.0"},
+    "mpmath_version": {"type": "string", "minLength": 1},
+    "scope": {
+      "type": "object",
+      "required": ["resolution", "viscosity", "dt", "steps", "amplitude", "forcing", "initial_data_family", "retained_mode_count"],
+      "properties": {
+        "resolution": {"const": 8},
+        "viscosity": {"type": "number", "exclusiveMinimum": 0},
+        "dt": {"type": "number", "exclusiveMinimum": 0},
+        "steps": {"type": "integer", "minimum": 1},
+        "amplitude": {"type": "number", "exclusiveMinimum": 0},
+        "forcing": {"const": "identically_zero"},
+        "initial_data_family": {"const": "Taylor-Green_vortex"},
+        "retained_mode_count": {"const": 125}
+      },
+      "additionalProperties": false
+    },
+    "reference_termination_reason": {"const": "requested_step_count_completed"},
+    "precision_ladder": {
+      "type": "object",
+      "required": ["low_dps", "high_dps", "max_modal_abs_difference_decimal", "rms_modal_abs_difference_decimal"],
+      "properties": {
+        "low_dps": {"type": "integer", "minimum": 50},
+        "high_dps": {"type": "integer", "minimum": 51},
+        "max_modal_abs_difference_decimal": {"type": "string", "pattern": "^[0-9.eE+-]+$"},
+        "rms_modal_abs_difference_decimal": {"type": "string", "pattern": "^[0-9.eE+-]+$"}
+      },
+      "additionalProperties": false
+    },
+    "comparison_metrics": {
+      "type": "object",
+      "required": ["max_retained_modal_abs_difference", "rms_retained_modal_abs_difference", "reference_kinetic_energy", "referee_kinetic_energy_decimal", "kinetic_energy_abs_difference", "reference_enstrophy", "referee_enstrophy_decimal", "enstrophy_abs_difference"],
+      "properties": {
+        "max_retained_modal_abs_difference": {"type": "number", "minimum": 0},
+        "rms_retained_modal_abs_difference": {"type": "number", "minimum": 0},
+        "reference_kinetic_energy": {"type": "number", "minimum": 0},
+        "referee_kinetic_energy_decimal": {"type": "string", "pattern": "^[0-9.eE+-]+$"},
+        "kinetic_energy_abs_difference": {"type": "number", "minimum": 0},
+        "reference_enstrophy": {"type": "number", "minimum": 0},
+        "referee_enstrophy_decimal": {"type": "string", "pattern": "^[0-9.eE+-]+$"},
+        "enstrophy_abs_difference": {"type": "number", "minimum": 0}
+      },
+      "additionalProperties": false
+    },
+    "independence": {
+      "const": {
+        "independent_arithmetic": true,
+        "independent_fft_path": true,
+        "independent_nonlinear_evaluation": true,
+        "independent_spatial_discretization": false
+      }
+    },
+    "nonclaims": {
+      "const": [
+        "finite_dimensional_agreement_is_not_continuum_proof",
+        "precision_agreement_is_not_global_regularity",
+        "precision_disagreement_is_not_mathematical_singularity",
+        "referee_is_not_an_independent_spatial_discretization",
+        "low_resolution_agreement_does_not_establish_high_resolution_agreement"
+      ]
+    },
+    "claim_level": {"const": "exploratory"}
+  },
+  "additionalProperties": false
+}
