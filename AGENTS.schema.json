@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/QSOLKCB/NS/blob/main/AGENTS.schema.json",
+  "title": "QSOL NS Agent Contract",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "document_type",
+    "serialization",
+    "repository",
+    "default_branch",
+    "human_operator",
+    "agent_boot_sequence",
+    "branch_policy",
+    "research_invariants",
+    "claim_levels",
+    "claim_promotion",
+    "experiment_requirements",
+    "proof_requirements",
+    "licensing",
+    "file_policy",
+    "language_policy",
+    "review_policy",
+    "completion_contract"
+  ],
+  "properties": {
+    "schema_version": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"},
+    "document_type": {"const": "qsol_ns_agent_contract"},
+    "serialization": {"const": "json"},
+    "repository": {"const": "QSOLKCB/NS"},
+    "default_branch": {"const": "main"},
+    "human_operator": {"type": "object"},
+    "agent_boot_sequence": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+    "branch_policy": {"type": "object"},
+    "research_invariants": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}},
+    "claim_levels": {
+      "type": "array",
+      "const": [
+        "exploratory",
+        "reproduced_numerical",
+        "candidate_lemma",
+        "proved_lemma",
+        "externally_checked_theorem",
+        "publication_candidate",
+        "public_solution_claim"
+      ]
+    },
+    "claim_promotion": {"type": "object"},
+    "experiment_requirements": {"type": "object"},
+    "proof_requirements": {"type": "object"},
+    "licensing": {"type": "object"},
+    "file_policy": {"type": "object"},
+    "language_policy": {"type": "object"},
+    "review_policy": {"type": "object"},
+    "completion_contract": {"type": "object"}
+  },
+  "additionalProperties": false
+}
