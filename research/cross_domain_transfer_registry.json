@@ -1,0 +1,131 @@
+{
+  "schema_version": "0.1.0",
+  "document_type": "qsol_cross_domain_transfer_registry",
+  "license": "Apache-2.0",
+  "registry_version": "0.1.0",
+  "source_material": {
+    "kind": "user_supplied_technical_reference",
+    "name": "pr6.md",
+    "sha256": "2bb9bc6f44af2dda571c70cc925196b29e02fc14cc50aef84fc69fc41c761042",
+    "authority": "design_input_not_domain_authority"
+  },
+  "records": [
+    {
+      "analogy_id": "LASER_SPECKLE_NOT_FLUID_FLOW",
+      "source_domain": "coherent_wave_optics",
+      "target_domain": "physical_fluid_dynamics",
+      "mapping_class": "explicit_non_correspondence",
+      "shared_structure": "visual patterning can superficially resemble textured or turbulent motion",
+      "assumptions": [],
+      "known_differences": [
+        "the referenced pattern is produced by coherent optical interference rather than a fluid velocity field",
+        "dynamic atmospheric distortion, when present, is a separate fluid-mediated optical effect"
+      ],
+      "allowed_uses": ["negative_control"],
+      "forbidden_inferences": [
+        "visual resemblance establishes fluid flow",
+        "optical interference is Navier-Stokes dynamics"
+      ],
+      "provenance_ref": "pr6.md#definite-non-fluid-phenomena"
+    },
+    {
+      "analogy_id": "DISPLAY_ARTIFACTS_NOT_FLUID_FLOW",
+      "source_domain": "display_electronics_and_video_compression",
+      "target_domain": "physical_fluid_dynamics",
+      "mapping_class": "explicit_non_correspondence",
+      "shared_structure": "banding, crosstalk or block patterns can visually resemble transport or flow structures",
+      "assumptions": [],
+      "known_differences": [
+        "macroblocking and banding arise from digital encoding or reconstruction limits",
+        "panel crosstalk arises from display electronics rather than bulk fluid transport"
+      ],
+      "allowed_uses": ["negative_control"],
+      "forbidden_inferences": [
+        "screen-local pattern motion establishes a fluid mechanism",
+        "liquid-crystal material implies observed macro-patterns are fluid flow"
+      ],
+      "provenance_ref": "pr6.md#display-artifacts"
+    },
+    {
+      "analogy_id": "BROWNIAN_TRANSPORT_TO_DIFFUSION_SDE",
+      "source_domain": "brownian_particle_transport",
+      "target_domain": "stochastic_diffusion_modeling",
+      "mapping_class": "operator_correspondence",
+      "shared_structure": "random transport represented by a Wiener-driven diffusion SDE such as dX_t=sqrt(2D)dW_t",
+      "assumptions": [
+        "the comparison is restricted to the stated stochastic diffusion structure"
+      ],
+      "known_differences": [
+        "physical Brownian transport and abstract data-space diffusion do not share physical ontology by virtue of the SDE form alone"
+      ],
+      "allowed_uses": ["candidate_generation"],
+      "forbidden_inferences": [
+        "shared SDE form proves shared physical mechanism",
+        "stochastic transport equivalence follows without target-domain validation"
+      ],
+      "provenance_ref": "pr6.md#brownian-motion-particle-transport"
+    },
+    {
+      "analogy_id": "GENERATIVE_DIFFUSION_LAPLACIAN_TO_NS_VISCOSITY",
+      "source_domain": "score_based_generative_diffusion",
+      "target_domain": "navier_stokes_3d_incompressible",
+      "mapping_class": "operator_correspondence",
+      "shared_structure": "Laplacian smoothing/diffusion appears in both a forward diffusion equation and the viscous term nu*Delta(u)",
+      "assumptions": [
+        "the comparison is limited to operator-level structure",
+        "no equality of state spaces, dynamics or physical interpretation is assumed"
+      ],
+      "known_differences": [
+        "a probability-density diffusion equation and incompressible velocity evolution act on different state objects",
+        "Navier-Stokes additionally contains nonlinear advection, pressure coupling and divergence-free constraints"
+      ],
+      "allowed_uses": ["candidate_generation"],
+      "forbidden_inferences": [
+        "shared Laplacian implies shared dynamics",
+        "generative denoising establishes a Navier-Stokes regularity or breakdown mechanism",
+        "operator resemblance satisfies a registered proof barrier"
+      ],
+      "provenance_ref": "pr6.md#forward-diffusion-and-navier-stokes-connection"
+    },
+    {
+      "analogy_id": "SCORE_FIELD_TO_NS_VELOCITY_FIELD",
+      "source_domain": "score_based_generative_diffusion",
+      "target_domain": "navier_stokes_3d_incompressible",
+      "mapping_class": "heuristic_analogy",
+      "shared_structure": "both descriptions use vector fields that guide state evolution",
+      "assumptions": [
+        "the comparison is heuristic and does not identify the vector fields"
+      ],
+      "known_differences": [
+        "a score field is a gradient of log probability density in model state space",
+        "Navier-Stokes velocity is a physical spatial velocity field subject to incompressibility and momentum dynamics"
+      ],
+      "allowed_uses": ["candidate_generation"],
+      "forbidden_inferences": [
+        "score field equals fluid velocity",
+        "conditioning or denoising direction equals Navier-Stokes advection"
+      ],
+      "provenance_ref": "pr6.md#reverse-process-score-function"
+    },
+    {
+      "analogy_id": "PROBABILITY_CONSERVATION_TO_NS_INCOMPRESSIBILITY",
+      "source_domain": "probability_transport",
+      "target_domain": "navier_stokes_3d_incompressible",
+      "mapping_class": "heuristic_analogy",
+      "shared_structure": "both settings contain conservation-style constraints expressed through divergence or continuity structure",
+      "assumptions": [
+        "the comparison is a structural prompt for candidate generation only"
+      ],
+      "known_differences": [
+        "probability-density conservation is not identical to the incompressibility condition div(u)=0",
+        "the conserved quantities, state spaces and governing equations differ"
+      ],
+      "allowed_uses": ["candidate_generation"],
+      "forbidden_inferences": [
+        "probability conservation proves incompressibility",
+        "continuity-style structure transfers a theorem across domains"
+      ],
+      "provenance_ref": "pr6.md#structural-mapping-matrix"
+    }
+  ]
+}

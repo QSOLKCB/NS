@@ -1,0 +1,57 @@
+{
+  "schema_version": "0.1.0",
+  "document_type": "qsol_analogy_firewall_contract",
+  "license": "Apache-2.0",
+  "firewall_version": "0.1.0",
+  "purpose": "controlled cross-domain candidate generation without importing source-domain authority into the target domain",
+  "authority": {
+    "analogy_may_generate_candidate": true,
+    "analogy_may_be_domain_evidence": false,
+    "analogy_may_promote_claim": false,
+    "analogy_may_satisfy_proof_barrier": false,
+    "analogy_may_select_winner": false,
+    "analogy_may_assert_domain_equivalence": false,
+    "target_domain_validation_required": true
+  },
+  "mapping_classes": [
+    "exact_correspondence",
+    "operator_correspondence",
+    "structural_analogy",
+    "heuristic_analogy",
+    "visual_resemblance",
+    "explicit_non_correspondence"
+  ],
+  "positive_candidate_generation_classes": [
+    "exact_correspondence",
+    "operator_correspondence",
+    "structural_analogy",
+    "heuristic_analogy"
+  ],
+  "negative_control_only_classes": [
+    "visual_resemblance",
+    "explicit_non_correspondence"
+  ],
+  "transfer_policy": {
+    "initial_target_claim_level": "exploratory",
+    "source_claim_level_inherited": false,
+    "source_proof_status_inherited": false,
+    "source_evidence_status_inherited": false,
+    "target_constraints_must_be_re_evaluated": true,
+    "provenance_required": true,
+    "known_differences_required": true,
+    "forbidden_inferences_required": true
+  },
+  "registry": {
+    "canonical_registry": "research/cross_domain_transfer_registry.json",
+    "registry_records_are_domain_truth": false,
+    "source_material_can_be_design_input_without_becoming_authority": true
+  },
+  "required_nonclaims": [
+    "visual_resemblance_is_not_physical_mechanism",
+    "shared_operator_is_not_shared_dynamics",
+    "structural_analogy_is_not_domain_equivalence",
+    "analogy_is_not_domain_evidence",
+    "analogy_cannot_promote_claim",
+    "cross_domain_transfer_requires_target_domain_validation"
+  ]
+}

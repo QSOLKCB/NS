@@ -1,12 +1,18 @@
 {
-  "schema_version": "1.4.0",
+  "schema_version": "1.5.0",
   "document_type": "qsol_ns_agent_contract",
   "serialization": "json",
   "repository": "QSOLKCB/NS",
   "default_branch": "main",
   "human_operator": {
     "role": "final_authority",
-    "required_for": ["public_solution_claim", "license_scope_change", "history_rewrite", "deletion_of_evidentiary_artifacts", "release_or_archive_publication"]
+    "required_for": [
+      "public_solution_claim",
+      "license_scope_change",
+      "history_rewrite",
+      "deletion_of_evidentiary_artifacts",
+      "release_or_archive_publication"
+    ]
   },
   "agent_boot_sequence": [
     "parse_AGENTS_md_as_JSON",
@@ -15,6 +21,7 @@
     "run_tools_validate_lab_contract_py",
     "run_tools_validate_precision_referee_py",
     "run_tools_validate_crucible_core_py",
+    "run_tools_validate_analogy_firewall_py",
     "read_README_md",
     "read_docs_PROBLEM_STATEMENT_md",
     "read_research_clay_target_json",
@@ -26,6 +33,9 @@
     "read_research_precision_referee_contract_json",
     "read_research_crucible_contract_json",
     "read_research_ns_crucible_adapter_json",
+    "read_research_analogy_firewall_contract_json",
+    "read_research_cross_domain_transfer_registry_json",
+    "read_research_ns_cross_domain_transfer_adapter_json",
     "read_docs_CLAIM_LEVELS_md",
     "read_docs_EXPERIMENT_CONTRACT_md",
     "read_docs_REPRODUCIBILITY_md",
@@ -60,9 +70,23 @@
     "failure_of_one_candidate_does_not_prove_competitor",
     "failure_ledger_is_preserved",
     "competing_hypotheses_have_no_default_winner",
+    "visual_resemblance_is_not_physical_mechanism",
+    "shared_operator_is_not_shared_dynamics",
+    "structural_analogy_is_not_domain_equivalence",
+    "analogy_is_not_domain_evidence",
+    "analogy_cannot_promote_claim",
+    "cross_domain_transfer_requires_target_domain_validation",
     "claim_status_must_never_exceed_evidence_status"
   ],
-  "claim_levels": ["exploratory", "reproduced_numerical", "candidate_lemma", "proved_lemma", "externally_checked_theorem", "publication_candidate", "public_solution_claim"],
+  "claim_levels": [
+    "exploratory",
+    "reproduced_numerical",
+    "candidate_lemma",
+    "proved_lemma",
+    "externally_checked_theorem",
+    "publication_candidate",
+    "public_solution_claim"
+  ],
   "claim_promotion": {
     "upward_promotion_is_monotonic": true,
     "automatic_promotion_allowed": false,
@@ -100,10 +124,69 @@
     "holdout_access_requires_candidate_freeze": true,
     "negative_results_preserved": true
   },
+  "analogy_policy": {
+    "firewall_contract": "research/analogy_firewall_contract.json",
+    "transfer_registry": "research/cross_domain_transfer_registry.json",
+    "domain_adapter": "research/ns_cross_domain_transfer_adapter.json",
+    "validator": "tools/validate_analogy_firewall.py",
+    "analogy_may_generate_candidate": true,
+    "analogy_may_be_domain_evidence": false,
+    "analogy_may_promote_claim": false,
+    "analogy_may_satisfy_proof_barrier": false,
+    "analogy_may_select_winner": false,
+    "analogy_may_assert_domain_equivalence": false,
+    "target_domain_validation_required": true,
+    "analogy_derived_candidate_initial_claim_level": "exploratory"
+  },
   "experiment_requirements": {
     "canonical_field_definition": "AGENTS.md#experiment_requirements.required_fields",
-    "required_fields": ["experiment_id", "source_commit", "created_at_utc", "operator_or_agent", "purpose", "hypothesis", "claim_level", "spatial_domain", "boundary_conditions", "initial_velocity_field_definition", "divergence_free_admissibility", "viscosity", "forcing", "scaling_convention", "measured_solution_quantity", "solver", "solver_version", "spatial_discretization", "time_integrator", "time_step_policy", "resolution", "precision", "tolerances", "filtering_regularization", "interpolation_remeshing", "random_seed_or_null", "operating_system_or_container_identity", "compiler_or_interpreter", "dependency_lock_or_exact_versions", "numerics_relevant_hardware_features", "thread_or_process_count", "input_hashes", "output_hashes", "diagnostics", "termination_reason", "warnings_or_errors", "wall_clock_independent_step_counts", "raw_outputs_or_content_addressed_pointer"],
-    "singularity_run_required_fields": ["convergence_resolution_behavior", "precision_sensitivity", "conservation_balance_residuals", "timestep_sensitivity", "competing_numerical_failure_explanation"],
+    "required_fields": [
+      "experiment_id",
+      "source_commit",
+      "created_at_utc",
+      "operator_or_agent",
+      "purpose",
+      "hypothesis",
+      "claim_level",
+      "spatial_domain",
+      "boundary_conditions",
+      "initial_velocity_field_definition",
+      "divergence_free_admissibility",
+      "viscosity",
+      "forcing",
+      "scaling_convention",
+      "measured_solution_quantity",
+      "solver",
+      "solver_version",
+      "spatial_discretization",
+      "time_integrator",
+      "time_step_policy",
+      "resolution",
+      "precision",
+      "tolerances",
+      "filtering_regularization",
+      "interpolation_remeshing",
+      "random_seed_or_null",
+      "operating_system_or_container_identity",
+      "compiler_or_interpreter",
+      "dependency_lock_or_exact_versions",
+      "numerics_relevant_hardware_features",
+      "thread_or_process_count",
+      "input_hashes",
+      "output_hashes",
+      "diagnostics",
+      "termination_reason",
+      "warnings_or_errors",
+      "wall_clock_independent_step_counts",
+      "raw_outputs_or_content_addressed_pointer"
+    ],
+    "singularity_run_required_fields": [
+      "convergence_resolution_behavior",
+      "precision_sensitivity",
+      "conservation_balance_residuals",
+      "timestep_sensitivity",
+      "competing_numerical_failure_explanation"
+    ],
     "raw_outputs_preserved": true,
     "failed_runs_preserved_when_informative": true,
     "silent_parameter_changes_forbidden": true
@@ -113,8 +196,25 @@
     "explicit_domain": true,
     "explicit_regularization_or_approximation": true,
     "external_theorem_dependencies_cited": true,
-    "formal_artifact_required_fields": ["prover", "prover_version", "dependency_lock_identity", "theorem_fully_qualified_name", "encoded_statement", "assumptions_and_axioms_used", "source_commit", "build_command", "successful_ci_or_run_identity_or_null", "correspondence_note"],
-    "proof_gap_markers_forbidden_in_verified_status": ["sorry", "admit", "assume_without_source", "numerically_obvious", "physically_obvious"]
+    "formal_artifact_required_fields": [
+      "prover",
+      "prover_version",
+      "dependency_lock_identity",
+      "theorem_fully_qualified_name",
+      "encoded_statement",
+      "assumptions_and_axioms_used",
+      "source_commit",
+      "build_command",
+      "successful_ci_or_run_identity_or_null",
+      "correspondence_note"
+    ],
+    "proof_gap_markers_forbidden_in_verified_status": [
+      "sorry",
+      "admit",
+      "assume_without_source",
+      "numerically_obvious",
+      "physically_obvious"
+    ]
   },
   "licensing": {
     "software_spdx": "Apache-2.0",
@@ -124,13 +224,25 @@
     "license_mutation_requires_human_operator": true
   },
   "file_policy": {
-    "immutable_without_explicit_reason": ["LICENSE", "LICENSES.md", "NOTICE", "CITATION.cff", "AGENTS.md", "AGENTS.schema.json"],
+    "immutable_without_explicit_reason": [
+      "LICENSE",
+      "LICENSES.md",
+      "NOTICE",
+      "CITATION.cff",
+      "AGENTS.md",
+      "AGENTS.schema.json"
+    ],
     "generated_artifacts_must_record_generator": true,
     "binary_results_require_manifest_entry": true,
     "secrets_forbidden": true
   },
   "language_policy": {
-    "solution_language_forbidden_unless_status_is_public_solution_claim": ["solved", "solution established", "millennium problem resolved", "proof complete"],
+    "solution_language_forbidden_unless_status_is_public_solution_claim": [
+      "solved",
+      "solution established",
+      "millennium problem resolved",
+      "proof complete"
+    ],
     "required_uncertainty_label_for_exploratory_results": true
   },
   "review_policy": {
@@ -141,7 +253,9 @@
     "check_discrete_continuum_gap": true,
     "check_roundoff_and_resolution_sensitivity": true,
     "check_circular_reasoning": true,
-    "check_hidden_regularization": true
+    "check_hidden_regularization": true,
+    "check_cross_domain_analogy_classification": true,
+    "check_analogy_target_revalidation": true
   },
   "completion_contract": {
     "summarize_changed_files": true,
