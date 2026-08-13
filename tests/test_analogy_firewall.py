@@ -35,6 +35,15 @@ def firewall():
     return fw
 
 
+def test_firewall_rejects_non_exploratory_initial_claim_level():
+    for level in ("candidate_lemma", "public_solution_claim"):
+        with pytest.raises(AnalogyFirewallError):
+            AnalogyFirewall(
+                target_domain="navier_stokes_3d_incompressible",
+                initial_claim_level=level,
+            )
+
+
 def test_operator_analogy_can_only_seed_exploratory_candidate():
     fw = firewall()
     candidate = fw.issue_candidate(
@@ -65,6 +74,13 @@ def test_firewall_forbids_authority_escalation(forbidden_use):
     fw = firewall()
     with pytest.raises(AnalogyFirewallError):
         fw.authorize_use("laplacian", forbidden_use)
+
+
+def test_authorize_use_rejects_another_target_domain():
+    fw = AnalogyFirewall(target_domain="navier_stokes_3d_incompressible")
+    fw.register(record(target_domain="another_domain"))
+    with pytest.raises(AnalogyFirewallError):
+        fw.authorize_use("laplacian", "candidate_generation")
 
 
 @pytest.mark.parametrize("mapping_class", ["visual_resemblance", "explicit_non_correspondence"])
@@ -122,6 +138,7 @@ def test_registry_export_and_authority_snapshot_are_deterministic_and_non_eviden
     assert authority["target_domain_validation_required"] is True
     assert authority["source_proof_status_inherited"] is False
     assert authority["source_evidence_status_inherited"] is False
+    assert authority["initial_claim_level"] == "exploratory"
 
 
 def test_duplicate_analogy_id_is_rejected():
