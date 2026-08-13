@@ -11,6 +11,7 @@ requires-python = ">=3.11"
 license = "Apache-2.0"
 dependencies = [
   "numpy>=2.0,<3",
+  "mpmath>=1.3,<2",
 ]
 
 [project.optional-dependencies]
@@ -21,6 +22,7 @@ test = [
 
 [project.scripts]
 qsol-ns-lab = "ns_lab.cli:main"
+qsol-ns-precision-referee = "ns_lab.precision_referee:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

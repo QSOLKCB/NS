@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.2.0",
+  "schema_version": "1.3.0",
   "document_type": "qsol_ns_agent_contract",
   "serialization": "json",
   "repository": "QSOLKCB/NS",
@@ -18,6 +18,8 @@
     "parse_AGENTS_md_as_JSON",
     "validate_against_AGENTS_schema_json",
     "run_tools_validate_boundary_map_py",
+    "run_tools_validate_lab_contract_py",
+    "run_tools_validate_precision_referee_py",
     "read_README_md",
     "read_docs_PROBLEM_STATEMENT_md",
     "read_research_clay_target_json",
@@ -25,6 +27,8 @@
     "read_research_theorem_registry_json",
     "read_research_proof_barriers_json",
     "read_research_baseline_identities_json",
+    "read_research_lab_contract_json",
+    "read_research_precision_referee_contract_json",
     "read_docs_CLAIM_LEVELS_md",
     "read_docs_EXPERIMENT_CONTRACT_md",
     "read_docs_REPRODUCIBILITY_md",
@@ -50,6 +54,9 @@
     "solver_failure_is_not_mathematical_singularity",
     "floating_point_overflow_is_not_mathematical_singularity",
     "resolution_instability_is_not_mathematical_singularity",
+    "precision_agreement_is_not_continuum_proof",
+    "finite_dimensional_agreement_is_not_global_regularity",
+    "precision_referee_is_not_independent_spatial_discretization",
     "claim_status_must_never_exceed_evidence_status"
   ],
   "claim_levels": [

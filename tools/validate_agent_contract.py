@@ -62,6 +62,18 @@ def main() -> None:
     require_rejected(validator, mutated, "boundary validator removed from agent boot")
 
     mutated = copy.deepcopy(contract)
+    mutated["agent_boot_sequence"].remove("run_tools_validate_lab_contract_py")
+    require_rejected(validator, mutated, "lab validator removed from agent boot")
+
+    mutated = copy.deepcopy(contract)
+    mutated["agent_boot_sequence"].remove("run_tools_validate_precision_referee_py")
+    require_rejected(validator, mutated, "precision referee validator removed from agent boot")
+
+    mutated = copy.deepcopy(contract)
+    mutated["agent_boot_sequence"].remove("read_research_precision_referee_contract_json")
+    require_rejected(validator, mutated, "precision referee contract removed from agent boot")
+
+    mutated = copy.deepcopy(contract)
     mutated["literature_boundary_policy"]["secondary_sources_may_discover_but_not_authorize"] = False
     require_rejected(validator, mutated, "secondary-source authority boundary disabled")
 
@@ -72,6 +84,10 @@ def main() -> None:
     mutated = copy.deepcopy(contract)
     mutated["literature_boundary_policy"]["domain_or_forcing_substitution_without_bridge_forbidden"] = False
     require_rejected(validator, mutated, "domain/forcing bridge protection disabled")
+
+    mutated = copy.deepcopy(contract)
+    mutated["research_invariants"].remove("precision_agreement_is_not_continuum_proof")
+    require_rejected(validator, mutated, "precision evidence boundary removed")
 
     print("AGENTS contract validation: PASS")
 
