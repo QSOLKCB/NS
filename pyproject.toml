@@ -11,16 +11,13 @@ requires-python = ">=3.11"
 license = "Apache-2.0"
 dependencies = [
   "numpy>=2.0,<3",
+  "mpmath>=1.3,<2",
 ]
 
 [project.optional-dependencies]
-precision = [
-  "mpmath>=1.3,<2",
-]
 test = [
   "pytest>=8,<10",
   "jsonschema>=4.23,<5",
-  "mpmath>=1.3,<2",
 ]
 
 [project.scripts]
