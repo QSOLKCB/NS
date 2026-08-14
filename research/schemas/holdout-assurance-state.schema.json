@@ -9,7 +9,12 @@
     },
     {
       "if": {"properties": {"holdout_evaluation": {"enum": ["passed", "failed", "blocked"]}}},
-      "then": {"properties": {"holdout_release_id": {"pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$", "type": "string"}}}
+      "then": {
+        "properties": {
+          "holdout_release_id": {"pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$", "type": "string"},
+          "negative_controls": {"minProperties": 1}
+        }
+      }
     }
   ],
   "properties": {

@@ -23,6 +23,12 @@ _SHA256 = re.compile(r"^[0-9a-f]{64}$")
 _COMMIT = re.compile(r"^[0-9a-f]{40}$")
 _ASSURANCE = {"not_run", "passed", "failed", "blocked"}
 _BRIDGE = {"not_run", "satisfied", "unsatisfied", "not_applicable"}
+_ACTIONS = {
+    "seal_holdout",
+    "materialize_holdout",
+    "release_holdout",
+    "record_assurance",
+}
 
 
 class HoldoutError(ValueError):
@@ -74,19 +80,19 @@ def _hash_bytes(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
 
-def _string_scalar_hashes(value: Any) -> set[str]:
-    hashes: set[str] = set()
+def _string_scalars(value: Any) -> tuple[str, ...]:
+    scalars: list[str] = []
     if isinstance(value, str):
-        hashes.add(_hash_bytes(value.encode("utf-8")))
+        scalars.append(value)
     elif isinstance(value, Mapping):
         for key, item in value.items():
             if isinstance(key, str):
-                hashes.add(_hash_bytes(key.encode("utf-8")))
-            hashes.update(_string_scalar_hashes(item))
-    elif isinstance(value, (list, tuple)):
+                scalars.append(key)
+            scalars.extend(_string_scalars(item))
+    elif isinstance(value, (list, tuple, set, frozenset)):
         for item in value:
-            hashes.update(_string_scalar_hashes(item))
-    return hashes
+            scalars.extend(_string_scalars(item))
+    return tuple(scalars)
 
 
 @dataclass(frozen=True)
@@ -107,7 +113,11 @@ class HoldoutManifest:
         for field in ("holdout_id", "domain_id", "evaluator_id", "evaluator_version"):
             _require_safe_id(getattr(self, field), field)
         _require_sha256(self.payload_sha256, "payload_sha256")
-        if not isinstance(self.payload_size_bytes, int) or isinstance(self.payload_size_bytes, bool) or self.payload_size_bytes <= 0:
+        if (
+            not isinstance(self.payload_size_bytes, int)
+            or isinstance(self.payload_size_bytes, bool)
+            or self.payload_size_bytes <= 0
+        ):
             raise HoldoutError("payload_size_bytes must be a positive integer")
         if len(self.leakage_sentinel_sha256) != len(set(self.leakage_sentinel_sha256)):
             raise HoldoutError("leakage sentinel hashes must be unique")
@@ -213,6 +223,8 @@ class AssuranceState:
             if self.holdout_release_id is None:
                 raise HoldoutError("holdout evaluation requires an auditable holdout release")
             _require_safe_id(self.holdout_release_id, "holdout_release_id")
+            if not self.negative_controls:
+                raise HoldoutError("holdout evaluation requires at least one negative control result")
         elif self.holdout_release_id is not None:
             raise HoldoutError("holdout_release_id requires holdout evaluation to be run")
         names = [name for name, _ in self.negative_controls]
@@ -240,9 +252,7 @@ class AssuranceState:
             "holdout_evaluation": self.holdout_evaluation,
             "continuum_bridge": self.continuum_bridge,
             "holdout_release_id": self.holdout_release_id,
-            "negative_controls": {
-                name: status for name, status in self.negative_controls
-            },
+            "negative_controls": {name: status for name, status in self.negative_controls},
             "notes": self.notes,
             "authority": {
                 "assurance_state_is_domain_truth": False,
@@ -273,6 +283,7 @@ class SealedHoldoutStore:
             self._lock_handle.close()
             self._closed = True
             raise HoldoutError("sealed holdout store v0.1 is single-writer per root") from exc
+
         self.payloads = self.root / "sealed" / "sha256"
         self.manifests = self.root / "manifests"
         self.materializations = self.root / "materializations"
@@ -287,9 +298,19 @@ class SealedHoldoutStore:
             self.assurance,
         ):
             path.mkdir(parents=True, exist_ok=True)
-        self._scan_journal()
+
+        try:
+            self.verify()
+        except Exception:
+            self.close()
+            raise
+
+    def _require_open(self) -> None:
+        if self._closed:
+            raise HoldoutError("sealed holdout store is closed")
 
     def __enter__(self) -> "SealedHoldoutStore":
+        self._require_open()
         return self
 
     def __exit__(self, *args: Any) -> bool:
@@ -312,6 +333,7 @@ class SealedHoldoutStore:
             pass
 
     def _immutable_write(self, path: Path, data: bytes) -> None:
+        self._require_open()
         path.parent.mkdir(parents=True, exist_ok=True)
         if path.exists():
             if path.read_bytes() != data:
@@ -329,6 +351,7 @@ class SealedHoldoutStore:
             temp.unlink(missing_ok=True)
 
     def _journal_events(self) -> list[dict[str, Any]]:
+        self._require_open()
         if not self.log.exists():
             return []
         events: list[dict[str, Any]] = []
@@ -351,12 +374,7 @@ class SealedHoldoutStore:
             del core["event_sha256"]
             if _hash_bytes(canonical_json_bytes(core)) != recorded:
                 raise HoldoutError("holdout journal event hash mismatch")
-            if event.get("action") not in {
-                "seal_holdout",
-                "materialize_holdout",
-                "release_holdout",
-                "record_assurance",
-            }:
+            if event.get("action") not in _ACTIONS:
                 raise HoldoutError("unsupported holdout journal action")
             _require_text(event.get("actor"), "actor")
             _require_commit(event.get("source_commit"))
@@ -381,6 +399,9 @@ class SealedHoldoutStore:
         source_commit: str,
         recorded_at_utc: str,
     ) -> str:
+        self._require_open()
+        if action not in _ACTIONS:
+            raise HoldoutError("unsupported holdout journal action")
         _require_safe_id(logical_id, "logical_id")
         _require_sha256(artifact_sha256, "artifact_sha256")
         _require_text(actor, "actor")
@@ -409,15 +430,24 @@ class SealedHoldoutStore:
     def _manifest_path(self, holdout_id: str) -> Path:
         return self.manifests / f"{_require_safe_id(holdout_id, 'holdout_id')}.json"
 
-    def manifest(self, holdout_id: str) -> HoldoutManifest:
+    def _payload_path(self, payload_sha256: str) -> Path:
+        digest = _require_sha256(payload_sha256, "payload_sha256")
+        return self.payloads / digest[:2] / f"{digest[2:]}.json"
+
+    @staticmethod
+    def _json_files(root: Path) -> set[Path]:
+        return {path for path in root.rglob("*.json") if path.is_file()}
+
+    def _load_manifest_unchecked(self, holdout_id: str) -> HoldoutManifest:
         path = self._manifest_path(holdout_id)
         if not path.is_file():
             raise HoldoutError(f"unknown holdout: {holdout_id}")
+        raw_bytes = path.read_bytes()
         try:
-            raw = json.loads(path.read_bytes())
+            raw = json.loads(raw_bytes)
         except json.JSONDecodeError as exc:
             raise HoldoutError("holdout manifest is invalid JSON") from exc
-        if canonical_json_bytes(raw) != path.read_bytes():
+        if canonical_json_bytes(raw) != raw_bytes:
             raise HoldoutError("holdout manifest is not canonical JSON")
         try:
             manifest = HoldoutManifest(
@@ -430,10 +460,81 @@ class SealedHoldoutStore:
         except (KeyError, TypeError) as exc:
             raise HoldoutError("holdout manifest structure is invalid") from exc
         manifest.validate()
-        payload_path = self.payloads / manifest.payload_sha256[:2] / f"{manifest.payload_sha256[2:]}.json"
+        payload_path = self._payload_path(manifest.payload_sha256)
         if not payload_path.is_file() or _hash_bytes(payload_path.read_bytes()) != manifest.payload_sha256:
             raise HoldoutError("sealed holdout payload is missing or hash-mismatched")
+        if payload_path.stat().st_size != manifest.payload_size_bytes:
+            raise HoldoutError("sealed holdout payload size does not match manifest")
         return manifest
+
+    def _load_payload(self, manifest: HoldoutManifest) -> dict[str, Any]:
+        raw_bytes = self._payload_path(manifest.payload_sha256).read_bytes()
+        if _hash_bytes(raw_bytes) != manifest.payload_sha256:
+            raise HoldoutError("sealed holdout payload hash mismatch")
+        try:
+            payload = json.loads(raw_bytes)
+        except json.JSONDecodeError as exc:
+            raise HoldoutError("sealed holdout payload is invalid JSON") from exc
+        if not isinstance(payload, dict) or canonical_json_bytes(payload) != raw_bytes:
+            raise HoldoutError("sealed holdout payload must be a canonical JSON object")
+        return payload
+
+    def _load_materialization_unchecked(self, materialization_id: str) -> HoldoutMaterialization:
+        path = self.materializations / f"{_require_safe_id(materialization_id, 'materialization_id')}.json"
+        if not path.is_file():
+            raise HoldoutError("unknown holdout materialization")
+        raw_bytes = path.read_bytes()
+        try:
+            raw = json.loads(raw_bytes)
+        except json.JSONDecodeError as exc:
+            raise HoldoutError("materialization is invalid JSON") from exc
+        if canonical_json_bytes(raw) != raw_bytes:
+            raise HoldoutError("materialization is not canonical JSON")
+        try:
+            value = HoldoutMaterialization(**raw)
+        except TypeError as exc:
+            raise HoldoutError("materialization structure is invalid") from exc
+        value.validate()
+        return value
+
+    def _load_release_unchecked(self, release_id: str) -> HoldoutReleaseReceipt:
+        path = self.releases / f"{_require_safe_id(release_id, 'release_id')}.json"
+        if not path.is_file():
+            raise HoldoutError("unknown holdout release")
+        raw_bytes = path.read_bytes()
+        try:
+            raw = json.loads(raw_bytes)
+        except json.JSONDecodeError as exc:
+            raise HoldoutError("release receipt is invalid JSON") from exc
+        if canonical_json_bytes(raw) != raw_bytes:
+            raise HoldoutError("release receipt is not canonical JSON")
+        try:
+            value = HoldoutReleaseReceipt(**raw)
+        except TypeError as exc:
+            raise HoldoutError("release receipt structure is invalid") from exc
+        value.validate()
+        return value
+
+    def _released_holdout_ids(self, events: list[dict[str, Any]] | None = None) -> set[str]:
+        source = events if events is not None else self._journal_events()
+        return {
+            self._load_release_unchecked(str(event["logical_id"])).holdout_id
+            for event in source
+            if event["action"] == "release_holdout"
+        }
+
+    def _released_materialization_ids(self, events: list[dict[str, Any]] | None = None) -> set[str]:
+        source = events if events is not None else self._journal_events()
+        return {
+            self._load_release_unchecked(str(event["logical_id"])).materialization_id
+            for event in source
+            if event["action"] == "release_holdout"
+        }
+
+    def manifest(self, holdout_id: str) -> HoldoutManifest:
+        self._require_open()
+        self.verify()
+        return self._load_manifest_unchecked(holdout_id)
 
     def seal(
         self,
@@ -448,6 +549,8 @@ class SealedHoldoutStore:
         source_commit: str,
         sealed_at_utc: str,
     ) -> HoldoutManifest:
+        self._require_open()
+        self.verify()
         _require_safe_id(holdout_id, "holdout_id")
         if self._manifest_path(holdout_id).exists():
             raise HoldoutError("holdout_id is immutable and already sealed")
@@ -463,7 +566,7 @@ class SealedHoldoutStore:
             raise HoldoutError("leakage_sentinels must be unique")
         payload_bytes = canonical_json_bytes(payload_value)
         payload_digest = _hash_bytes(payload_bytes)
-        payload_path = self.payloads / payload_digest[:2] / f"{payload_digest[2:]}.json"
+        payload_path = self._payload_path(payload_digest)
         self._immutable_write(payload_path, payload_bytes)
         manifest = HoldoutManifest(
             holdout_id=holdout_id,
@@ -481,11 +584,10 @@ class SealedHoldoutStore:
         )
         manifest_bytes = canonical_json_bytes(manifest.to_dict())
         self._immutable_write(self._manifest_path(holdout_id), manifest_bytes)
-        manifest_digest = _hash_bytes(manifest_bytes)
         self._append_event(
             action="seal_holdout",
             logical_id=holdout_id,
-            artifact_sha256=manifest_digest,
+            artifact_sha256=_hash_bytes(manifest_bytes),
             actor=actor,
             source_commit=source_commit,
             recorded_at_utc=sealed_at_utc,
@@ -500,15 +602,21 @@ class SealedHoldoutStore:
         return canonical_sha256(candidate.to_dict())
 
     def assert_context_clean(self, context: Any, *, holdout_id: str) -> None:
-        manifest = self.manifest(holdout_id)
-        observed = _string_scalar_hashes(context)
-        forbidden = set(manifest.leakage_sentinel_sha256)
-        forbidden.add(_hash_bytes(manifest.payload_sha256.encode("utf-8")))
-        leaked = observed & forbidden
-        if leaked:
-            raise HoldoutLeakageError(
-                "pre-release context contains sealed holdout material or its payload identity"
-            )
+        self._require_open()
+        self.verify()
+        manifest = self._load_manifest_unchecked(holdout_id)
+        payload = self._load_payload(manifest)
+        sentinels = payload.get("leakage_sentinels", [])
+        if not isinstance(sentinels, list) or any(not isinstance(item, str) or not item for item in sentinels):
+            raise HoldoutError("sealed payload leakage_sentinels are invalid")
+        sentinel_hashes = tuple(_hash_bytes(item.encode("utf-8")) for item in sentinels)
+        if sentinel_hashes != manifest.leakage_sentinel_sha256:
+            raise HoldoutError("sealed payload leakage sentinels do not match manifest")
+        for scalar in _string_scalars(context):
+            if manifest.payload_sha256 in scalar or any(sentinel in scalar for sentinel in sentinels):
+                raise HoldoutLeakageError(
+                    "pre-release context contains sealed holdout material or its payload identity"
+                )
 
     def materialize(
         self,
@@ -522,11 +630,18 @@ class SealedHoldoutStore:
         source_commit: str,
         materialized_at_utc: str,
     ) -> HoldoutMaterialization:
-        manifest = self.manifest(holdout_id)
+        self._require_open()
+        replay = self.verify()
+        events = self._journal_events()
+        manifest = self._load_manifest_unchecked(holdout_id)
+        if holdout_id in self._released_holdout_ids(events):
+            raise HoldoutError("holdout has already been released; new materializations are forbidden")
         candidate_digest = self._require_frozen_candidate(candidate)
         if candidate.domain_id != manifest.domain_id:
             raise HoldoutError("candidate domain does not match holdout domain")
         _require_sha256(crucible_ledger_head_sha256, "crucible_ledger_head_sha256")
+        if replay["head_event_sha256"] is None and self.log.exists():
+            raise HoldoutError("holdout journal head is unavailable")
         self.assert_context_clean(pre_release_context, holdout_id=holdout_id)
         materialization = HoldoutMaterialization(
             materialization_id=materialization_id,
@@ -554,42 +669,6 @@ class SealedHoldoutStore:
         )
         return materialization
 
-    def _load_materialization(self, materialization_id: str) -> HoldoutMaterialization:
-        path = self.materializations / f"{_require_safe_id(materialization_id, 'materialization_id')}.json"
-        if not path.is_file():
-            raise HoldoutError("unknown holdout materialization")
-        raw_bytes = path.read_bytes()
-        try:
-            raw = json.loads(raw_bytes)
-        except json.JSONDecodeError as exc:
-            raise HoldoutError("materialization is invalid JSON") from exc
-        if canonical_json_bytes(raw) != raw_bytes:
-            raise HoldoutError("materialization is not canonical JSON")
-        try:
-            value = HoldoutMaterialization(**raw)
-        except TypeError as exc:
-            raise HoldoutError("materialization structure is invalid") from exc
-        value.validate()
-        return value
-
-    def _load_release(self, release_id: str) -> HoldoutReleaseReceipt:
-        path = self.releases / f"{_require_safe_id(release_id, 'release_id')}.json"
-        if not path.is_file():
-            raise HoldoutError("unknown holdout release")
-        raw_bytes = path.read_bytes()
-        try:
-            raw = json.loads(raw_bytes)
-        except json.JSONDecodeError as exc:
-            raise HoldoutError("release receipt is invalid JSON") from exc
-        if canonical_json_bytes(raw) != raw_bytes:
-            raise HoldoutError("release receipt is not canonical JSON")
-        try:
-            value = HoldoutReleaseReceipt(**raw)
-        except TypeError as exc:
-            raise HoldoutError("release receipt structure is invalid") from exc
-        value.validate()
-        return value
-
     def release(
         self,
         *,
@@ -600,23 +679,21 @@ class SealedHoldoutStore:
         source_commit: str,
         released_at_utc: str,
     ) -> tuple[dict[str, Any], HoldoutReleaseReceipt]:
-        materialization = self._load_materialization(materialization_id)
+        self._require_open()
+        self.verify()
+        events = self._journal_events()
+        if materialization_id in self._released_materialization_ids(events):
+            raise HoldoutError("holdout materialization has already been released")
+        materialization = self._load_materialization_unchecked(materialization_id)
         candidate_digest = self._require_frozen_candidate(candidate)
         if candidate.candidate_id != materialization.candidate_id:
             raise HoldoutError("release candidate does not match materialization")
         if candidate_digest != materialization.candidate_snapshot_sha256:
             raise HoldoutError("candidate changed after holdout materialization")
-        manifest = self.manifest(materialization.holdout_id)
+        manifest = self._load_manifest_unchecked(materialization.holdout_id)
         if manifest.payload_sha256 != materialization.holdout_payload_sha256:
             raise HoldoutError("holdout payload identity drifted after materialization")
-        path = self.payloads / manifest.payload_sha256[:2] / f"{manifest.payload_sha256[2:]}.json"
-        raw_bytes = path.read_bytes()
-        if _hash_bytes(raw_bytes) != manifest.payload_sha256:
-            raise HoldoutError("sealed holdout payload hash mismatch")
-        try:
-            payload = json.loads(raw_bytes)
-        except json.JSONDecodeError as exc:
-            raise HoldoutError("sealed holdout payload is invalid JSON") from exc
+        payload = self._load_payload(manifest)
         receipt = HoldoutReleaseReceipt(
             release_id=release_id,
             materialization_id=materialization_id,
@@ -652,19 +729,24 @@ class SealedHoldoutStore:
         source_commit: str,
         recorded_at_utc: str,
     ) -> str:
+        self._require_open()
+        self.verify()
         state.validate()
         if state.holdout_evaluation != "not_run":
-            if manifest is None:
-                raise HoldoutError("holdout assurance requires the corresponding manifest")
             assert state.holdout_release_id is not None
-            release = self._load_release(state.holdout_release_id)
+            release = self._load_release_unchecked(state.holdout_release_id)
             if release.candidate_id != state.candidate_id:
                 raise HoldoutError("assurance candidate does not match holdout release")
-            if release.holdout_id != manifest.holdout_id:
-                raise HoldoutError("assurance manifest does not match holdout release")
-            if release.holdout_payload_sha256 != manifest.payload_sha256:
-                raise HoldoutError("assurance release payload identity does not match manifest")
-            expected = set(manifest.negative_control_ids)
+            persisted_manifest = self._load_manifest_unchecked(release.holdout_id)
+            if manifest is not None:
+                manifest.validate()
+                if manifest.to_dict() != persisted_manifest.to_dict():
+                    raise HoldoutError("caller-supplied manifest does not match persisted holdout manifest")
+            if release.holdout_payload_sha256 != persisted_manifest.payload_sha256:
+                raise HoldoutError("assurance release payload identity does not match persisted manifest")
+            expected = set(persisted_manifest.negative_control_ids)
+            if not expected:
+                raise HoldoutError("holdout evaluation requires at least one declared negative control")
             observed = {name for name, _ in state.negative_controls}
             if observed != expected:
                 raise HoldoutError(
@@ -687,36 +769,70 @@ class SealedHoldoutStore:
         return digest
 
     def verify(self) -> dict[str, Any]:
+        self._require_open()
         events = self._journal_events()
         seen: set[tuple[str, str]] = set()
+        expected_manifests: set[Path] = set()
+        expected_materializations: set[Path] = set()
+        expected_releases: set[Path] = set()
+        expected_assurance: set[Path] = set()
+        expected_payloads: set[Path] = set()
+
         for event in events:
-            key = (str(event["action"]), str(event["logical_id"]))
+            action = str(event["action"])
+            logical_id = str(event["logical_id"])
+            key = (action, logical_id)
             if key in seen:
                 raise HoldoutError("holdout journal reuses an immutable logical ID for the same action")
             seen.add(key)
-            action = event["action"]
-            logical_id = event["logical_id"]
+
             if action == "seal_holdout":
                 path = self._manifest_path(logical_id)
-                self.manifest(logical_id)
+                expected_manifests.add(path)
             elif action == "materialize_holdout":
                 path = self.materializations / f"{logical_id}.json"
-                self._load_materialization(logical_id)
+                expected_materializations.add(path)
             elif action == "release_holdout":
                 path = self.releases / f"{logical_id}.json"
-                self._load_release(logical_id)
+                expected_releases.add(path)
             else:
                 path = self.assurance / f"{logical_id}.json"
-                if not path.is_file():
-                    raise HoldoutError("assurance artifact is missing")
+                expected_assurance.add(path)
+
+            if not path.is_file() or _hash_bytes(path.read_bytes()) != event["artifact_sha256"]:
+                raise HoldoutError("holdout journal artifact hash mismatch")
+
+            if action == "seal_holdout":
+                manifest = self._load_manifest_unchecked(logical_id)
+                expected_payloads.add(self._payload_path(manifest.payload_sha256))
+            elif action == "materialize_holdout":
+                self._load_materialization_unchecked(logical_id)
+            elif action == "release_holdout":
+                self._load_release_unchecked(logical_id)
+            else:
                 try:
                     raw = json.loads(path.read_bytes())
                 except json.JSONDecodeError as exc:
                     raise HoldoutError("assurance artifact is invalid JSON") from exc
                 if canonical_json_bytes(raw) != path.read_bytes():
                     raise HoldoutError("assurance artifact is not canonical JSON")
-            if not path.is_file() or _hash_bytes(path.read_bytes()) != event["artifact_sha256"]:
-                raise HoldoutError("holdout journal artifact hash mismatch")
+
+        artifact_sets = (
+            ("manifest", self._json_files(self.manifests), expected_manifests),
+            ("materialization", self._json_files(self.materializations), expected_materializations),
+            ("release", self._json_files(self.releases), expected_releases),
+            ("assurance", self._json_files(self.assurance), expected_assurance),
+            ("sealed payload", self._json_files(self.payloads), expected_payloads),
+        )
+        for label, actual, expected in artifact_sets:
+            if actual != expected:
+                extras = sorted(str(path.relative_to(self.root)) for path in actual - expected)
+                missing = sorted(str(path.relative_to(self.root)) for path in expected - actual)
+                raise HoldoutError(
+                    f"holdout journal/artifact reconciliation failed for {label}: "
+                    f"orphan={extras}, missing={missing}"
+                )
+
         return {
             "event_count": len(events),
             "head_event_sha256": events[-1]["event_sha256"] if events else None,
