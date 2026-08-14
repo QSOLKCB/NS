@@ -1,0 +1,51 @@
+{
+  "schema_version": "0.1.0",
+  "document_type": "qsol_sealed_holdout_contract",
+  "license": "Apache-2.0",
+  "holdout_version": "0.1.0",
+  "purpose": "freeze-before-observation holdout materialization, auditable release, leakage detection, negative controls, and separated assurance states",
+  "authority": {
+    "sealed_storage_is_cryptographic_confidentiality": false,
+    "holdout_success_promotes_claim": false,
+    "holdout_success_selects_winner": false,
+    "assurance_state_defines_domain_truth": false,
+    "replay_or_cross_method_agreement_is_continuum_proof": false
+  },
+  "freeze_and_release": {
+    "candidate_status_required": "frozen",
+    "candidate_frozen_flag_required": true,
+    "candidate_snapshot_hash_bound_before_release": true,
+    "crucible_ledger_head_bound_before_release": true,
+    "payload_hash_bound_before_release": true,
+    "materialization_event_required": true,
+    "release_event_required": true,
+    "post_materialization_candidate_drift_fails_closed": true
+  },
+  "leakage_controls": {
+    "pre_release_context_scan_required": true,
+    "payload_identity_forbidden_pre_release": true,
+    "hashed_leakage_sentinels_supported": true,
+    "negative_controls_required_when_holdout_evaluation_runs": true
+  },
+  "assurance_states": [
+    "schema_admission",
+    "deterministic_replay",
+    "cross_method_challenge",
+    "holdout_evaluation",
+    "continuum_bridge"
+  ],
+  "assurance_states_are_independent": true,
+  "journal": {
+    "append_only_hash_chain": true,
+    "immutable_artifact_hashes": true,
+    "single_writer_process_only": true,
+    "actor_source_commit_utc_required": true
+  },
+  "required_nonclaims": [
+    "holdout_success_is_not_proof",
+    "replay_is_not_continuum_proof",
+    "cross_method_agreement_is_not_continuum_proof",
+    "schema_or_formal_assurance_is_not_physical_truth",
+    "sealed_storage_is_not_cryptographic_confidentiality_against_filesystem_access"
+  ]
+}
