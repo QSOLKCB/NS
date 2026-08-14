@@ -1,0 +1,44 @@
+{
+  "$id": "https://github.com/QSOLKCB/NS/blob/main/research/schemas/holdout-assurance-state.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {"properties": {"holdout_evaluation": {"const": "not_run"}}},
+      "then": {"properties": {"holdout_release_id": {"type": "null"}}}
+    },
+    {
+      "if": {"properties": {"holdout_evaluation": {"enum": ["passed", "failed", "blocked"]}}},
+      "then": {
+        "properties": {
+          "holdout_release_id": {"pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$", "type": "string"},
+          "negative_controls": {"minProperties": 1}
+        }
+      }
+    }
+  ],
+  "properties": {
+    "assurance_id": {"pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$", "type": "string"},
+    "authority": {
+      "const": {
+        "assurance_state_is_domain_truth": false,
+        "cross_method_agreement_is_continuum_proof": false,
+        "formal_or_schema_assurance_is_physical_truth": false,
+        "holdout_success_promotes_claim": false,
+        "replay_is_continuum_proof": false
+      }
+    },
+    "candidate_id": {"pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$", "type": "string"},
+    "continuum_bridge": {"enum": ["not_run", "satisfied", "unsatisfied", "not_applicable"]},
+    "cross_method_challenge": {"enum": ["not_run", "passed", "failed", "blocked"]},
+    "deterministic_replay": {"enum": ["not_run", "passed", "failed", "blocked"]},
+    "holdout_evaluation": {"enum": ["not_run", "passed", "failed", "blocked"]},
+    "holdout_release_id": {"type": ["string", "null"]},
+    "negative_controls": {"additionalProperties": {"enum": ["passed", "failed"]}, "type": "object"},
+    "notes": {"type": "string"},
+    "schema_admission": {"enum": ["not_run", "passed", "failed", "blocked"]}
+  },
+  "required": ["assurance_id", "candidate_id", "schema_admission", "deterministic_replay", "cross_method_challenge", "holdout_evaluation", "continuum_bridge", "holdout_release_id", "negative_controls", "notes", "authority"],
+  "title": "QSOL Crucible Holdout Assurance State",
+  "type": "object"
+}

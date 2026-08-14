@@ -1,0 +1,20 @@
+{
+  "$id": "https://github.com/QSOLKCB/NS/blob/main/research/schemas/holdout-event.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "action": {"enum": ["seal_holdout", "materialize_holdout", "release_holdout", "record_assurance"]},
+    "actor": {"minLength": 1, "type": "string"},
+    "artifact_sha256": {"pattern": "^[0-9a-f]{64}$", "type": "string"},
+    "event_sha256": {"pattern": "^[0-9a-f]{64}$", "type": "string"},
+    "holdout_version": {"const": "0.1.0"},
+    "logical_id": {"pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$", "type": "string"},
+    "previous_event_sha256": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
+    "recorded_at_utc": {"format": "date-time", "type": "string"},
+    "sequence": {"minimum": 1, "type": "integer"},
+    "source_commit": {"pattern": "^[0-9a-f]{40}$", "type": "string"}
+  },
+  "required": ["holdout_version", "sequence", "previous_event_sha256", "action", "logical_id", "artifact_sha256", "actor", "source_commit", "recorded_at_utc", "event_sha256"],
+  "title": "QSOL Crucible Holdout Journal Event",
+  "type": "object"
+}
