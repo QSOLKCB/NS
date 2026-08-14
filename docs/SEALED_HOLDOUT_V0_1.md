@@ -20,8 +20,10 @@ Candidate-specific materialization requires all of the following:
 - an exact SHA-256 identity of the frozen candidate snapshot;
 - the exact verified Crucible Ledger head SHA-256 supplied by the caller;
 - the exact sealed holdout payload SHA-256;
-- a pre-release context that does not contain the payload identity or any hashed leakage sentinel;
+- a pre-release context that does not contain the payload identity or any leakage sentinel, including when embedded inside a larger string;
 - actor, exact source commit, and UTC timestamp provenance.
+
+Multiple candidates may be frozen and materialized as one intended batch before the first reveal. Once any release for a holdout occurs, that batch is closed: no new candidate may be materialized against the already-observed holdout. A materialization may be released only once.
 
 Release recomputes the candidate snapshot identity and fails closed if the candidate changed after materialization. It also verifies that the sealed payload still matches the hash bound at materialization.
 
@@ -29,13 +31,15 @@ Release recomputes the candidate snapshot identity and fails closed if the candi
 
 A JSON holdout payload may contain a top-level `leakage_sentinels` array of unique strings. Only SHA-256 hashes of those sentinels are exposed in the public manifest.
 
-Before materialization, `assert_context_clean` hashes string scalars in the supplied generation/evaluation context and rejects a context containing a sentinel or the sealed payload identity. This is a deterministic leakage probe, not a claim that every possible semantic or transformed leak can be detected.
+Before materialization, `assert_context_clean` privately reloads the sealed payload, verifies that its sentinel identities still match the public manifest, and scans every string scalar and string mapping key in the supplied generation/evaluation context. A sentinel or payload SHA-256 appearing as a substring is rejected, not merely exact whole-string equality.
 
-The CI suite includes hostile sentinel and payload-identity leakage tests.
+This is a deterministic verbatim-leakage probe, not a claim that every semantic, encoded, paraphrased, transformed, or side-channel leak can be detected.
+
+The CI suite includes hostile standalone and embedded sentinel/payload-identity leakage tests.
 
 ## Negative controls
 
-Each holdout manifest may declare negative-control IDs. If a recorded assurance state claims that holdout evaluation ran, every declared negative control must be reported exactly once. A holdout evaluation cannot be recorded as `passed` while any negative control is `failed`.
+A holdout may be sealed without controls if no holdout evaluation will be asserted. Once a recorded assurance state says that holdout evaluation ran, the persisted holdout manifest must declare at least one negative control and every declared control must be reported exactly once. The persisted manifest is reloaded from the store; a caller-supplied modified manifest cannot change the expected control set. A holdout evaluation cannot be recorded as `passed` while any negative control is `failed`.
 
 Negative controls test the evaluation machinery. Passing them does not validate the Navier–Stokes candidate itself.
 
@@ -73,7 +77,9 @@ The holdout store writes canonical JSON artifacts for manifests, materialization
 - UTC timestamp;
 - previous event hash.
 
-`verify()` replays the event chain, reloads the referenced artifacts, checks canonical serialization and artifact hashes, and fails closed on tampering. v0.1 is single-writer per store root via a nonblocking filesystem lock.
+`verify()` replays the event chain, reloads the referenced artifacts, checks canonical serialization and artifact hashes, and reconciles the complete manifest/materialization/release/assurance directories plus sealed payload files against authoritative journal history. An artifact written before a crash but lacking its required event is therefore an orphan and fails closed on replay or reopen instead of being silently usable.
+
+v0.1 is single-writer per store root via a nonblocking filesystem lock. Releasing that lock with `close()` permanently invalidates that store object; all later reads and mutations through the stale reference fail rather than racing a newly opened writer.
 
 ## Authority limits
 
@@ -93,15 +99,7 @@ These limits are represented in the machine contract, artifact authority snapsho
 
 ## Validation
 
-`tools/validate_holdout.py` performs contract/schema validation and an end-to-end hostile fixture:
-
-- active candidate materialization must fail;
-- sentinel leakage must fail;
-- frozen candidate materialization succeeds;
-- release binds the same frozen snapshot and payload;
-- distinct assurance states are preserved;
-- negative controls are required for holdout evaluation;
-- journal replay verifies the artifact chain.
+`tools/validate_holdout.py` performs contract/schema validation and an end-to-end hostile fixture. `tests/test_holdout.py` additionally covers review-derived adversarial cases: embedded leakage, forged caller manifests, empty declared controls, orphan artifacts/payloads, stale closed writers, post-release materialization, and duplicate releases.
 
 `.github/workflows/holdout-evaluation.yml` runs the validator and `tests/test_holdout.py` on Python 3.11 and 3.13.
 
