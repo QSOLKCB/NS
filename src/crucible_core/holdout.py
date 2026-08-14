@@ -572,6 +572,24 @@ class SealedHoldoutStore:
         value.validate()
         return value
 
+    def _load_release(self, release_id: str) -> HoldoutReleaseReceipt:
+        path = self.releases / f"{_require_safe_id(release_id, 'release_id')}.json"
+        if not path.is_file():
+            raise HoldoutError("unknown holdout release")
+        raw_bytes = path.read_bytes()
+        try:
+            raw = json.loads(raw_bytes)
+        except json.JSONDecodeError as exc:
+            raise HoldoutError("release receipt is invalid JSON") from exc
+        if canonical_json_bytes(raw) != raw_bytes:
+            raise HoldoutError("release receipt is not canonical JSON")
+        try:
+            value = HoldoutReleaseReceipt(**raw)
+        except TypeError as exc:
+            raise HoldoutError("release receipt structure is invalid") from exc
+        value.validate()
+        return value
+
     def release(
         self,
         *,
@@ -638,6 +656,14 @@ class SealedHoldoutStore:
         if state.holdout_evaluation != "not_run":
             if manifest is None:
                 raise HoldoutError("holdout assurance requires the corresponding manifest")
+            assert state.holdout_release_id is not None
+            release = self._load_release(state.holdout_release_id)
+            if release.candidate_id != state.candidate_id:
+                raise HoldoutError("assurance candidate does not match holdout release")
+            if release.holdout_id != manifest.holdout_id:
+                raise HoldoutError("assurance manifest does not match holdout release")
+            if release.holdout_payload_sha256 != manifest.payload_sha256:
+                raise HoldoutError("assurance release payload identity does not match manifest")
             expected = set(manifest.negative_control_ids)
             observed = {name for name, _ in state.negative_controls}
             if observed != expected:
@@ -662,8 +688,35 @@ class SealedHoldoutStore:
 
     def verify(self) -> dict[str, Any]:
         events = self._journal_events()
-        for manifest_path in self.manifests.glob("*.json"):
-            self.manifest(manifest_path.stem)
+        seen: set[tuple[str, str]] = set()
+        for event in events:
+            key = (str(event["action"]), str(event["logical_id"]))
+            if key in seen:
+                raise HoldoutError("holdout journal reuses an immutable logical ID for the same action")
+            seen.add(key)
+            action = event["action"]
+            logical_id = event["logical_id"]
+            if action == "seal_holdout":
+                path = self._manifest_path(logical_id)
+                self.manifest(logical_id)
+            elif action == "materialize_holdout":
+                path = self.materializations / f"{logical_id}.json"
+                self._load_materialization(logical_id)
+            elif action == "release_holdout":
+                path = self.releases / f"{logical_id}.json"
+                self._load_release(logical_id)
+            else:
+                path = self.assurance / f"{logical_id}.json"
+                if not path.is_file():
+                    raise HoldoutError("assurance artifact is missing")
+                try:
+                    raw = json.loads(path.read_bytes())
+                except json.JSONDecodeError as exc:
+                    raise HoldoutError("assurance artifact is invalid JSON") from exc
+                if canonical_json_bytes(raw) != path.read_bytes():
+                    raise HoldoutError("assurance artifact is not canonical JSON")
+            if not path.is_file() or _hash_bytes(path.read_bytes()) != event["artifact_sha256"]:
+                raise HoldoutError("holdout journal artifact hash mismatch")
         return {
             "event_count": len(events),
             "head_event_sha256": events[-1]["event_sha256"] if events else None,
