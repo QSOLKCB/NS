@@ -22,6 +22,10 @@ PAPER_SHA256 = "0e779481c4da40bd28d1e642e1d8ca57447d129610df28dfa5a11e9af8ae228f
 LEAN_REPOSITORY = "openai/NavierStokesAndEuler"
 LEAN_COMMIT = "8937a8f4cbc7abaab5e9e97d1cc7f5d2319d9538"
 GATE_STATUS = "analytical_dependency_graph_partial"
+PROGRAMME_OBLIGATION_PRECISIONS = {
+    "programme_obligation",
+    "exact_label_plus_programme_obligation",
+}
 
 EXPECTED_AUTHORITY = {
     "clay_target": "research/clay_target.json",
@@ -220,7 +224,7 @@ EXPECTED_DISPOSITION = {
     "graph_acyclic_required": True,
     "orphan_nodes_forbidden": True,
     "lemma_level_dependency_indexing_complete": False,
-    "programme_obligation_nodes_remaining": 10,
+    "programme_obligation_nodes_remaining": 12,
     "pass_condition_met": False,
     "local_estimate_correctness_assessed": False,
     "next_step": "3A_gate_2_expand_lemma_proposition_index",
@@ -382,10 +386,11 @@ def validate_cross(dag: dict, external: dict, correspondence: dict) -> None:
         raise SystemExit(f"required dependency classes missing: {sorted(missing)}")
 
     programme_obligation_nodes = sum(
-        item["paper_anchor_precision"] == "programme_obligation" for item in dag["nodes"]
+        item["paper_anchor_precision"] in PROGRAMME_OBLIGATION_PRECISIONS
+        for item in dag["nodes"]
     )
     if programme_obligation_nodes != EXPECTED_DISPOSITION["programme_obligation_nodes_remaining"]:
-        raise SystemExit("programme-obligation anchor count drift")
+        raise SystemExit("programme-obligation-bearing anchor count drift")
     if dag["scope"]["lemma_level_dependency_indexing_complete"]:
         raise SystemExit("lemma-level indexing cannot be complete while programme obligations remain")
     if dag["gate_2_disposition"]["pass_condition_met"]:
