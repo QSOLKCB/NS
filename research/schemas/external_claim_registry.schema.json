@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/QSOLKCB/NS/blob/main/research/schemas/external_claim_registry.schema.json",
+  "title": "QSOL NS external solution-claim registry",
+  "description": "Fail-closed intake schema for externally published claims that map to Clay alternatives without promoting them into the source-checked historical theorem registry.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "document_type",
+    "license",
+    "as_of",
+    "repository_baseline_commit",
+    "policy",
+    "claims",
+    "machine_invariants"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0.0"},
+    "document_type": {"const": "qsol_ns_external_claim_registry"},
+    "license": {"const": "Apache-2.0"},
+    "as_of": {"type": "string", "format": "date"},
+    "repository_baseline_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "policy": {
+      "type": "object",
+      "required": [
+        "repository_claim",
+        "independent_verification_required",
+        "formalization_replay_is_not_mathematical_acceptance",
+        "historical_theorem_registry_unchanged_until_audited_promotion"
+      ],
+      "properties": {
+        "repository_claim": {"const": "no_solution_claim"},
+        "independent_verification_required": {"const": true},
+        "formalization_replay_is_not_mathematical_acceptance": {"const": true},
+        "historical_theorem_registry_unchanged_until_audited_promotion": {"const": true}
+      },
+      "additionalProperties": false
+    },
+    "claims": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 4,
+      "items": {
+        "type": "object",
+        "required": [
+          "claim_id",
+          "formulation_id",
+          "source_ids",
+          "source_position",
+          "qsol_status",
+          "forcing_relation",
+          "statement_summary",
+          "verification_obligations"
+        ],
+        "properties": {
+          "claim_id": {"type": "string", "pattern": "^OPENAI_2026_[ABCD]$"},
+          "formulation_id": {"enum": ["A", "B", "C", "D"]},
+          "source_ids": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {"type": "string", "pattern": "^[A-Z0-9_]+$"}
+          },
+          "source_position": {"enum": ["not_addressed_by_source", "claims_satisfied"]},
+          "qsol_status": {"enum": ["not_resolved", "external_claim_pending_independent_verification"]},
+          "forcing_relation": {"type": "string", "minLength": 1},
+          "statement_summary": {"type": "string", "minLength": 1},
+          "verification_obligations": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {"type": "string", "minLength": 1}
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "machine_invariants": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    }
+  },
+  "additionalProperties": false
+}
