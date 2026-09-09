@@ -146,7 +146,7 @@ Next ML-search engineering:
 
 - [x] add duplicate/prior-failure-family detection against accumulated Crucible history;
 - [x] add controlled candidate mutation/crossover provenance;
-- [ ] add sealed holdout materialization with auditable release events;
+- [x] add sealed holdout materialization with auditable release events;
 - [ ] add target-domain reviewers capable of rejecting analogy families before expensive evaluation;
 - [ ] add provider adapters only after the provider-neutral generator semantics remain stable;
 - [ ] add multi-process/concurrent writer coordination without weakening append-only history;
@@ -165,7 +165,7 @@ The following work may borrow **software architecture, falsification methods, pr
 - [x] bind screening decisions to content-addressed candidate/failure identities and preserve false-positive review paths;
 - [x] machine-lock `SIMILAR_CANDIDATE != MATHEMATICALLY_EQUIVALENT_CANDIDATE` and `DEAD_FAMILY_MATCH != PROOF_OF_FALSEHOOD`.
 
-**PR #10 — Controlled Mutation & Crossover Engine — IMPLEMENTED IN THIS PR.**
+**PR #10 — Controlled Mutation & Crossover Engine — IMPLEMENTED.**
 
 - [x] borrow the role-separated cognitive-mode idea from `QSOLKCB/QSOL-NEXUS` to define explicit runtime-owned transformation operators rather than generic "try again" prompting;
 - [x] support weaken assumption, repair scaling defect, replace failed estimate, reverse regularity/breakdown perspective, adversarially attack a parent, and combine two same-track surviving parent mechanisms;
@@ -173,15 +173,31 @@ The following work may borrow **software architecture, falsification methods, pr
 - [x] forbid transformation/crossover from inheriting parent claim level, evidence status, frozen state or survival status;
 - [x] machine-lock `TRANSFORM_OUTPUT != DOMAIN_EVIDENCE`, `PARENT_CLAIM_LEVEL != CHILD_CLAIM_LEVEL`, `OPERATOR_LABEL != MATHEMATICAL_VALIDATION`, `CROSSOVER != PROOF_SYNTHESIS`, and `TRANSFORM_RUN != LEDGER_COMMIT`.
 
-**PR #11 — Sealed Holdout & Adversarial Evaluation.**
+**PR #11 — Sealed Holdout & Adversarial Evaluation — IMPLEMENTED.**
 
-- [ ] borrow the freeze-before-observation and fail-closed admission discipline from `QSOLKCB/UFF` SPECTRAL/QEC-style workflows;
-- [ ] materialize sealed holdout packets only after candidate freeze and record auditable reveal/release events;
-- [ ] separate schema admission, deterministic replay, cross-method challenge, holdout evaluation and continuum-bridge obligations into distinct assurance states;
-- [ ] preserve the UFF-style principle that replay/calibration/formal assurance are different from physical or mathematical truth;
-- [ ] add negative controls and leakage tests for the evaluation machinery itself.
+- [x] borrow the freeze-before-observation and fail-closed admission discipline from `QSOLKCB/UFF` SPECTRAL/QEC-style workflows;
+- [x] materialize sealed holdout packets only after candidate freeze and record auditable reveal/release events;
+- [x] separate schema admission, deterministic replay, cross-method challenge, holdout evaluation and continuum-bridge obligations into distinct assurance states;
+- [x] preserve the UFF-style principle that replay/calibration/formal assurance are different from physical or mathematical truth;
+- [x] add negative controls and leakage tests for the evaluation machinery itself.
 
-**PR #12 — Multi-Model Crucible Council.**
+**PR #12 — OpenAI 2026 C/D Claim Intake & Independent Verification — THIS PR.**
+
+- [x] freeze the pre-intake repository state at commit `504180162eb117bc3eb280b93c8ef4df845c0d27` and preserve it on `archive/pre-openai-ns-2026-09-08`;
+- [x] register the exact OpenAI analytical paper and pinned Lean repository as primary research artifacts;
+- [x] record the reviewed paper SHA-256 and pinned Lean commit;
+- [x] encode A/B as not addressed and C/D as external claims pending independent verification;
+- [x] keep the source-checked historical theorem registry unchanged;
+- [x] add a schema and fail-closed validator for external solution-claim intake;
+- [x] define the staged analytical, statement-correspondence, Lean replay and adversarial-review programme;
+- [ ] complete exact Fefferman C/D field-by-field correspondence;
+- [ ] build the theorem/corollary analytical dependency DAG;
+- [ ] independently re-derive the proof-critical scaling, support, stress, pulse, correction, localization and uniqueness arguments;
+- [ ] clean-room replay the pinned Lean build and Comparator challenges with reproducible receipts;
+- [ ] audit prose ↔ Lean ↔ Fefferman statement correspondence;
+- [ ] complete independent adversarial review before any QSOL theorem-registry promotion.
+
+**PR #13 — Multi-Model Crucible Council.**
 
 - [ ] borrow the NEXUS rule that models propose/participate while the runtime owns state, evidence identity and validated transitions;
 - [ ] give independent model actors frozen question/context/evidence packets and role-separated review tasks such as scaling critic, theorem-boundary critic, circularity hunter, numerical skeptic, regularity advocate and breakdown advocate;
@@ -189,7 +205,7 @@ The following work may borrow **software architecture, falsification methods, pr
 - [ ] keep provider/model size/account tier/performance history from creating epistemic privilege;
 - [ ] machine-lock `COUNCIL_CONSENSUS != EVIDENCE_STATUS` and require all actual evidence transitions to remain Crucible/domain-adapter operations.
 
-**PR #13 — Crucible Atlas & Observer Bus.**
+**PR #14 — Crucible Atlas & Observer Bus.**
 
 - [ ] borrow the searchable atlas/pathway presentation ideas from `QSOLKCB/synergetics2` for candidate ancestry, theorem dependencies, proof barriers, prior-failure families and surviving frontier visualization;
 - [ ] borrow the strict canonical-versus-interpretive observation split from `QSOLKCB/E8_MUSIC`;
@@ -205,6 +221,26 @@ The following work may borrow **software architecture, falsification methods, pr
 - [ ] consider a later Lean 4 assurance layer, following the bounded formal-assurance discipline used in `QSOLKCB/UFF` and `QSOLKCB/E8_MUSIC`, to prove selected software/epistemic invariants without presenting formal verification as a Navier-Stokes proof.
 
 Crucible Core is an orchestration/falsification engine, not a truth engine. The Analogy Firewall broadens candidate generation without broadening evidentiary authority. The Content-Addressed Crucible Ledger makes the resulting search history durable without increasing its claim level. The ML Generator permits bounded model proposals without granting the model a write path to research authority. Similarity screening reduces repeated search without deciding mathematical equivalence or falsehood. Controlled transformation allows lineage-preserving search evolution without inherited epistemic authority. Cross-repository borrowing may expand search strategy and instrumentation, but it does not bypass target-domain validation. Each future domain adapter must define its own epistemic standard.
+
+## Phase 3A — OpenAI 2026 C/D independent verification — IN PROGRESS
+
+This event-driven phase takes temporary priority over new mechanism search because OpenAI has published a concrete analytical construction and formal artifact explicitly claiming two official Clay breakdown alternatives. The goal is to determine exactly what has been proved, not to race the source's conclusion.
+
+Initial intake is implemented in PR #12. The full gate sequence is defined in `docs/OPENAI_2026_INDEPENDENT_VERIFICATION.md`.
+
+Priority order:
+
+1. freeze provenance and exact artifact identities;
+2. verify Fefferman C/D statement correspondence;
+3. reconstruct the analytical dependency graph;
+4. independently reproduce proof-critical local arguments;
+5. replay the pinned Lean formalization and Comparator path;
+6. audit prose ↔ Lean ↔ Clay semantic correspondence;
+7. use computation only as a non-proof diagnostic layer;
+8. conduct independent adversarial review;
+9. make a separate audited disposition/promotion decision.
+
+A/B remain separate unforced questions. C/D remain external claims pending independent verification until these gates close.
 
 ## Phase 3 — Competing mechanism search
 
