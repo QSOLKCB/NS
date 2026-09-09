@@ -10,6 +10,7 @@ on:
       - "docs/BASELINE_IDENTITIES.md"
       - "docs/PROBLEM_STATEMENT.md"
       - "docs/LITERATURE_MAP.md"
+      - "docs/ROADMAP.md"
       - "docs/OPENAI_2026_INDEPENDENT_VERIFICATION.md"
       - "docs/history/**"
       - "tools/validate_boundary_map.py"
@@ -20,6 +21,7 @@ on:
       - main
     paths:
       - "research/**"
+      - "docs/ROADMAP.md"
       - "tools/validate_boundary_map.py"
       - "tools/validate_external_claim_registry.py"
       - ".github/workflows/boundary-map.yml"
