@@ -35,7 +35,7 @@ assert c["child_policy"]["parent_claim_level_inherited"] is False and c["child_p
 assert c["commit_policy"]["model_facing_run_may_mutate_crucible_ledger"] is False
 assert c["receipt_policy"]["single_writer_process_only_v0_1"] is True
 assert {x["barrier_id"] for x in pb["barriers"]}
-assert agents["schema_version"]=="1.8.0"
+assert agents["schema_version"]=="1.9.0"
 for step in ("run_tools_validate_candidate_transform_py","read_research_candidate_transform_contract_json","read_research_ns_candidate_transform_adapter_json"):
     assert step in agents["agent_boot_sequence"]
 for invariant in ("transform_output_is_not_domain_evidence","transform_child_does_not_inherit_parent_authority","parent_claim_level_is_not_child_claim_level","parent_evidence_is_not_child_evidence","parent_survival_is_not_child_survival","operator_label_is_not_mathematical_validation","crossover_is_not_proof_synthesis","transform_run_is_not_ledger_commit"):
