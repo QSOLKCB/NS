@@ -21,6 +21,7 @@ PAPER_URL = "https://cdn.openai.com/pdf/32d9f210-8b73-45e0-91bc-82a30aef8a9a/nav
 PAPER_SHA256 = "0e779481c4da40bd28d1e642e1d8ca57447d129610df28dfa5a11e9af8ae228f"
 LEAN_REPOSITORY = "openai/NavierStokesAndEuler"
 LEAN_COMMIT = "8937a8f4cbc7abaab5e9e97d1cc7f5d2319d9538"
+GATE_STATUS = "analytical_dependency_graph_partial"
 
 EXPECTED_AUTHORITY = {
     "clay_target": "research/clay_target.json",
@@ -58,6 +59,7 @@ EXPECTED_SOURCE_PINS = {
 EXPECTED_SCOPE = {
     "formulations": ["C", "D"],
     "dependency_graph_only": True,
+    "lemma_level_dependency_indexing_complete": False,
     "local_proof_reconstruction_complete": False,
     "proof_validity_assessed": False,
     "lean_build_replayed_by_qsol": False,
@@ -206,7 +208,7 @@ EXPECTED_EDGES = [
     {"from": "G2_CORRECTION_CYCLE", "to": "G2_DIVERGENCE_FREE_CURL"},
     {"from": "G2_CORRECTION_CYCLE", "to": "G2_PULSE_COVARIANCE"},
     {"from": "G2_ANNULAR_STRESS", "to": "G2_STRESS_CONE"},
-    {"from": "G2_ANNULAR_STRESS", "to": "G2_PULSE_COVARIANCE"},
+    {"from": "G2_PULSE_COVARIANCE", "to": "G2_ANNULAR_STRESS"},
     {"from": "G2_PULSE_COVARIANCE", "to": "G2_STRESS_CONE"},
     {"from": "G2_STRESS_CONE", "to": "G2_LEADING_PROFILE"},
     {"from": "G2_LEADING_PROFILE", "to": "G2_SCALING"},
@@ -217,19 +219,23 @@ EXPECTED_DISPOSITION = {
     "rooted_C_and_D_paths_accounted_for": True,
     "graph_acyclic_required": True,
     "orphan_nodes_forbidden": True,
+    "lemma_level_dependency_indexing_complete": False,
+    "programme_obligation_nodes_remaining": 10,
+    "pass_condition_met": False,
     "local_estimate_correctness_assessed": False,
-    "next_gate": "3A_gate_3_local_proof_reconstruction",
+    "next_step": "3A_gate_2_expand_lemma_proposition_index",
 }
 
 EXPECTED_INVARIANTS = [
-    "DEPENDENCY_GRAPH_COMPLETENESS != PROOF_VALIDITY",
+    "DEPENDENCY_CLASS_COVERAGE != GATE2_COMPLETION",
+    "PROGRAMME_OBLIGATION_ANCHOR != EXPLICIT_LEMMA_PROPOSITION_INDEX",
     "FORMAL_MODULE_ANCHOR != ANALYTIC_RECONSTRUCTION",
     "PAPER_LABEL_OR_SECTION != VERIFIED_LEMMA",
     "GRAPH_EDGE != PROVED_IMPLICATION",
-    "GATE2_PASS != LEAN_REPLAY",
-    "GATE2_PASS != INDEPENDENT_VERIFICATION_COMPLETE",
+    "GATE2_PARTIAL != GATE2_PASS",
+    "GATE2_PARTIAL != LEAN_REPLAY",
+    "GATE2_PARTIAL != INDEPENDENT_VERIFICATION_COMPLETE",
     "C_AND_D_DEPENDENCY_PATHS_DO_NOT_RESOLVE_A_OR_B",
-    "GATE3_MUST_RECONSTRUCT_PROOF_CRITICAL_NODES_INDEPENDENTLY",
 ]
 
 
@@ -304,6 +310,8 @@ def reachable(root: str, edges: list[dict]) -> set[str]:
 def validate_cross(dag: dict, external: dict, correspondence: dict) -> None:
     if dag["pr13_merge_baseline"] != PR13_MERGE:
         raise SystemExit("PR #13 merge baseline drift")
+    if dag["gate_status"] != GATE_STATUS:
+        raise SystemExit("Gate 2 must remain partial until lemma/proposition indexing closes")
     if dag["authority"] != EXPECTED_AUTHORITY:
         raise SystemExit("Gate 2 authority map drift")
     if dag["source_pins"] != EXPECTED_SOURCE_PINS:
@@ -373,12 +381,34 @@ def validate_cross(dag: dict, external: dict, correspondence: dict) -> None:
     if missing:
         raise SystemExit(f"required dependency classes missing: {sorted(missing)}")
 
+    programme_obligation_nodes = sum(
+        item["paper_anchor_precision"] == "programme_obligation" for item in dag["nodes"]
+    )
+    if programme_obligation_nodes != EXPECTED_DISPOSITION["programme_obligation_nodes_remaining"]:
+        raise SystemExit("programme-obligation anchor count drift")
+    if dag["scope"]["lemma_level_dependency_indexing_complete"]:
+        raise SystemExit("lemma-level indexing cannot be complete while programme obligations remain")
+    if dag["gate_2_disposition"]["pass_condition_met"]:
+        raise SystemExit("Gate 2 pass condition cannot be true for the partial graph")
+
 
 def run_negative_probes(dag: dict, external: dict, correspondence: dict,
                         validator: Draft202012Validator) -> None:
     mutated = copy.deepcopy(dag)
     mutated["as_of"] = "not-a-date"
     reject_schema(validator, mutated, "malformed Gate 2 audit date")
+
+    mutated = copy.deepcopy(dag)
+    mutated["gate_status"] = "analytical_dependency_graph_complete"
+    reject_schema(validator, mutated, "Gate 2 marked complete before lemma-level indexing")
+
+    mutated = copy.deepcopy(dag)
+    mutated["scope"]["lemma_level_dependency_indexing_complete"] = True
+    reject_schema(validator, mutated, "lemma-level indexing falsely marked complete")
+
+    mutated = copy.deepcopy(dag)
+    mutated["gate_2_disposition"]["pass_condition_met"] = True
+    reject_schema(validator, mutated, "Gate 2 pass condition falsely marked met")
 
     mutated = copy.deepcopy(dag)
     mutated["scope"]["proof_validity_assessed"] = True
@@ -399,6 +429,11 @@ def run_negative_probes(dag: dict, external: dict, correspondence: dict,
     mutated = copy.deepcopy(dag)
     mutated["edges"].pop()
     reject_cross(mutated, external, correspondence, "audited dependency edge removed")
+
+    mutated = copy.deepcopy(dag)
+    pulse_to_stress = mutated["edges"].index({"from": "G2_PULSE_COVARIANCE", "to": "G2_ANNULAR_STRESS"})
+    mutated["edges"][pulse_to_stress] = {"from": "G2_ANNULAR_STRESS", "to": "G2_PULSE_COVARIANCE"}
+    reject_cross(mutated, external, correspondence, "residual-stress/covariance dependency reversed")
 
     mutated = copy.deepcopy(dag)
     mutated["edges"].append({"from": "G2_SCALING", "to": "G2_ROOT_C"})
@@ -438,6 +473,7 @@ def main() -> None:
         "OpenAI 2026 analytical dependency DAG validation: PASS "
         f"(Gate 2={dag['gate_status']}, nodes={len(dag['nodes'])}, "
         f"edges={len(dag['edges'])}, classes={len(dag['required_dependency_classes'])}, "
+        f"programme_obligations={dag['gate_2_disposition']['programme_obligation_nodes_remaining']}, "
         f"Lean={LEAN_COMMIT[:12]})"
     )
 
