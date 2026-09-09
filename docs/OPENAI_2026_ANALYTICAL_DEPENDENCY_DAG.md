@@ -11,7 +11,7 @@ Gate 1 established only that the pinned final C/D statements line up with Feffer
 
 The machine-readable answer is `research/openai_2026_dependency_dag.json`.
 
-**Gate 2 remains open.** The current graph is a coarse rooted dependency index, not yet the lemma/proposition-level graph required by the governing pass condition. Ten of the twenty current nodes still use `programme_obligation` anchors and several aggregate multiple formal modules into a single obligation. Those aggregates must be expanded before `gate_status` may become complete.
+**Gate 2 remains open.** The current graph is a coarse rooted dependency index, not yet the lemma/proposition-level graph required by the governing pass condition. Twelve of the twenty current nodes still carry programme-obligation content: ten use `programme_obligation` directly, while `G2_D_BRIDGE` and `G2_PERIODIZATION` use `exact_label_plus_programme_obligation`. Several also aggregate multiple formal modules into a single obligation. Those aggregates must be expanded before `gate_status` may become complete.
 
 The graph is also **not a proof**. Every node remains `indexed_not_reconstructed`; local correctness belongs to Gate 3 only after Gate 2's indexing pass condition is actually met.
 
@@ -49,7 +49,7 @@ The validator requires that:
 - every node is reachable from C, D, or both;
 - all twelve Gate 2 dependency classes are represented;
 - the reviewed node and edge semantics remain fail-closed;
-- lemma-level indexing remains explicitly false while programme-obligation anchors remain;
+- lemma-level indexing remains explicitly false while programme-obligation-bearing anchors remain;
 - Gate 2's pass condition remains false until those dependencies are expanded.
 
 ## C path
@@ -156,7 +156,7 @@ The registry distinguishes:
 - `exact_label_plus_programme_obligation`;
 - `programme_obligation`.
 
-`programme_obligation` means QSOL knows the proof role from the verification programme but has **not yet** indexed the exact paper/Lean lemma chain. There are currently ten such nodes. Their presence is now a machine-readable reason Gate 2 cannot pass.
+Both `programme_obligation` and `exact_label_plus_programme_obligation` mean unresolved programme-level proof work remains. The hybrid form preserves an exact source label while still recording an unexpanded programme obligation. There are currently twelve programme-obligation-bearing nodes in total. Their presence is a machine-readable reason Gate 2 cannot pass.
 
 ## Current Gate 2 status
 
@@ -177,7 +177,7 @@ What this PR establishes:
 
 What remains before Gate 2 can pass:
 
-1. expand every `programme_obligation` node into explicit paper/formal lemma or proposition dependencies where the source supports that precision;
+1. expand every programme-obligation-bearing node into explicit paper/formal lemma or proposition dependencies where the source supports that precision;
 2. split aggregate multi-module obligations into proof-critical child nodes and edges;
 3. ensure no proof-critical dependency remains only narrative shorthand or an untracked citation;
 4. update the audited graph lock and only then set `lemma_level_dependency_indexing_complete = true` and the Gate 2 pass condition to true.
