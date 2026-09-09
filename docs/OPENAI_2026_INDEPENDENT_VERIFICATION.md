@@ -63,6 +63,8 @@ The machine-readable version of this table is `research/external_claim_registry.
 
 ### Gate 1 — exact Clay statement correspondence
 
+**Implementation status:** complete in PR #13. See `research/openai_2026_correspondence.json` and `docs/OPENAI_2026_CD_CORRESPONDENCE.md`.
+
 For C and D, reconstruct a field-by-field correspondence between the source theorem/corollary and Fefferman's assumptions and conclusion:
 
 - domain;
@@ -77,6 +79,8 @@ For C and D, reconstruct a field-by-field correspondence between the source theo
 **Pass condition:** every hypothesis and conclusion required by C/D is accounted for without strengthening, weakening or changing quantifiers.
 
 ### Gate 2 — analytical dependency graph
+
+**Implementation status:** complete in PR #14 at the dependency-indexing level. See `research/openai_2026_dependency_dag.json` and `docs/OPENAI_2026_ANALYTICAL_DEPENDENCY_DAG.md`.
 
 Build a dependency graph from Theorem 1.1 and Corollary 10.6 down to the construction lemmas and propositions. At minimum the audit must isolate:
 
@@ -94,6 +98,8 @@ Build a dependency graph from Theorem 1.1 and Corollary 10.6 down to the constru
 12. the periodicization step used for D.
 
 **Pass condition:** there is no proof-critical dependency represented only by narrative shorthand or an untracked citation.
+
+Gate 2 completion means the proof-critical spine is explicitly rooted, typed, pinned and fail-closed under CI. It does **not** mean that any local estimate, construction lemma, limit interchange or uniqueness hypothesis has been independently proved by QSOL. Those are Gate 3 obligations.
 
 ### Gate 3 — local proof reconstruction
 
@@ -213,11 +219,15 @@ No disposition is equivalent to Clay Institute acceptance. Any future promotion 
 
 ### WP1 — theorem/corollary correspondence
 
+**Status:** implemented in PR #13.
+
 Produce machine-readable maps for Theorem 1.1 → C and Corollary 10.6 → D, including every Fefferman field and erratum.
 
 ### WP2 — proof dependency graph
 
-Index Sections 4–10, appendices and the main propositions/lemmas into a dependency DAG rooted at Theorem 1.1 and Corollary 10.6.
+**Status:** implemented in PR #14 at the dependency-indexing level.
+
+Index Sections 4–10, appendices and the main propositions/lemmas into a dependency DAG rooted at Theorem 1.1 and Corollary 10.6. The registry deliberately distinguishes exact paper labels from section-family and programme-obligation anchors rather than inventing citation precision.
 
 ### WP3 — scaling ledger
 
