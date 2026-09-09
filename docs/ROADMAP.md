@@ -215,6 +215,32 @@ The following work may borrow **software architecture, falsification methods, pr
 
 **Cross-domain research lenses after the above infrastructure stabilizes.**
 
+### Informational Navier–Stokes donor / negative-control programme
+
+Treat Trent Slade's user-supplied *The Hydrodynamics of Cognition: Deriving the Informational Navier–Stokes Equation on Curved Semantic Manifolds* as a future **structural-analogy / operator-correspondence donor**, never as Navier–Stokes theorem authority or Clay evidence. If admitted into the machine transfer registry, it must enter through the existing Analogy Firewall with provenance and explicit target-domain revalidation.
+
+Potential uses:
+
+- [ ] use the shared advective, pressure-gradient, viscous and continuity/incompressibility structure as an operator-correspondence case while recording that the donor evolves on a high-dimensional curved Fisher–Rao semantic manifold rather than `R^3` or `R^3/Z^3`;
+- [ ] use the donor's curvature/Ricci viscous term as a **negative control**: the canonical Clay domains are flat, so shared Navier–Stokes form does not license import of curvature dynamics;
+- [ ] use its `Re_I = V L / nu_I` scaling as a scaling-discipline example for Crucible candidate generation/calibration, not as a Clay blow-up criterion;
+- [ ] evaluate its vorticity/strain and `lambda_2` vortex diagnostics as inspiration for future `NS-SIM` observables, with all resulting outputs remaining numerical diagnostics rather than proof;
+- [ ] borrow its explicit proxy/measurement design as an observer-contract pattern while keeping semantic proxies separate from physical PDE observables;
+- [ ] make the donor an Analogy Firewall regression case that must distinguish metaphor, structural mapping, measurable hypothesis and target-domain evidence;
+- [ ] preserve the donor's additional RES-RAG coupling, spectral-reaction terms and semantic constitutive laws as **differences**, not silently strip them away to manufacture whole-domain equivalence.
+
+Required forbidden inferences for any future intake:
+
+```text
+INS_VALIDITY != NAVIER_STOKES_EVIDENCE
+SHARED_ADVECTIVE_OPERATOR != SHARED_DYNAMICS
+CURVED_SEMANTIC_MANIFOLD != R3_OR_TORUS
+INFORMATION_REYNOLDS_NUMBER != CLAY_BLOWUP_CRITERION
+SEMANTIC_PROXY != PHYSICAL_PDE_OBSERVABLE
+```
+
+The donor's stronger interpretive claims (for example, treating meaning as fluid or hallucination as turbulence) must remain source-domain hypotheses/metaphors unless separately operationalized and validated. They cannot satisfy an NS proof barrier, raise an NS claim level, or alter the OpenAI 2026 C/D verification status.
+
 - [ ] investigate Wasserstein/transport diagnostics inspired by `QSOLKCB/res-rag` for normalized energy, enstrophy or vorticity distributions across time, resolution and numerical method; treat any such construction as a diagnostic/search lens until an explicit NS mathematical bridge is established;
 - [ ] admit Haken-style order-parameter/instability ideas or Fuller/Synergetics coordinate/geometric ideas only as classified candidate-generation sources through the Analogy Firewall;
 - [ ] admit motifs from other speculative/formal QSOL frameworks only as provenance-labelled candidate reservoirs, never by importing their physical interpretation or evidentiary status;
