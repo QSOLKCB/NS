@@ -333,7 +333,7 @@
     "graph_acyclic_required": true,
     "orphan_nodes_forbidden": true,
     "lemma_level_dependency_indexing_complete": false,
-    "programme_obligation_nodes_remaining": 10,
+    "programme_obligation_nodes_remaining": 12,
     "pass_condition_met": false,
     "local_estimate_correctness_assessed": false,
     "next_step": "3A_gate_2_expand_lemma_proposition_index"
