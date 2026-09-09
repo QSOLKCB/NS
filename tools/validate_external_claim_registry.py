@@ -23,6 +23,21 @@ PDF_URL = "https://cdn.openai.com/pdf/32d9f210-8b73-45e0-91bc-82a30aef8a9a/navie
 LEAN_URL = f"https://github.com/openai/NavierStokesAndEuler/tree/{LEAN_COMMIT}"
 OPENAI_SOURCE_IDS = ["OPENAI_NS_BLOWUP_2026", "OPENAI_NS_LEAN_2026"]
 
+PAPER_SOURCE_NOTES = (
+    "Published 2026-09-08. Theorem 1.1 claims a smooth compactly supported forced R^3 "
+    "construction with zero initial velocity, bounded kinetic energy and finite-time unbounded "
+    "velocity, and states that this establishes Fefferman alternative C; Corollary 10.6 supplies "
+    "the periodic D construction. QSOL intake SHA-256 for the reviewed PDF bytes: "
+    f"{PDF_SHA256}. Registration records the source claim and does not constitute QSOL "
+    "independent verification."
+)
+LEAN_SOURCE_NOTES = (
+    f"Pinned intake commit {LEAN_COMMIT}. Upstream formalization.yaml reports Lean 4 "
+    "formalizations for C and D with sorry_count 0 and review status self-assessed. Registration "
+    "records the upstream artifact claim; build replay, statement correspondence and independent "
+    "mathematical review remain QSOL obligations."
+)
+
 EXPECTED_ARTIFACT_PINS = {
     "OPENAI_NS_BLOWUP_2026": {"url": PDF_URL, "sha256": PDF_SHA256},
     "OPENAI_NS_LEAN_2026": {
@@ -32,6 +47,10 @@ EXPECTED_ARTIFACT_PINS = {
     },
 }
 
+# The complete external-source identity, including notes/nonclaims, is an audited lock.
+# A source-registry edit that changes these semantics must update this validator in the same
+# reviewed diff rather than relying on token-presence checks that could preserve hashes while
+# smuggling a stronger QSOL claim into prose.
 EXPECTED_SOURCE_IDENTITIES = {
     "OPENAI_NS_BLOWUP_2026": {
         "authority_class": "primary_research",
@@ -42,7 +61,7 @@ EXPECTED_SOURCE_IDENTITIES = {
         "doi": None,
         "url": PDF_URL,
         "role": "external_claimed_clay_C_D_construction",
-        "required_note_tokens": [PDF_SHA256, "Published 2026-09-08", "alternative C", "Corollary 10.6"],
+        "notes": PAPER_SOURCE_NOTES,
     },
     "OPENAI_NS_LEAN_2026": {
         "authority_class": "primary_research",
@@ -53,7 +72,7 @@ EXPECTED_SOURCE_IDENTITIES = {
         "doi": None,
         "url": LEAN_URL,
         "role": "external_formalization_artifact_for_claimed_C_D_results",
-        "required_note_tokens": [LEAN_COMMIT, "sorry_count 0", "review status self-assessed"],
+        "notes": LEAN_SOURCE_NOTES,
     },
 }
 
@@ -155,17 +174,11 @@ def validate_source_identity(source_by_id: dict[str, dict], source_id: str) -> N
     source = source_by_id[source_id]
     expected = EXPECTED_SOURCE_IDENTITIES[source_id]
     for field, expected_value in expected.items():
-        if field == "required_note_tokens":
-            continue
         if source.get(field) != expected_value:
             raise SystemExit(
                 f"pinned source identity drift for {source_id}: "
                 f"{field}={source.get(field)!r}, expected {expected_value!r}"
             )
-    notes = source.get("notes", "")
-    for token in expected["required_note_tokens"]:
-        if token not in notes:
-            raise SystemExit(f"pinned source note identity drift for {source_id}: missing {token!r}")
 
 
 def validate_cross(claims: dict, sources: dict) -> None:
@@ -257,9 +270,19 @@ def run_negative_probes(
     reject_cross(claims, mutated_sources, "paper digest note changed while intake remained pinned")
 
     mutated_sources = copy.deepcopy(sources)
+    paper = next(record for record in mutated_sources["sources"] if record["source_id"] == "OPENAI_NS_BLOWUP_2026")
+    paper["notes"] += " QSOL independently verified the result and the proof is complete."
+    reject_cross(claims, mutated_sources, "paper source notes smuggled a QSOL verification claim")
+
+    mutated_sources = copy.deepcopy(sources)
     lean = next(record for record in mutated_sources["sources"] if record["source_id"] == "OPENAI_NS_LEAN_2026")
     lean["url"] = "https://github.com/openai/NavierStokesAndEuler"
     reject_cross(claims, mutated_sources, "Lean pinned URL changed")
+
+    mutated_sources = copy.deepcopy(sources)
+    lean = next(record for record in mutated_sources["sources"] if record["source_id"] == "OPENAI_NS_LEAN_2026")
+    lean["notes"] += " QSOL accepts the formalization as independent mathematical verification."
+    reject_cross(claims, mutated_sources, "Lean source notes smuggled QSOL acceptance")
 
     mutated_sources = copy.deepcopy(sources)
     lean = next(record for record in mutated_sources["sources"] if record["source_id"] == "OPENAI_NS_LEAN_2026")
