@@ -150,7 +150,7 @@
         "graph_acyclic_required": {"const": true},
         "orphan_nodes_forbidden": {"const": true},
         "lemma_level_dependency_indexing_complete": {"const": false},
-        "programme_obligation_nodes_remaining": {"const": 10},
+        "programme_obligation_nodes_remaining": {"const": 12},
         "pass_condition_met": {"const": false},
         "local_estimate_correctness_assessed": {"const": false},
         "next_step": {"const": "3A_gate_2_expand_lemma_proposition_index"}
