@@ -14,6 +14,23 @@ Charles L. Fefferman's official Clay Mathematics Institute problem description a
 
 The official PDF also carries errata. In particular, the periodic formulation must include periodicity of the pressure. The repository records these details in `research/clay_target.json` rather than relying on a folk-summary of the problem.
 
+## September 2026 external C/D claim — independent verification pending
+
+On 2026-09-08 OpenAI published *Finite time blowup for Navier-Stokes* and an accompanying Lean 4 repository. The paper's Theorem 1.1 constructs, for every positive viscosity, a smooth compactly supported force and a solution starting from zero velocity whose kinetic energy remains uniformly bounded while its velocity becomes unbounded in finite time. The paper explicitly states that this establishes Fefferman alternative **C**. It further states that compact support yields the corresponding periodic construction and identifies Corollary 10.6 with alternative **D**.
+
+The accompanying pinned Lean artifact likewise describes its two Navier-Stokes main results as alternatives C and D. Its upstream metadata reports zero `sorry` declarations for those results and labels its review status `self-assessed`.
+
+QSOL NS therefore records the event with the following exact boundary:
+
+- **A:** not addressed by the OpenAI 2026 construction; still unresolved in this repository.
+- **B:** not addressed by the OpenAI 2026 construction; still unresolved in this repository.
+- **C:** explicitly claimed by OpenAI; **external claim pending QSOL independent verification**.
+- **D:** explicitly claimed by OpenAI; **external claim pending QSOL independent verification**.
+
+This distinction is forced by the official forcing quantifiers. A and B require `f = 0`. C and D permit suitable smooth forcing. A valid C or D proof would satisfy an official route to the Millennium problem while leaving the mathematically separate unforced A/B questions untouched.
+
+The new primary sources live in `research/source_registry.json`; the exact A-D intake state lives in `research/external_claim_registry.json`. The source-checked historical `research/theorem_registry.json` is intentionally unchanged until a separate audited promotion decision is justified. See `docs/OPENAI_2026_INDEPENDENT_VERIFICATION.md` for the verification programme.
+
 ## What is already known
 
 ### Global weak solutions exist
@@ -68,7 +85,7 @@ The initial machine registry includes source-checked summaries of:
 - Koch & Tataru (2001): small-data global well-posedness in `BMO^{-1}`;
 - Escauriaza, Seregin & Sverak (2003): endpoint `L^3` regularity/blow-up criterion.
 
-See `research/source_registry.json` and `research/theorem_registry.json` for exact source IDs, DOI records, limitations and machine status.
+See `research/source_registry.json` and `research/theorem_registry.json` for exact source IDs, DOI records, limitations and machine status. Externally published solution claims are intentionally tracked separately in `research/external_claim_registry.json` until an audited promotion is warranted.
 
 ## Status and incompleteness
 
