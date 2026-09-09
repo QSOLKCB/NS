@@ -95,7 +95,7 @@ Build a dependency graph from Theorem 1.1 and Corollary 10.6 down to the constru
 
 **Pass condition:** there is no proof-critical dependency represented only by narrative shorthand or an untracked citation.
 
-**Current status after PR #14:** **INCOMPLETE / PARTIAL INDEX.** The current machine graph covers both roots and all twelve dependency classes, but ten of twenty nodes still use `programme_obligation` anchors and several aggregate multiple formal modules without indexing their internal proof-critical lemma/proposition dependencies. Gate 2 therefore remains open with `gate_status = analytical_dependency_graph_partial`; Gate 3 must not begin merely because class-level coverage exists.
+**Current status after PR #14:** **INCOMPLETE / PARTIAL INDEX.** The current machine graph covers both roots and all twelve dependency classes, but twelve of twenty nodes still carry programme-obligation content: ten use `programme_obligation`, while `G2_D_BRIDGE` and `G2_PERIODIZATION` use `exact_label_plus_programme_obligation`. Several also aggregate multiple formal modules without indexing their internal proof-critical lemma/proposition dependencies. Gate 2 therefore remains open with `gate_status = analytical_dependency_graph_partial`; Gate 3 must not begin merely because class-level coverage exists.
 
 ### Gate 3 — local proof reconstruction
 
@@ -221,7 +221,7 @@ Produce machine-readable maps for Theorem 1.1 → C and Corollary 10.6 → D, in
 
 Index Sections 4–10, appendices and the main propositions/lemmas into a dependency DAG rooted at Theorem 1.1 and Corollary 10.6.
 
-**Status:** partial. PR #14 establishes the rooted coarse graph and dependency-class coverage, but must continue within Gate 2 until every proof-critical aggregate is descended to explicit lemma/proposition dependencies and the ten `programme_obligation` anchors are resolved or replaced with source-supported precision.
+**Status:** partial. PR #14 establishes the rooted coarse graph and dependency-class coverage, but must continue within Gate 2 until every proof-critical aggregate is descended to explicit lemma/proposition dependencies and all twelve programme-obligation-bearing anchors—including the two `exact_label_plus_programme_obligation` D-path nodes—are resolved or replaced with source-supported precision.
 
 ### WP3 — scaling ledger
 
