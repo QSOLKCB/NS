@@ -4,6 +4,17 @@
   "license": "Apache-2.0",
   "as_of": "2026-09-09",
   "repository_baseline_commit": "504180162eb117bc3eb280b93c8ef4df845c0d27",
+  "artifact_pins": {
+    "OPENAI_NS_BLOWUP_2026": {
+      "url": "https://cdn.openai.com/pdf/32d9f210-8b73-45e0-91bc-82a30aef8a9a/navier-stokes.pdf",
+      "sha256": "0e779481c4da40bd28d1e642e1d8ca57447d129610df28dfa5a11e9af8ae228f"
+    },
+    "OPENAI_NS_LEAN_2026": {
+      "repository": "openai/NavierStokesAndEuler",
+      "commit": "8937a8f4cbc7abaab5e9e97d1cc7f5d2319d9538",
+      "url": "https://github.com/openai/NavierStokesAndEuler/tree/8937a8f4cbc7abaab5e9e97d1cc7f5d2319d9538"
+    }
+  },
   "policy": {
     "repository_claim": "no_solution_claim",
     "independent_verification_required": true,
