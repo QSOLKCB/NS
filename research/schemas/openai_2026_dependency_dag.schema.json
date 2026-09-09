@@ -17,7 +17,7 @@
     "as_of": {"type": "string", "format": "date"},
     "phase": {"const": "3A_gate_2"},
     "pr13_merge_baseline": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
-    "gate_status": {"const": "analytical_dependency_graph_complete"},
+    "gate_status": {"const": "analytical_dependency_graph_partial"},
     "authority": {
       "type": "object",
       "required": ["clay_target", "external_claim_registry", "statement_correspondence", "verification_programme", "openai_paper_source_id", "openai_formalization_source_id"],
@@ -72,10 +72,11 @@
     },
     "scope": {
       "type": "object",
-      "required": ["formulations", "dependency_graph_only", "local_proof_reconstruction_complete", "proof_validity_assessed", "lean_build_replayed_by_qsol", "comparator_replayed_by_qsol", "theorem_registry_promotion", "edge_semantics"],
+      "required": ["formulations", "dependency_graph_only", "lemma_level_dependency_indexing_complete", "local_proof_reconstruction_complete", "proof_validity_assessed", "lean_build_replayed_by_qsol", "comparator_replayed_by_qsol", "theorem_registry_promotion", "edge_semantics"],
       "properties": {
         "formulations": {"const": ["C", "D"]},
         "dependency_graph_only": {"const": true},
+        "lemma_level_dependency_indexing_complete": {"const": false},
         "local_proof_reconstruction_complete": {"const": false},
         "proof_validity_assessed": {"const": false},
         "lean_build_replayed_by_qsol": {"const": false},
@@ -142,21 +143,24 @@
     },
     "gate_2_disposition": {
       "type": "object",
-      "required": ["dependency_classes_accounted_for", "rooted_C_and_D_paths_accounted_for", "graph_acyclic_required", "orphan_nodes_forbidden", "local_estimate_correctness_assessed", "next_gate"],
+      "required": ["dependency_classes_accounted_for", "rooted_C_and_D_paths_accounted_for", "graph_acyclic_required", "orphan_nodes_forbidden", "lemma_level_dependency_indexing_complete", "programme_obligation_nodes_remaining", "pass_condition_met", "local_estimate_correctness_assessed", "next_step"],
       "properties": {
         "dependency_classes_accounted_for": {"const": true},
         "rooted_C_and_D_paths_accounted_for": {"const": true},
         "graph_acyclic_required": {"const": true},
         "orphan_nodes_forbidden": {"const": true},
+        "lemma_level_dependency_indexing_complete": {"const": false},
+        "programme_obligation_nodes_remaining": {"const": 10},
+        "pass_condition_met": {"const": false},
         "local_estimate_correctness_assessed": {"const": false},
-        "next_gate": {"const": "3A_gate_3_local_proof_reconstruction"}
+        "next_step": {"const": "3A_gate_2_expand_lemma_proposition_index"}
       },
       "additionalProperties": false
     },
     "machine_invariants": {
       "type": "array",
-      "minItems": 8,
-      "maxItems": 8,
+      "minItems": 9,
+      "maxItems": 9,
       "uniqueItems": true,
       "items": {"type": "string", "minLength": 1}
     }
