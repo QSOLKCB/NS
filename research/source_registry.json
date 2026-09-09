@@ -123,6 +123,30 @@
       "url": "https://doi.org/10.1070/RM2003v058n02ABEH000609",
       "role": "endpoint_regular_blowup_criterion",
       "notes": "The title notation L_{3,infinity} refers to the endpoint time-uniform spatial L3 context; do not silently reinterpret it as a spatial Lorentz L^{3,infinity} statement."
+    },
+    {
+      "source_id": "OPENAI_NS_BLOWUP_2026",
+      "authority_class": "primary_research",
+      "authors": ["OpenAI"],
+      "year": 2026,
+      "title": "Finite time blowup for Navier-Stokes",
+      "publisher_or_venue": "OpenAI",
+      "doi": null,
+      "url": "https://cdn.openai.com/pdf/32d9f210-8b73-45e0-91bc-82a30aef8a9a/navier-stokes.pdf",
+      "role": "external_claimed_clay_C_D_construction",
+      "notes": "Published 2026-09-08. Theorem 1.1 claims a smooth compactly supported forced R^3 construction with zero initial velocity, bounded kinetic energy and finite-time unbounded velocity, and states that this establishes Fefferman alternative C; Corollary 10.6 supplies the periodic D construction. QSOL intake SHA-256 for the reviewed PDF bytes: 0e779481c4da40bd28d1e642e1d8ca57447d129610df28dfa5a11e9af8ae228f. Registration records the source claim and does not constitute QSOL independent verification."
+    },
+    {
+      "source_id": "OPENAI_NS_LEAN_2026",
+      "authority_class": "primary_research",
+      "authors": ["OpenAI"],
+      "year": 2026,
+      "title": "NavierStokesAndEuler Lean certificates",
+      "publisher_or_venue": "GitHub",
+      "doi": null,
+      "url": "https://github.com/openai/NavierStokesAndEuler/tree/8937a8f4cbc7abaab5e9e97d1cc7f5d2319d9538",
+      "role": "external_formalization_artifact_for_claimed_C_D_results",
+      "notes": "Pinned intake commit 8937a8f4cbc7abaab5e9e97d1cc7f5d2319d9538. Upstream formalization.yaml reports Lean 4 formalizations for C and D with sorry_count 0 and review status self-assessed. Registration records the upstream artifact claim; build replay, statement correspondence and independent mathematical review remain QSOL obligations."
     }
   ]
 }

@@ -29,9 +29,23 @@ def require_rejected(validator: Draft202012Validator, candidate: object, label: 
     raise SystemExit(f"schema regression: forbidden mutation accepted: {label}")
 
 
+def remove_boot_step(contract: dict, validator: Draft202012Validator, step: str, label: str) -> None:
+    mutated = copy.deepcopy(contract)
+    mutated["agent_boot_sequence"].remove(step)
+    require_rejected(validator, mutated, label)
+
+
+def flip_bool(contract: dict, validator: Draft202012Validator, section: str, field: str, value: bool, label: str) -> None:
+    mutated = copy.deepcopy(contract)
+    mutated[section][field] = value
+    require_rejected(validator, mutated, label)
+
+
 def main() -> None:
     contract = load_json(CONTRACT_PATH)
     schema = load_json(SCHEMA_PATH)
+    if not isinstance(contract, dict) or not isinstance(schema, dict):
+        raise SystemExit("AGENTS contract and schema must both be JSON objects")
 
     Draft202012Validator.check_schema(schema)
     validator = Draft202012Validator(schema)
@@ -45,9 +59,14 @@ def main() -> None:
     del mutated["human_operator"]["role"]
     require_rejected(validator, mutated, "missing human_operator.role")
 
-    mutated = copy.deepcopy(contract)
-    mutated["claim_promotion"]["public_solution_claim_requires_completed_external_mathematical_review"] = False
-    require_rejected(validator, mutated, "external review gate disabled")
+    flip_bool(
+        contract,
+        validator,
+        "claim_promotion",
+        "public_solution_claim_requires_completed_external_mathematical_review",
+        False,
+        "external review gate disabled",
+    )
 
     mutated = copy.deepcopy(contract)
     mutated["experiment_requirements"]["required_fields"].remove("created_at_utc")
@@ -57,14 +76,17 @@ def main() -> None:
     mutated["proof_requirements"]["formal_artifact_required_fields"].remove("encoded_statement")
     require_rejected(validator, mutated, "formal provenance field removed")
 
-    for boot_step, label in [
+    required_boot_steps = [
         ("run_tools_validate_boundary_map_py", "boundary validator removed from agent boot"),
+        ("run_tools_validate_external_claim_registry_py", "external-claim validator removed from agent boot"),
         ("run_tools_validate_lab_contract_py", "lab validator removed from agent boot"),
         ("run_tools_validate_precision_referee_py", "precision referee validator removed from agent boot"),
         ("run_tools_validate_crucible_core_py", "Crucible validator removed from agent boot"),
         ("run_tools_validate_analogy_firewall_py", "Analogy Firewall validator removed from agent boot"),
         ("run_tools_validate_crucible_ledger_py", "Crucible ledger validator removed from agent boot"),
         ("run_tools_validate_ml_generator_py", "ML generator validator removed from agent boot"),
+        ("run_tools_validate_candidate_transform_py", "candidate-transform validator removed from agent boot"),
+        ("read_research_external_claim_registry_json", "external-claim registry removed from agent boot"),
         ("read_research_precision_referee_contract_json", "precision referee contract removed from agent boot"),
         ("read_research_crucible_contract_json", "Crucible contract removed from agent boot"),
         ("read_research_ns_crucible_adapter_json", "NS Crucible adapter removed from agent boot"),
@@ -74,145 +96,127 @@ def main() -> None:
         ("read_research_crucible_ledger_contract_json", "Crucible ledger contract removed from agent boot"),
         ("read_research_ml_generator_contract_json", "ML generator contract removed from agent boot"),
         ("read_research_ns_ml_generator_adapter_json", "NS ML generator adapter removed from agent boot"),
-    ]:
+        ("read_research_candidate_transform_contract_json", "candidate-transform contract removed from agent boot"),
+        ("read_research_ns_candidate_transform_adapter_json", "NS candidate-transform adapter removed from agent boot"),
+    ]
+    for step, label in required_boot_steps:
+        remove_boot_step(contract, validator, step, label)
+
+    expected_external_policy = {
+        "external_claim_registry": "research/external_claim_registry.json",
+        "external_claim_validator": "tools/validate_external_claim_registry.py",
+    }
+    for field, expected in expected_external_policy.items():
+        if contract["literature_boundary_policy"].get(field) != expected:
+            raise SystemExit(f"agent contract missing external-claim policy binding: {field}")
         mutated = copy.deepcopy(contract)
-        mutated["agent_boot_sequence"].remove(boot_step)
-        require_rejected(validator, mutated, label)
+        mutated["literature_boundary_policy"][field] = "wrong"
+        require_rejected(validator, mutated, f"external-claim policy binding drift: {field}")
 
-    mutated = copy.deepcopy(contract)
-    mutated["literature_boundary_policy"]["secondary_sources_may_discover_but_not_authorize"] = False
-    require_rejected(validator, mutated, "secondary-source authority boundary disabled")
+    flip_bool(
+        contract,
+        validator,
+        "literature_boundary_policy",
+        "secondary_sources_may_discover_but_not_authorize",
+        False,
+        "secondary-source authority boundary disabled",
+    )
+    flip_bool(
+        contract,
+        validator,
+        "literature_boundary_policy",
+        "hypothesis_weakening_without_proof_forbidden",
+        False,
+        "hypothesis weakening protection disabled",
+    )
+    flip_bool(
+        contract,
+        validator,
+        "literature_boundary_policy",
+        "domain_or_forcing_substitution_without_bridge_forbidden",
+        False,
+        "domain/forcing bridge protection disabled",
+    )
 
-    mutated = copy.deepcopy(contract)
-    mutated["literature_boundary_policy"]["hypothesis_weakening_without_proof_forbidden"] = False
-    require_rejected(validator, mutated, "hypothesis weakening protection disabled")
-
-    mutated = copy.deepcopy(contract)
-    mutated["literature_boundary_policy"]["domain_or_forcing_substitution_without_bridge_forbidden"] = False
-    require_rejected(validator, mutated, "domain/forcing bridge protection disabled")
-
-    for invariant, label in [
-        ("precision_agreement_is_not_continuum_proof", "precision evidence boundary removed"),
-        ("crucible_core_does_not_define_domain_truth", "Crucible truth-authority boundary removed"),
-        ("visual_resemblance_is_not_physical_mechanism", "visual resemblance boundary removed"),
-        ("shared_operator_is_not_shared_dynamics", "shared-operator boundary removed"),
-        ("structural_analogy_is_not_domain_equivalence", "domain-equivalence analogy boundary removed"),
-        ("analogy_is_not_domain_evidence", "analogy evidence firewall removed"),
-        ("analogy_cannot_promote_claim", "analogy claim-promotion firewall removed"),
-        ("cross_domain_transfer_requires_target_domain_validation", "target-domain validation requirement removed"),
-        ("persisted_state_is_not_truth", "persistence truth boundary removed"),
-        ("ledger_replay_is_not_claim_promotion", "ledger replay promotion boundary removed"),
-        ("content_addressing_is_not_mathematical_validation", "content-addressing validation boundary removed"),
-        ("mutable_history_is_not_research_provenance", "immutable history boundary removed"),
-        ("transfer_ticket_is_not_domain_evidence", "transfer-ticket evidence boundary removed"),
-        ("model_output_is_not_candidate", "model output/candidate boundary removed"),
-        ("valid_json_is_not_valid_research_candidate", "JSON/research-candidate boundary removed"),
-        ("generator_output_is_not_domain_evidence", "generator evidence boundary removed"),
-        ("generator_output_is_not_claim_promotion", "generator claim boundary removed"),
-        ("generator_self_assessment_is_not_evidence_status", "generator self-assessment boundary removed"),
-        ("invalid_generation_attempt_is_not_mathematical_failure", "generation failure/math failure boundary removed"),
-        ("accepted_candidate_is_not_surviving_candidate", "accepted/surviving candidate boundary removed"),
-    ]:
+    required_invariants = [
+        "precision_agreement_is_not_continuum_proof",
+        "crucible_core_does_not_define_domain_truth",
+        "visual_resemblance_is_not_physical_mechanism",
+        "shared_operator_is_not_shared_dynamics",
+        "structural_analogy_is_not_domain_equivalence",
+        "analogy_is_not_domain_evidence",
+        "analogy_cannot_promote_claim",
+        "cross_domain_transfer_requires_target_domain_validation",
+        "persisted_state_is_not_truth",
+        "ledger_replay_is_not_claim_promotion",
+        "content_addressing_is_not_mathematical_validation",
+        "mutable_history_is_not_research_provenance",
+        "transfer_ticket_is_not_domain_evidence",
+        "model_output_is_not_candidate",
+        "valid_json_is_not_valid_research_candidate",
+        "generator_output_is_not_domain_evidence",
+        "generator_output_is_not_claim_promotion",
+        "generator_self_assessment_is_not_evidence_status",
+        "invalid_generation_attempt_is_not_mathematical_failure",
+        "accepted_candidate_is_not_surviving_candidate",
+        "transform_output_is_not_domain_evidence",
+        "transform_child_does_not_inherit_parent_authority",
+        "operator_label_is_not_mathematical_validation",
+        "crossover_is_not_proof_synthesis",
+        "transform_run_is_not_ledger_commit",
+    ]
+    for invariant in required_invariants:
         mutated = copy.deepcopy(contract)
         mutated["research_invariants"].remove(invariant)
-        require_rejected(validator, mutated, label)
+        require_rejected(validator, mutated, f"research invariant removed: {invariant}")
 
-    for field, label in [
-        ("core_may_define_domain_truth", "Crucible granted domain-truth authority"),
-        ("core_may_promote_claim", "Crucible granted claim-promotion authority"),
-        ("core_may_select_winner", "Crucible granted winner-selection authority"),
+    for field in ["core_may_define_domain_truth", "core_may_promote_claim", "core_may_select_winner"]:
+        flip_bool(contract, validator, "crucible_policy", field, True, f"Crucible authority enabled: {field}")
+    flip_bool(contract, validator, "crucible_policy", "holdout_access_requires_candidate_freeze", False, "Crucible holdout freeze gate disabled")
+    flip_bool(contract, validator, "crucible_policy", "negative_results_preserved", False, "Crucible negative-result preservation disabled")
+
+    for field in [
+        "analogy_may_be_domain_evidence",
+        "analogy_may_promote_claim",
+        "analogy_may_satisfy_proof_barrier",
+        "analogy_may_select_winner",
+        "analogy_may_assert_domain_equivalence",
     ]:
-        mutated = copy.deepcopy(contract)
-        mutated["crucible_policy"][field] = True
-        require_rejected(validator, mutated, label)
+        flip_bool(contract, validator, "analogy_policy", field, True, f"analogy authority enabled: {field}")
+    flip_bool(contract, validator, "analogy_policy", "target_domain_validation_required", False, "analogy target-domain validation disabled")
 
-    mutated = copy.deepcopy(contract)
-    mutated["crucible_policy"]["holdout_access_requires_candidate_freeze"] = False
-    require_rejected(validator, mutated, "Crucible holdout freeze gate disabled")
-
-    mutated = copy.deepcopy(contract)
-    mutated["crucible_policy"]["negative_results_preserved"] = False
-    require_rejected(validator, mutated, "Crucible negative-result preservation disabled")
-
-    for field, label in [
-        ("analogy_may_be_domain_evidence", "analogy granted domain-evidence authority"),
-        ("analogy_may_promote_claim", "analogy granted claim-promotion authority"),
-        ("analogy_may_satisfy_proof_barrier", "analogy granted proof-barrier authority"),
-        ("analogy_may_select_winner", "analogy granted winner-selection authority"),
-        ("analogy_may_assert_domain_equivalence", "analogy granted domain-equivalence authority"),
+    for field in [
+        "ledger_may_define_truth",
+        "ledger_may_promote_claim",
+        "ledger_may_select_winner",
+        "persistence_creates_domain_evidence",
     ]:
-        mutated = copy.deepcopy(contract)
-        mutated["analogy_policy"][field] = True
-        require_rejected(validator, mutated, label)
+        flip_bool(contract, validator, "ledger_policy", field, True, f"ledger authority enabled: {field}")
 
-    mutated = copy.deepcopy(contract)
-    mutated["analogy_policy"]["target_domain_validation_required"] = False
-    require_rejected(validator, mutated, "analogy target-domain validation disabled")
-
-    mutated = copy.deepcopy(contract)
-    mutated["analogy_policy"]["analogy_derived_candidate_initial_claim_level"] = "candidate_lemma"
-    require_rejected(validator, mutated, "analogy-derived candidate starts above exploratory")
-
-    for field, label in [
-        ("objects_immutable", "ledger object immutability disabled"),
-        ("logical_ref_rebinding_forbidden", "ledger ref rebinding enabled"),
-        ("event_log_append_only", "ledger event log made mutable"),
-        ("event_log_sha256_hash_chained", "ledger event hash chain disabled"),
-        ("event_provenance_requires_actor_source_commit_and_utc", "ledger event provenance weakened"),
-        ("analogy_derived_candidate_requires_transfer_ticket", "transfer ticket requirement disabled"),
+    for field in [
+        "model_output_is_candidate",
+        "generator_may_be_domain_evidence",
+        "generator_may_promote_claim",
+        "generator_may_assign_proof_status",
+        "generator_may_select_winner",
+        "direct_analogy_bypass",
+        "model_facing_airlock_may_mutate_crucible_ledger",
     ]:
-        mutated = copy.deepcopy(contract)
-        mutated["ledger_policy"][field] = False
-        require_rejected(validator, mutated, label)
+        flip_bool(contract, validator, "generator_policy", field, True, f"generator authority enabled: {field}")
 
-    for field, label in [
-        ("ledger_may_define_truth", "ledger granted truth authority"),
-        ("ledger_may_promote_claim", "ledger granted claim-promotion authority"),
-        ("ledger_may_select_winner", "ledger granted winner-selection authority"),
-        ("persistence_creates_domain_evidence", "persistence granted evidence authority"),
+    for field in [
+        "parent_claim_level_inherited",
+        "parent_evidence_inherited",
+        "parent_survival_status_inherited",
+        "model_may_write_engine_provenance_fields",
+        "model_facing_transform_may_mutate_crucible_ledger",
     ]:
-        mutated = copy.deepcopy(contract)
-        mutated["ledger_policy"][field] = True
-        require_rejected(validator, mutated, label)
+        flip_bool(contract, validator, "transform_policy", field, True, f"transform authority enabled: {field}")
 
-    for field, label in [
-        ("model_output_is_candidate", "model output made candidate automatically"),
-        ("generator_may_be_domain_evidence", "generator granted domain-evidence authority"),
-        ("generator_may_promote_claim", "generator granted claim-promotion authority"),
-        ("generator_may_assign_proof_status", "generator granted proof authority"),
-        ("generator_may_select_winner", "generator granted winner authority"),
-        ("direct_analogy_bypass", "generator granted Analogy Firewall bypass"),
-        ("model_facing_airlock_may_mutate_crucible_ledger", "model-facing airlock granted ledger mutation"),
-    ]:
-        mutated = copy.deepcopy(contract)
-        mutated["generator_policy"][field] = True
-        require_rejected(validator, mutated, label)
-
-    mutated = copy.deepcopy(contract)
-    mutated["generator_policy"]["accepted_candidate_initial_claim_level"] = "candidate_lemma"
-    require_rejected(validator, mutated, "ML candidate starts above exploratory")
-
-    for field, label in [
-        ("every_attempt_recorded", "generation attempts may disappear"),
-        ("rejected_attempts_recorded", "rejected generation attempts may disappear"),
-    ]:
-        mutated = copy.deepcopy(contract)
-        mutated["generator_policy"][field] = False
-        require_rejected(validator, mutated, label)
-
-    for field, label in [
-        ("check_cross_domain_analogy_classification", "cross-domain analogy classification review disabled"),
-        ("check_analogy_target_revalidation", "analogy target revalidation review disabled"),
-        ("check_content_addressed_ledger_integrity", "ledger integrity review disabled"),
-        ("check_transfer_ticket_provenance", "transfer-ticket provenance review disabled"),
-        ("check_ml_generator_authority", "ML generator authority review disabled"),
-        ("check_generation_attempt_provenance", "generation-attempt provenance review disabled"),
-    ]:
-        mutated = copy.deepcopy(contract)
-        mutated["review_policy"][field] = False
-        require_rejected(validator, mutated, label)
-
-    print("AGENTS contract validation: PASS")
+    print(
+        "AGENTS contract validation: PASS "
+        f"(schema {contract['schema_version']}, external claim boundary boot-wired)"
+    )
 
 
 if __name__ == "__main__":
