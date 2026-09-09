@@ -1,0 +1,120 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/QSOLKCB/NS/blob/main/research/schemas/openai_2026_correspondence.schema.json",
+  "title": "QSOL NS OpenAI 2026 C/D statement correspondence",
+  "description": "Structural schema for Phase 3A Gate 1. Exact semantics are additionally locked by tools/validate_openai_2026_correspondence.py.",
+  "type": "object",
+  "required": ["schema_version", "document_type", "license", "as_of", "phase", "pr12_merge_baseline", "gate_status", "authority", "formal_artifact_pin", "scope", "clay_snapshot", "correspondences", "machine_invariants"],
+  "properties": {
+    "schema_version": {"const": "1.0.0"},
+    "document_type": {"const": "qsol_ns_openai_2026_cd_correspondence"},
+    "license": {"const": "Apache-2.0"},
+    "as_of": {"type": "string", "format": "date"},
+    "phase": {"const": "3A_gate_1"},
+    "pr12_merge_baseline": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "gate_status": {"const": "statement_correspondence_confirmed"},
+    "authority": {
+      "type": "object",
+      "required": ["clay_target", "external_claim_registry", "openai_paper_source_id", "openai_formalization_source_id"],
+      "properties": {
+        "clay_target": {"const": "research/clay_target.json"},
+        "external_claim_registry": {"const": "research/external_claim_registry.json"},
+        "openai_paper_source_id": {"const": "OPENAI_NS_BLOWUP_2026"},
+        "openai_formalization_source_id": {"const": "OPENAI_NS_LEAN_2026"}
+      },
+      "additionalProperties": false
+    },
+    "formal_artifact_pin": {
+      "type": "object",
+      "required": ["repository", "commit", "files"],
+      "properties": {
+        "repository": {"const": "openai/NavierStokesAndEuler"},
+        "commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "files": {
+          "type": "array",
+          "minItems": 4,
+          "maxItems": 4,
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "required": ["path", "blob_sha"],
+            "properties": {
+              "path": {"type": "string", "minLength": 1},
+              "blob_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"}
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "scope": {
+      "type": "object",
+      "required": ["formulations", "statement_correspondence_only", "proof_validity_assessed", "lean_build_replayed_by_qsol", "comparator_replayed_by_qsol", "theorem_registry_promotion"],
+      "properties": {
+        "formulations": {"const": ["C", "D"]},
+        "statement_correspondence_only": {"const": true},
+        "proof_validity_assessed": {"const": false},
+        "lean_build_replayed_by_qsol": {"const": false},
+        "comparator_replayed_by_qsol": {"const": false},
+        "theorem_registry_promotion": {"const": false}
+      },
+      "additionalProperties": false
+    },
+    "clay_snapshot": {
+      "type": "object",
+      "required": ["shared_equation_scope", "C", "D", "periodic_pressure_erratum"],
+      "properties": {
+        "shared_equation_scope": {"type": "object"},
+        "C": {"type": "object"},
+        "D": {"type": "object"},
+        "periodic_pressure_erratum": {"type": "string", "minLength": 1}
+      },
+      "additionalProperties": false
+    },
+    "correspondences": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "items": {
+        "type": "object",
+        "required": ["formulation_id", "external_claim_id", "analytical_source_statement", "lean_declaration", "lean_target_summary", "fields", "construction_to_target_bridge", "statement_disposition", "proof_disposition"],
+        "properties": {
+          "formulation_id": {"enum": ["C", "D"]},
+          "external_claim_id": {"enum": ["OPENAI_2026_C", "OPENAI_2026_D"]},
+          "analytical_source_statement": {"type": "string", "minLength": 1},
+          "lean_declaration": {"type": "string", "minLength": 1},
+          "lean_target_summary": {"type": "string", "minLength": 1},
+          "fields": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "required": ["field_id", "clay_requirement", "source_or_lean_encoding", "relation", "audit_status"],
+              "properties": {
+                "field_id": {"type": "string", "minLength": 1},
+                "clay_requirement": {"type": "string", "minLength": 1},
+                "source_or_lean_encoding": {"type": "string", "minLength": 1},
+                "relation": {"enum": ["exact_match", "source_special_case_satisfies_target"]},
+                "audit_status": {"const": "accounted_for"}
+              },
+              "additionalProperties": false
+            }
+          },
+          "construction_to_target_bridge": {"type": "string", "minLength": 1},
+          "statement_disposition": {"const": "correspondence_accounted_for"},
+          "proof_disposition": {"const": "not_assessed"}
+        },
+        "additionalProperties": false
+      }
+    },
+    "machine_invariants": {
+      "type": "array",
+      "minItems": 7,
+      "maxItems": 7,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    }
+  },
+  "additionalProperties": false
+}
