@@ -5,7 +5,7 @@
   "as_of": "2026-09-09",
   "phase": "3A_gate_2",
   "pr13_merge_baseline": "52fcdb1b4ec0eb561fd80e3dbdfab3f0e87465cf",
-  "gate_status": "analytical_dependency_graph_complete",
+  "gate_status": "analytical_dependency_graph_partial",
   "authority": {
     "clay_target": "research/clay_target.json",
     "external_claim_registry": "research/external_claim_registry.json",
@@ -45,6 +45,7 @@
   "scope": {
     "formulations": ["C", "D"],
     "dependency_graph_only": true,
+    "lemma_level_dependency_indexing_complete": false,
     "local_proof_reconstruction_complete": false,
     "proof_validity_assessed": false,
     "lean_build_replayed_by_qsol": false,
@@ -321,7 +322,7 @@
     {"from": "G2_CORRECTION_CYCLE", "to": "G2_DIVERGENCE_FREE_CURL"},
     {"from": "G2_CORRECTION_CYCLE", "to": "G2_PULSE_COVARIANCE"},
     {"from": "G2_ANNULAR_STRESS", "to": "G2_STRESS_CONE"},
-    {"from": "G2_ANNULAR_STRESS", "to": "G2_PULSE_COVARIANCE"},
+    {"from": "G2_PULSE_COVARIANCE", "to": "G2_ANNULAR_STRESS"},
     {"from": "G2_PULSE_COVARIANCE", "to": "G2_STRESS_CONE"},
     {"from": "G2_STRESS_CONE", "to": "G2_LEADING_PROFILE"},
     {"from": "G2_LEADING_PROFILE", "to": "G2_SCALING"}
@@ -331,17 +332,21 @@
     "rooted_C_and_D_paths_accounted_for": true,
     "graph_acyclic_required": true,
     "orphan_nodes_forbidden": true,
+    "lemma_level_dependency_indexing_complete": false,
+    "programme_obligation_nodes_remaining": 10,
+    "pass_condition_met": false,
     "local_estimate_correctness_assessed": false,
-    "next_gate": "3A_gate_3_local_proof_reconstruction"
+    "next_step": "3A_gate_2_expand_lemma_proposition_index"
   },
   "machine_invariants": [
-    "DEPENDENCY_GRAPH_COMPLETENESS != PROOF_VALIDITY",
+    "DEPENDENCY_CLASS_COVERAGE != GATE2_COMPLETION",
+    "PROGRAMME_OBLIGATION_ANCHOR != EXPLICIT_LEMMA_PROPOSITION_INDEX",
     "FORMAL_MODULE_ANCHOR != ANALYTIC_RECONSTRUCTION",
     "PAPER_LABEL_OR_SECTION != VERIFIED_LEMMA",
     "GRAPH_EDGE != PROVED_IMPLICATION",
-    "GATE2_PASS != LEAN_REPLAY",
-    "GATE2_PASS != INDEPENDENT_VERIFICATION_COMPLETE",
-    "C_AND_D_DEPENDENCY_PATHS_DO_NOT_RESOLVE_A_OR_B",
-    "GATE3_MUST_RECONSTRUCT_PROOF_CRITICAL_NODES_INDEPENDENTLY"
+    "GATE2_PARTIAL != GATE2_PASS",
+    "GATE2_PARTIAL != LEAN_REPLAY",
+    "GATE2_PARTIAL != INDEPENDENT_VERIFICATION_COMPLETE",
+    "C_AND_D_DEPENDENCY_PATHS_DO_NOT_RESOLVE_A_OR_B"
   ]
 }
