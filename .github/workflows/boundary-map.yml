@@ -14,11 +14,13 @@ on:
       - "docs/OPENAI_2026_INDEPENDENT_VERIFICATION.md"
       - "docs/OPENAI_2026_CD_CORRESPONDENCE.md"
       - "docs/OPENAI_2026_ANALYTICAL_DEPENDENCY_DAG.md"
+      - "docs/OPENAI_2026_FORMAL_DECLARATION_INDEX.md"
       - "docs/history/**"
       - "tools/validate_boundary_map.py"
       - "tools/validate_external_claim_registry.py"
       - "tools/validate_openai_2026_correspondence.py"
       - "tools/validate_openai_2026_dependency_dag.py"
+      - "tools/validate_openai_2026_formal_index.py"
       - ".github/workflows/boundary-map.yml"
   push:
     branches:
@@ -28,10 +30,12 @@ on:
       - "docs/ROADMAP.md"
       - "docs/OPENAI_2026_CD_CORRESPONDENCE.md"
       - "docs/OPENAI_2026_ANALYTICAL_DEPENDENCY_DAG.md"
+      - "docs/OPENAI_2026_FORMAL_DECLARATION_INDEX.md"
       - "tools/validate_boundary_map.py"
       - "tools/validate_external_claim_registry.py"
       - "tools/validate_openai_2026_correspondence.py"
       - "tools/validate_openai_2026_dependency_dag.py"
+      - "tools/validate_openai_2026_formal_index.py"
       - ".github/workflows/boundary-map.yml"
 
 permissions:
@@ -55,3 +59,5 @@ jobs:
         run: python tools/validate_openai_2026_correspondence.py
       - name: Validate OpenAI 2026 analytical dependency DAG
         run: python tools/validate_openai_2026_dependency_dag.py
+      - name: Validate OpenAI 2026 formal declaration index
+        run: python tools/validate_openai_2026_formal_index.py
