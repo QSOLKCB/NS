@@ -1,0 +1,169 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/QSOLKCB/NS/blob/main/research/schemas/openai_2026_dependency_dag.schema.json",
+  "title": "QSOL NS OpenAI 2026 analytical dependency DAG",
+  "description": "Structural schema for Phase 3A Gate 2. Exact reviewed graph semantics are additionally locked by tools/validate_openai_2026_dependency_dag.py.",
+  "type": "object",
+  "required": [
+    "schema_version", "document_type", "license", "as_of", "phase",
+    "pr13_merge_baseline", "gate_status", "authority", "source_pins", "scope",
+    "required_dependency_classes", "roots", "nodes", "edges", "gate_2_disposition",
+    "machine_invariants"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0.0"},
+    "document_type": {"const": "qsol_ns_openai_2026_dependency_dag"},
+    "license": {"const": "Apache-2.0"},
+    "as_of": {"type": "string", "format": "date"},
+    "phase": {"const": "3A_gate_2"},
+    "pr13_merge_baseline": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "gate_status": {"const": "analytical_dependency_graph_partial"},
+    "authority": {
+      "type": "object",
+      "required": ["clay_target", "external_claim_registry", "statement_correspondence", "verification_programme", "openai_paper_source_id", "openai_formalization_source_id"],
+      "properties": {
+        "clay_target": {"const": "research/clay_target.json"},
+        "external_claim_registry": {"const": "research/external_claim_registry.json"},
+        "statement_correspondence": {"const": "research/openai_2026_correspondence.json"},
+        "verification_programme": {"const": "docs/OPENAI_2026_INDEPENDENT_VERIFICATION.md"},
+        "openai_paper_source_id": {"const": "OPENAI_NS_BLOWUP_2026"},
+        "openai_formalization_source_id": {"const": "OPENAI_NS_LEAN_2026"}
+      },
+      "additionalProperties": false
+    },
+    "source_pins": {
+      "type": "object",
+      "required": ["paper", "lean"],
+      "properties": {
+        "paper": {
+          "type": "object",
+          "required": ["url", "sha256"],
+          "properties": {
+            "url": {"type": "string", "format": "uri"},
+            "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+          },
+          "additionalProperties": false
+        },
+        "lean": {
+          "type": "object",
+          "required": ["repository", "commit", "audited_files"],
+          "properties": {
+            "repository": {"const": "openai/NavierStokesAndEuler"},
+            "commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+            "audited_files": {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": {
+                "type": "object",
+                "required": ["path", "blob_sha"],
+                "properties": {
+                  "path": {"type": "string", "minLength": 1},
+                  "blob_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"}
+                },
+                "additionalProperties": false
+              }
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "scope": {
+      "type": "object",
+      "required": ["formulations", "dependency_graph_only", "lemma_level_dependency_indexing_complete", "local_proof_reconstruction_complete", "proof_validity_assessed", "lean_build_replayed_by_qsol", "comparator_replayed_by_qsol", "theorem_registry_promotion", "edge_semantics"],
+      "properties": {
+        "formulations": {"const": ["C", "D"]},
+        "dependency_graph_only": {"const": true},
+        "lemma_level_dependency_indexing_complete": {"const": false},
+        "local_proof_reconstruction_complete": {"const": false},
+        "proof_validity_assessed": {"const": false},
+        "lean_build_replayed_by_qsol": {"const": false},
+        "comparator_replayed_by_qsol": {"const": false},
+        "theorem_registry_promotion": {"const": false},
+        "edge_semantics": {"const": "from_node depends on to_node"}
+      },
+      "additionalProperties": false
+    },
+    "required_dependency_classes": {
+      "type": "array",
+      "minItems": 12,
+      "maxItems": 12,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "roots": {
+      "const": {"C": "G2_ROOT_C", "D": "G2_ROOT_D"}
+    },
+    "nodes": {
+      "type": "array",
+      "minItems": 12,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "required": ["node_id", "node_class", "dependency_class", "title", "paper_anchor", "paper_anchor_precision", "formal_modules", "obligation", "audit_status"],
+        "properties": {
+          "node_id": {"type": "string", "pattern": "^G2_[A-Z0-9_]+$"},
+          "node_class": {"enum": ["claim_root", "target_bridge", "comparison", "candidate_extraction", "construction", "estimate", "iteration", "limit", "localization"]},
+          "dependency_class": {
+            "oneOf": [
+              {"type": "null"},
+              {"type": "string", "minLength": 1}
+            ]
+          },
+          "title": {"type": "string", "minLength": 1},
+          "paper_anchor": {"type": "string", "minLength": 1},
+          "paper_anchor_precision": {"enum": ["exact_label", "exact_label_plus_programme_obligation", "exact_labels_from_formalization_comments", "exact_label_from_formalization_comment", "section_label_from_formalization_comments", "section_family", "programme_obligation"]},
+          "formal_modules": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {"type": "string", "pattern": "^NavierStokes/.+\\.lean$"}
+          },
+          "obligation": {"type": "string", "minLength": 1},
+          "audit_status": {"const": "indexed_not_reconstructed"}
+        },
+        "additionalProperties": false
+      }
+    },
+    "edges": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "required": ["from", "to"],
+        "properties": {
+          "from": {"type": "string", "pattern": "^G2_[A-Z0-9_]+$"},
+          "to": {"type": "string", "pattern": "^G2_[A-Z0-9_]+$"}
+        },
+        "additionalProperties": false
+      }
+    },
+    "gate_2_disposition": {
+      "type": "object",
+      "required": ["dependency_classes_accounted_for", "rooted_C_and_D_paths_accounted_for", "graph_acyclic_required", "orphan_nodes_forbidden", "lemma_level_dependency_indexing_complete", "programme_obligation_nodes_remaining", "pass_condition_met", "local_estimate_correctness_assessed", "next_step"],
+      "properties": {
+        "dependency_classes_accounted_for": {"const": true},
+        "rooted_C_and_D_paths_accounted_for": {"const": true},
+        "graph_acyclic_required": {"const": true},
+        "orphan_nodes_forbidden": {"const": true},
+        "lemma_level_dependency_indexing_complete": {"const": false},
+        "programme_obligation_nodes_remaining": {"const": 12},
+        "pass_condition_met": {"const": false},
+        "local_estimate_correctness_assessed": {"const": false},
+        "next_step": {"const": "3A_gate_2_expand_lemma_proposition_index"}
+      },
+      "additionalProperties": false
+    },
+    "machine_invariants": {
+      "type": "array",
+      "minItems": 9,
+      "maxItems": 9,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    }
+  },
+  "additionalProperties": false
+}
