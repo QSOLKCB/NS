@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/QSOLKCB/NS/blob/main/research/schemas/openai_2026_formal_index_node.schema.json",
+  "title": "QSOL NS OpenAI 2026 formal declaration node index",
+  "type": "object",
+  "required": ["schema_version", "document_type", "parent_node_id", "parent_anchor_precision_snapshot", "source_commit", "coverage_status", "declarations", "remaining_obligations"],
+  "properties": {
+    "schema_version": {"const": "1.0.0"},
+    "document_type": {"const": "qsol_ns_openai_2026_formal_node_index"},
+    "parent_node_id": {"enum": ["G2_C_BRIDGE", "G2_D_BRIDGE", "G2_WHOLE_SPACE_UNIQUENESS", "G2_PERIODIC_MAX_LIFESPAN", "G2_R3_COMPACT_CANDIDATE", "G2_PERIODIC_CANDIDATE"]},
+    "parent_anchor_precision_snapshot": {"enum": ["programme_obligation", "exact_label_plus_programme_obligation"]},
+    "source_commit": {"const": "8937a8f4cbc7abaab5e9e97d1cc7f5d2319d9538"},
+    "coverage_status": {"const": "exact_formal_surface_indexed_paper_mapping_pending"},
+    "declarations": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "required": ["fully_qualified_name", "module", "kind", "role", "audit_status"],
+        "properties": {
+          "fully_qualified_name": {"type": "string", "minLength": 3},
+          "module": {"type": "string", "pattern": "^NavierStokes/.+\\.lean$"},
+          "kind": {"const": "theorem"},
+          "role": {"type": "string", "minLength": 8},
+          "audit_status": {"const": "indexed_not_reconstructed"}
+        },
+        "additionalProperties": false
+      }
+    },
+    "remaining_obligations": {
+      "const": [
+        "paper lemma/proposition mapping remains incomplete",
+        "transitive formal dependency closure remains incomplete",
+        "independent local proof reconstruction has not begun"
+      ]
+    }
+  },
+  "additionalProperties": false
+}
