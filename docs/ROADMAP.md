@@ -191,7 +191,7 @@ The following work may borrow **software architecture, falsification methods, pr
 - [x] add a schema and fail-closed validator for external solution-claim intake;
 - [x] define the staged analytical, statement-correspondence, Lean replay and adversarial-review programme.
 
-**PR #13 — OpenAI 2026 C/D Exact Statement Correspondence — THIS PR.**
+**PR #13 — OpenAI 2026 C/D Exact Statement Correspondence — IMPLEMENTED.**
 
 - [x] pin the OpenAI formalization commit and exact statement-surface blob identities used by the audit;
 - [x] snapshot the live Clay shared equation scope, formulations C/D, and periodic-pressure erratum;
@@ -200,10 +200,29 @@ The following work may borrow **software architecture, falsification methods, pr
 - [x] account for bounded-energy requirements on C and velocity/pressure periodicity on D;
 - [x] separate stronger construction-specific witnesses from the final target statement so admissibility does not masquerade as proof of construction;
 - [x] add fail-closed schema/cross-registry validation and hostile mutations against statement/proof authority escalation;
-- [x] close Phase 3A Gate 1 / WP1 at `statement_correspondence_confirmed` while leaving proof validity, Lean replay, Comparator replay, and theorem-registry promotion false;
-- [ ] proceed to Gate 2 / WP2 analytical dependency-DAG reconstruction.
+- [x] close Phase 3A Gate 1 / WP1 at `statement_correspondence_confirmed` while leaving proof validity, Lean replay, Comparator replay, and theorem-registry promotion false.
 
-**PR #14 — Multi-Model Crucible Council.**
+**PR #14 — OpenAI 2026 Analytical Dependency DAG — IMPLEMENTED (PARTIAL GATE-2 FOUNDATION).**
+
+- [x] root the analytical dependency graph at Theorem 1.1/C and Corollary 10.6/D;
+- [x] register all twelve Gate-2 dependency classes and separate the C and D comparison branches;
+- [x] pin the OpenAI paper, Lean commit, and high-value formal-module surface;
+- [x] exact-lock the coarse node/edge semantics, acyclicity, reachability, and nonclaim boundary;
+- [x] machine-record twelve programme-obligation-bearing parents and keep `pass_condition_met = false`;
+- [x] leave Gate 2 open until proof-critical aggregates descend to explicit lemma/proposition dependencies.
+
+**PR #15 — OpenAI 2026 Formal Declaration Index Slice 1 — THIS PR.**
+
+- [x] index the exact pinned Lean declaration surface for six endpoint/bridge/candidate parents;
+- [x] bind 42 parent/declaration relationships covering 34 unique formal declarations;
+- [x] record 30 selected direct body-reference edges without claiming transitive closure;
+- [x] pin twelve formal modules by exact Git blob identity;
+- [x] add fail-closed node/manifest schemas, semantic hashes, hostile validation, and CI;
+- [x] keep paper lemma/proposition mapping, proof reconstruction, Lean replay, Comparator replay, and Gate-2 passage false;
+- [ ] index the remaining construction-core parents: leading profile, annular stress, residual flatness, localization, energy, and periodization;
+- [ ] complete source-supported paper lemma/proposition mapping and sufficient transitive dependency expansion before Gate 3.
+
+**PR #16 — Multi-Model Crucible Council.**
 
 - [ ] borrow the NEXUS rule that models propose/participate while the runtime owns state, evidence identity and validated transitions;
 - [ ] give independent model actors frozen question/context/evidence packets and role-separated review tasks such as scaling critic, theorem-boundary critic, circularity hunter, numerical skeptic, regularity advocate and breakdown advocate;
@@ -211,7 +230,7 @@ The following work may borrow **software architecture, falsification methods, pr
 - [ ] keep provider/model size/account tier/performance history from creating epistemic privilege;
 - [ ] machine-lock `COUNCIL_CONSENSUS != EVIDENCE_STATUS` and require all actual evidence transitions to remain Crucible/domain-adapter operations.
 
-**PR #15 — Crucible Atlas & Observer Bus.**
+**PR #17 — Crucible Atlas & Observer Bus.**
 
 - [ ] borrow the searchable atlas/pathway presentation ideas from `QSOLKCB/synergetics2` for candidate ancestry, theorem dependencies, proof barriers, prior-failure families and surviving frontier visualization;
 - [ ] borrow the strict canonical-versus-interpretive observation split from `QSOLKCB/E8_MUSIC`;
@@ -258,23 +277,25 @@ Crucible Core is an orchestration/falsification engine, not a truth engine. The 
 
 This event-driven phase takes temporary priority over new mechanism search because OpenAI has published a concrete analytical construction and formal artifact explicitly claiming two official Clay breakdown alternatives. The goal is to determine exactly what has been proved, not to race the source's conclusion.
 
-The intake boundary was implemented in PR #12. Gate 1 / WP1 exact C/D target-statement correspondence is implemented in PR #13. The full gate sequence remains defined in `docs/OPENAI_2026_INDEPENDENT_VERIFICATION.md`.
+PR #12 froze intake and provenance. PR #13 completed the final C/D target-statement correspondence. PR #14 established the coarse Gate-2 analytical dependency DAG. PR #15 indexes the formal declaration surface for the first six programme-obligation-bearing parents. The full gate sequence remains defined in `docs/OPENAI_2026_INDEPENDENT_VERIFICATION.md`.
 
 Priority order:
 
 1. [x] freeze provenance and exact artifact identities — PR #12;
 2. [x] verify Fefferman C/D final-statement correspondence — PR #13 / Gate 1;
-3. [ ] reconstruct the analytical dependency graph — **Gate 2 / next priority**;
-4. [ ] independently reproduce proof-critical local arguments;
+3. [ ] reconstruct the analytical dependency graph — **Gate 2 IN PROGRESS**;
+   - [x] rooted coarse dependency-class DAG — PR #14;
+   - [x] endpoint/bridge/candidate formal declaration index slice — PR #15;
+   - [ ] construction-core formal declaration index;
+   - [ ] paper lemma/proposition mapping and sufficient transitive dependency closure;
+4. [ ] independently reproduce proof-critical local arguments — Gate 3, not started;
 5. [ ] replay the pinned Lean formalization and Comparator path;
 6. [ ] audit prose ↔ Lean ↔ Clay semantic correspondence beyond the final target declarations;
 7. [ ] use computation only as a non-proof diagnostic layer;
 8. [ ] conduct independent adversarial review;
 9. [ ] make a separate audited disposition/promotion decision.
 
-Gate 1 confirms only that the final pinned C/D target statements account for the official Fefferman requirements, including the periodic-pressure erratum. It does **not** assess the correctness of OpenAI's construction, the construction-to-target bridge, the Lean proof, a clean-room build, or Clay acceptance.
-
-A/B remain separate unforced questions. C/D remain external claims pending independent verification until later gates close.
+Gate 2 remains partial. Exact declaration names, module pins, and direct source-reference edges improve traceability but do **not** establish proof validity, complete the paper-to-formal mapping, or authorize Gate 3. C/D remain external claims pending independent verification; A/B remain unresolved.
 
 ## Phase 3 — Competing mechanism search
 
