@@ -1,0 +1,122 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/QSOLKCB/NS/blob/main/research/schemas/openai_2026_formal_index_manifest.schema.json",
+  "title": "QSOL NS OpenAI 2026 formal declaration index manifest",
+  "type": "object",
+  "required": ["schema_version", "document_type", "license", "as_of", "phase", "pr14_merge_baseline", "gate_status", "authority", "source_pin", "scope", "node_files", "formal_edges", "disposition", "machine_invariants"],
+  "properties": {
+    "schema_version": {"const": "1.0.0"},
+    "document_type": {"const": "qsol_ns_openai_2026_formal_index_manifest"},
+    "license": {"const": "Apache-2.0"},
+    "as_of": {"type": "string", "format": "date"},
+    "phase": {"const": "3A_gate_2_formal_declaration_index_slice_1"},
+    "pr14_merge_baseline": {"const": "66206230bc8504dc57808468adac6f1b5ffd39b4"},
+    "gate_status": {"const": "formal_declaration_index_slice_1_complete_gate_2_still_partial"},
+    "authority": {
+      "const": {
+        "dependency_dag": "research/openai_2026_dependency_dag.json",
+        "statement_correspondence": "research/openai_2026_correspondence.json",
+        "external_claim_registry": "research/external_claim_registry.json",
+        "verification_programme": "docs/OPENAI_2026_INDEPENDENT_VERIFICATION.md",
+        "openai_formalization_source_id": "OPENAI_NS_LEAN_2026"
+      }
+    },
+    "source_pin": {
+      "type": "object",
+      "required": ["repository", "commit", "module_pins"],
+      "properties": {
+        "repository": {"const": "openai/NavierStokesAndEuler"},
+        "commit": {"const": "8937a8f4cbc7abaab5e9e97d1cc7f5d2319d9538"},
+        "module_pins": {
+          "type": "array",
+          "minItems": 12,
+          "maxItems": 12,
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "required": ["path", "blob_sha"],
+            "properties": {
+              "path": {"type": "string", "pattern": "^NavierStokes/.+\\.lean$"},
+              "blob_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"}
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "scope": {
+      "type": "object",
+      "required": ["programme_obligation_parent_nodes_total", "parent_nodes_indexed_in_slice", "parent_nodes_remaining_after_slice", "transitive_formal_dependency_closure_complete", "paper_lemma_proposition_mapping_complete", "local_proof_reconstruction_complete", "proof_validity_assessed", "lean_build_replayed_by_qsol", "comparator_replayed_by_qsol", "gate_2_pass_condition_met"],
+      "properties": {
+        "programme_obligation_parent_nodes_total": {"const": 12},
+        "parent_nodes_indexed_in_slice": {"const": ["G2_C_BRIDGE", "G2_D_BRIDGE", "G2_WHOLE_SPACE_UNIQUENESS", "G2_PERIODIC_MAX_LIFESPAN", "G2_R3_COMPACT_CANDIDATE", "G2_PERIODIC_CANDIDATE"]},
+        "parent_nodes_remaining_after_slice": {"const": ["G2_LEADING_PROFILE", "G2_ANNULAR_STRESS", "G2_RESIDUAL_FLATNESS", "G2_LOCALIZATION", "G2_ENERGY", "G2_PERIODIZATION"]},
+        "transitive_formal_dependency_closure_complete": {"const": false},
+        "paper_lemma_proposition_mapping_complete": {"const": false},
+        "local_proof_reconstruction_complete": {"const": false},
+        "proof_validity_assessed": {"const": false},
+        "lean_build_replayed_by_qsol": {"const": false},
+        "comparator_replayed_by_qsol": {"const": false},
+        "gate_2_pass_condition_met": {"const": false}
+      },
+      "additionalProperties": false
+    },
+    "node_files": {
+      "type": "array",
+      "minItems": 6,
+      "maxItems": 6,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "required": ["parent_node_id", "path", "semantic_sha256"],
+        "properties": {
+          "parent_node_id": {"type": "string", "pattern": "^G2_[A-Z0-9_]+$"},
+          "path": {"type": "string", "pattern": "^research/openai_2026_formal_index/.+\\.json$"},
+          "semantic_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+        },
+        "additionalProperties": false
+      }
+    },
+    "formal_edges": {
+      "type": "array",
+      "minItems": 30,
+      "maxItems": 30,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "required": ["from", "to", "basis"],
+        "properties": {
+          "from": {"type": "string", "minLength": 3},
+          "to": {"type": "string", "minLength": 3},
+          "basis": {"const": "direct_body_reference_in_pinned_source"}
+        },
+        "additionalProperties": false
+      }
+    },
+    "disposition": {
+      "const": {
+        "programme_obligation_parent_nodes_indexed": 6,
+        "programme_obligation_parent_nodes_remaining": 6,
+        "unique_formal_declarations_indexed": 34,
+        "parent_declaration_bindings_indexed": 42,
+        "selected_direct_formal_edges_indexed": 30,
+        "gate_2_status": "analytical_dependency_graph_partial",
+        "next_step": "3A_gate_2_construction_core_formal_index_then_paper_mapping_and_transitive_closure"
+      }
+    },
+    "machine_invariants": {
+      "const": [
+        "FORMAL_DECLARATION_INDEX != PROOF_VALIDITY",
+        "FORMAL_DECLARATION_NAME != INDEPENDENT_RECONSTRUCTION",
+        "DIRECT_BODY_REFERENCE_EDGE != COMPLETE_TRANSITIVE_DEPENDENCY_GRAPH",
+        "FORMAL_SURFACE_COVERAGE != PAPER_LEMMA_MAPPING",
+        "FORMAL_INDEX_SLICE_1 != GATE2_PASS",
+        "GATE2_FORMAL_INDEX_SLICE != LEAN_REPLAY",
+        "GATE2_FORMAL_INDEX_SLICE != INDEPENDENT_VERIFICATION_COMPLETE",
+        "C_AND_D_REMAIN_EXTERNAL_CLAIMS_PENDING_INDEPENDENT_VERIFICATION"
+      ]
+    }
+  },
+  "additionalProperties": false
+}

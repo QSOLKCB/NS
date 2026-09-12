@@ -95,7 +95,7 @@ Build a dependency graph from Theorem 1.1 and Corollary 10.6 down to the constru
 
 **Pass condition:** there is no proof-critical dependency represented only by narrative shorthand or an untracked citation.
 
-**Current status after PR #14:** **INCOMPLETE / PARTIAL INDEX.** The current machine graph covers both roots and all twelve dependency classes, but twelve of twenty nodes still carry programme-obligation content: ten use `programme_obligation`, while `G2_D_BRIDGE` and `G2_PERIODIZATION` use `exact_label_plus_programme_obligation`. Several also aggregate multiple formal modules without indexing their internal proof-critical lemma/proposition dependencies. Gate 2 therefore remains open with `gate_status = analytical_dependency_graph_partial`; Gate 3 must not begin merely because class-level coverage exists.
+**Current status after PR #15:** **INCOMPLETE / PARTIAL INDEX.** PR #14 established the rooted coarse graph and all twelve dependency classes. PR #15 now indexes the exact pinned Lean declaration surface for six of the twelve programme-obligation-bearing parent nodes: the C/D target bridges, whole-space comparison, periodic maximal lifespan, compact whole-space candidate, and periodic candidate. Six construction-core parents remain at programme-obligation precision: leading profile, annular stress, residual flatness, localization, energy, and periodization. Even for the six indexed parents, paper lemma/proposition mapping and complete transitive formal dependency closure remain unfinished. Gate 2 therefore stays open with `gate_status = analytical_dependency_graph_partial`; Gate 3 has not begun.
 
 ### Gate 3 — local proof reconstruction
 
@@ -221,7 +221,7 @@ Produce machine-readable maps for Theorem 1.1 → C and Corollary 10.6 → D, in
 
 Index Sections 4–10, appendices and the main propositions/lemmas into a dependency DAG rooted at Theorem 1.1 and Corollary 10.6.
 
-**Status:** partial. PR #14 establishes the rooted coarse graph and dependency-class coverage, but must continue within Gate 2 until every proof-critical aggregate is descended to explicit lemma/proposition dependencies and all twelve programme-obligation-bearing anchors—including the two `exact_label_plus_programme_obligation` D-path nodes—are resolved or replaced with source-supported precision.
+**Status:** partial. PR #14 established the rooted coarse graph. PR #15 indexes 34 unique pinned Lean declarations and 30 selected direct body-reference edges across six endpoint/bridge/candidate parents. The remaining six construction-core parents still require declaration-level indexing, and the full Gate-2 pass condition additionally requires source-supported paper lemma/proposition mapping and sufficient transitive dependency expansion that no proof-critical dependency remains narrative shorthand or an untracked citation.
 
 ### WP3 — scaling ledger
 

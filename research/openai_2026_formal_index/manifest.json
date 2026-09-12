@@ -1,0 +1,119 @@
+{
+  "schema_version": "1.0.0",
+  "document_type": "qsol_ns_openai_2026_formal_index_manifest",
+  "license": "Apache-2.0",
+  "as_of": "2026-09-12",
+  "phase": "3A_gate_2_formal_declaration_index_slice_1",
+  "pr14_merge_baseline": "66206230bc8504dc57808468adac6f1b5ffd39b4",
+  "gate_status": "formal_declaration_index_slice_1_complete_gate_2_still_partial",
+  "authority": {
+    "dependency_dag": "research/openai_2026_dependency_dag.json",
+    "statement_correspondence": "research/openai_2026_correspondence.json",
+    "external_claim_registry": "research/external_claim_registry.json",
+    "verification_programme": "docs/OPENAI_2026_INDEPENDENT_VERIFICATION.md",
+    "openai_formalization_source_id": "OPENAI_NS_LEAN_2026"
+  },
+  "source_pin": {
+    "repository": "openai/NavierStokesAndEuler",
+    "commit": "8937a8f4cbc7abaab5e9e97d1cc7f5d2319d9538",
+    "module_pins": [
+      {"path": "NavierStokes/ActualCandidateAssembly.lean", "blob_sha": "820bd414afdb55d4d74a78be357311e6b234a2e4"},
+      {"path": "NavierStokes/CandidateConsequences.lean", "blob_sha": "5f3eae72b029ea2503f9c2eaa20a1b11685062ff"},
+      {"path": "NavierStokes/CompactSpatialForceDecay.lean", "blob_sha": "aaeb4f7f35f43527f6e71f3a581c186c81dd80f2"},
+      {"path": "NavierStokes/ComparatorR3Theorem.lean", "blob_sha": "eb98522380b91b209421bf7519f34bc68ba95c1d"},
+      {"path": "NavierStokes/ComparatorTheorem.lean", "blob_sha": "8105493534a5007c689c59e22bc252623bcbe901"},
+      {"path": "NavierStokes/MaximalLifespan.lean", "blob_sha": "83968db431a7327110e9ea10c6196dc3e39d5323"},
+      {"path": "NavierStokes/MixedPeriodicAssembly.lean", "blob_sha": "cdf0ce21933fa2770e91f0ae0542c73782186b97"},
+      {"path": "NavierStokes/PeriodicUniqueness.lean", "blob_sha": "20577dc723b0e82766f885f7261bc40a827219d6"},
+      {"path": "NavierStokes/R3/WholeSpaceUniqueness.lean", "blob_sha": "ad83465eedc6b723fb01d10603453234cf7f84b4"},
+      {"path": "NavierStokes/R3ActualCandidate.lean", "blob_sha": "5a1d79b69591388af6b4bfceb3566cb797e4fb8a"},
+      {"path": "NavierStokes/R3CompactCandidate.lean", "blob_sha": "97082e900e4334c703617ebde8ecb58dfc2f1590"},
+      {"path": "NavierStokes/R3FiniteEnergyComparison.lean", "blob_sha": "43dfeab5d087a92474b90c0ab9ee38d57ba25481"}
+    ]
+  },
+  "scope": {
+    "programme_obligation_parent_nodes_total": 12,
+    "parent_nodes_indexed_in_slice": [
+      "G2_C_BRIDGE",
+      "G2_D_BRIDGE",
+      "G2_WHOLE_SPACE_UNIQUENESS",
+      "G2_PERIODIC_MAX_LIFESPAN",
+      "G2_R3_COMPACT_CANDIDATE",
+      "G2_PERIODIC_CANDIDATE"
+    ],
+    "parent_nodes_remaining_after_slice": [
+      "G2_LEADING_PROFILE",
+      "G2_ANNULAR_STRESS",
+      "G2_RESIDUAL_FLATNESS",
+      "G2_LOCALIZATION",
+      "G2_ENERGY",
+      "G2_PERIODIZATION"
+    ],
+    "transitive_formal_dependency_closure_complete": false,
+    "paper_lemma_proposition_mapping_complete": false,
+    "local_proof_reconstruction_complete": false,
+    "proof_validity_assessed": false,
+    "lean_build_replayed_by_qsol": false,
+    "comparator_replayed_by_qsol": false,
+    "gate_2_pass_condition_met": false
+  },
+  "node_files": [
+    {"parent_node_id": "G2_C_BRIDGE", "path": "research/openai_2026_formal_index/c_bridge.json", "semantic_sha256": "e90bf98d59e0b28489b881ade355b06796615dd2cde90b0007985b07005530df"},
+    {"parent_node_id": "G2_D_BRIDGE", "path": "research/openai_2026_formal_index/d_bridge.json", "semantic_sha256": "992759b23ca2a0ca96c46179a874657222fc53d2d3bb56ad438f5eaf8f65aec0"},
+    {"parent_node_id": "G2_WHOLE_SPACE_UNIQUENESS", "path": "research/openai_2026_formal_index/whole_space_uniqueness.json", "semantic_sha256": "7a7b78735347cac72014a074cbec6396b0ccf8ee770170fd38ea282597cdb2e8"},
+    {"parent_node_id": "G2_PERIODIC_MAX_LIFESPAN", "path": "research/openai_2026_formal_index/periodic_max_lifespan.json", "semantic_sha256": "1cd743bd0edbce09533652f3924f74846ab905606fe83091a9e7aad248790f44"},
+    {"parent_node_id": "G2_R3_COMPACT_CANDIDATE", "path": "research/openai_2026_formal_index/r3_compact_candidate.json", "semantic_sha256": "038dcbb33232fc1db570af96c654098716bca66a709efdc9d71c52ec8b2a47f6"},
+    {"parent_node_id": "G2_PERIODIC_CANDIDATE", "path": "research/openai_2026_formal_index/periodic_candidate.json", "semantic_sha256": "a586cd25710fa8219cf067cdcce568f78811416cacb1672db1b86db8accadd6a"}
+  ],
+  "formal_edges": [
+    {"from": "NavierStokes.ComparatorBridge.navier_stokes_breakdown_R3", "to": "NavierStokes.R3CompactCandidate.selected_compact_candidate", "basis": "direct_body_reference_in_pinned_source"},
+    {"from": "NavierStokes.ComparatorBridge.navier_stokes_breakdown_R3", "to": "NavierStokes.ComparatorBridge.option_C_of_compact_candidate", "basis": "direct_body_reference_in_pinned_source"},
+    {"from": "NavierStokes.ComparatorBridge.option_C_of_compact_candidate", "to": "NavierStokes.CompactSpatialForceDecay.forceConditionDecay", "basis": "direct_body_reference_in_pinned_source"},
+    {"from": "NavierStokes.ComparatorBridge.option_C_of_compact_candidate", "to": "NavierStokes.ComparatorBridge.compact_candidate_excludes_global_solution", "basis": "direct_body_reference_in_pinned_source"},
+    {"from": "NavierStokes.ComparatorBridge.navier_stokes_breakdown_periodic", "to": "NavierStokes.ActualCandidateAssembly.selected_candidate", "basis": "direct_body_reference_in_pinned_source"},
+    {"from": "NavierStokes.ComparatorBridge.navier_stokes_breakdown_periodic", "to": "NavierStokes.ComparatorBridge.option_D_of_candidate", "basis": "direct_body_reference_in_pinned_source"},
+    {"from": "NavierStokes.ComparatorBridge.option_D_of_candidate", "to": "NavierStokes.CandidateConsequences.futureJet_decay", "basis": "direct_body_reference_in_pinned_source"},
+    {"from": "NavierStokes.ComparatorBridge.option_D_of_candidate", "to": "NavierStokes.MaximalLifespan.candidate_excludes_global_solution", "basis": "direct_body_reference_in_pinned_source"},
+    {"from": "NavierStokes.ComparatorBridge.compact_candidate_excludes_global_solution", "to": "NavierStokesR3.WholeSpaceUniqueness.classical_uniqueness_on_Icc", "basis": "direct_body_reference_in_pinned_source"},
+    {"from": "NavierStokes.ComparatorBridge.compact_candidate_excludes_global_solution", "to": "NavierStokes.ComparatorBridge.GlobalSolutionRn.uniformFiniteEnergy", "basis": "direct_body_reference_in_pinned_source"},
+    {"from": "NavierStokes.ComparatorBridge.compact_candidate_excludes_global_solution", "to": "NavierStokes.R3CompactCandidate.Properties.not_global_agreement", "basis": "direct_body_reference_in_pinned_source"},
+    {"from": "NavierStokes.MaximalLifespan.candidate_excludes_global_solution", "to": "NavierStokes.MaximalLifespan.candidate_no_solution_after_one", "basis": "direct_body_reference_in_pinned_source"},
+    {"from": "NavierStokes.MaximalLifespan.candidate_no_solution_after_one", "to": "NavierStokes.MaximalLifespan.candidate_agree_on_overlap", "basis": "direct_body_reference_in_pinned_source"},
+    {"from": "NavierStokes.MaximalLifespan.candidate_agree_on_overlap", "to": "NavierStokes.MaximalLifespan.ClassicalSolution.agree_on_overlap", "basis": "direct_body_reference_in_pinned_source"},
+    {"from": "NavierStokes.MaximalLifespan.candidate_agree_on_overlap", "to": "NavierStokes.MaximalLifespan.candidate_is_classical_solution", "basis": "direct_body_reference_in_pinned_source"},
+    {"from": "NavierStokes.MaximalLifespan.ClassicalSolution.agree_on_overlap", "to": "NavierStokes.PeriodicUniqueness.classical_uniqueness_on_Icc", "basis": "direct_body_reference_in_pinned_source"},
+    {"from": "NavierStokes.MaximalLifespan.candidate_is_maximal", "to": "NavierStokes.MaximalLifespan.candidate_is_classical_solution", "basis": "direct_body_reference_in_pinned_source"},
+    {"from": "NavierStokes.MaximalLifespan.candidate_is_maximal", "to": "NavierStokes.MaximalLifespan.candidate_no_solution_after_one", "basis": "direct_body_reference_in_pinned_source"},
+    {"from": "NavierStokes.R3CompactCandidate.selected_compact_candidate", "to": "NavierStokes.ActualCandidateAssembly.selected_witness", "basis": "direct_body_reference_in_pinned_source"},
+    {"from": "NavierStokes.R3CompactCandidate.selected_compact_candidate", "to": "NavierStokes.R3CompactCandidate.of_localized_fields", "basis": "direct_body_reference_in_pinned_source"},
+    {"from": "NavierStokes.R3CompactCandidate.of_localized_fields", "to": "NavierStokes.R3CompactCandidate.of_periodic_local_model", "basis": "direct_body_reference_in_pinned_source"},
+    {"from": "NavierStokes.R3CompactCandidate.of_periodic_local_model", "to": "NavierStokes.R3CompactCandidate.compactForce_smooth", "basis": "direct_body_reference_in_pinned_source"},
+    {"from": "NavierStokes.R3CompactCandidate.of_periodic_local_model", "to": "NavierStokes.R3CompactCandidate.local_model_divergence", "basis": "direct_body_reference_in_pinned_source"},
+    {"from": "NavierStokes.R3CompactCandidate.of_periodic_local_model", "to": "NavierStokes.R3CompactCandidate.local_model_equation", "basis": "direct_body_reference_in_pinned_source"},
+    {"from": "NavierStokes.ActualCandidateAssembly.selected_candidate", "to": "NavierStokes.ActualCandidateAssembly.selected_witness", "basis": "direct_body_reference_in_pinned_source"},
+    {"from": "NavierStokes.ActualCandidateAssembly.selected_witness", "to": "NavierStokes.ActualCandidateAssembly.witness", "basis": "direct_body_reference_in_pinned_source"},
+    {"from": "NavierStokes.CandidateConsequences.consequences_of_candidate", "to": "NavierStokes.MaximalLifespan.candidate_is_maximal", "basis": "direct_body_reference_in_pinned_source"},
+    {"from": "NavierStokes.CandidateConsequences.consequences_of_candidate", "to": "NavierStokes.CandidateConsequences.futureJet_decay", "basis": "direct_body_reference_in_pinned_source"},
+    {"from": "NavierStokes.CandidateConsequences.mixed_exists_force_with_consequences", "to": "NavierStokes.MixedPeriodicAssembly.exists_candidate_force", "basis": "direct_body_reference_in_pinned_source"},
+    {"from": "NavierStokes.CandidateConsequences.mixed_exists_force_with_consequences", "to": "NavierStokes.CandidateConsequences.consequences_of_candidate", "basis": "direct_body_reference_in_pinned_source"}
+  ],
+  "disposition": {
+    "programme_obligation_parent_nodes_indexed": 6,
+    "programme_obligation_parent_nodes_remaining": 6,
+    "unique_formal_declarations_indexed": 34,
+    "parent_declaration_bindings_indexed": 42,
+    "selected_direct_formal_edges_indexed": 30,
+    "gate_2_status": "analytical_dependency_graph_partial",
+    "next_step": "3A_gate_2_construction_core_formal_index_then_paper_mapping_and_transitive_closure"
+  },
+  "machine_invariants": [
+    "FORMAL_DECLARATION_INDEX != PROOF_VALIDITY",
+    "FORMAL_DECLARATION_NAME != INDEPENDENT_RECONSTRUCTION",
+    "DIRECT_BODY_REFERENCE_EDGE != COMPLETE_TRANSITIVE_DEPENDENCY_GRAPH",
+    "FORMAL_SURFACE_COVERAGE != PAPER_LEMMA_MAPPING",
+    "FORMAL_INDEX_SLICE_1 != GATE2_PASS",
+    "GATE2_FORMAL_INDEX_SLICE != LEAN_REPLAY",
+    "GATE2_FORMAL_INDEX_SLICE != INDEPENDENT_VERIFICATION_COMPLETE",
+    "C_AND_D_REMAIN_EXTERNAL_CLAIMS_PENDING_INDEPENDENT_VERIFICATION"
+  ]
+}
