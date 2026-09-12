@@ -7,7 +7,12 @@ from __future__ import annotations
 import copy
 import hashlib
 import json
+import re
+from functools import lru_cache
 from pathlib import Path
+from urllib.error import HTTPError, URLError
+from urllib.parse import quote
+from urllib.request import Request, urlopen
 
 from jsonschema import Draft202012Validator, FormatChecker
 from jsonschema.exceptions import ValidationError
@@ -22,6 +27,12 @@ PR14_MERGE = "66206230bc8504dc57808468adac6f1b5ffd39b4"
 LEAN_REPOSITORY = "openai/NavierStokesAndEuler"
 LEAN_COMMIT = "8937a8f4cbc7abaab5e9e97d1cc7f5d2319d9538"
 PROGRAMME_PRECISIONS = {"programme_obligation", "exact_label_plus_programme_obligation"}
+RAW_SOURCE_BASE = f"https://raw.githubusercontent.com/{LEAN_REPOSITORY}/{LEAN_COMMIT}/"
+DECLARATION_RE = re.compile(
+    r"(?m)^[ \t]*(?:(?:private|protected|noncomputable)\s+)*"
+    r"(?P<kind>theorem|lemma|def|abbrev|structure)\s+"
+    r"(?P<name>[A-Za-z0-9_'.]+)\b"
+)
 
 EXPECTED_INDEXED_PARENTS = [
     "G2_C_BRIDGE",
@@ -61,6 +72,16 @@ EXPECTED_MODULE_PINS = [
     {"path": "NavierStokes/R3CompactCandidate.lean", "blob_sha": "97082e900e4334c703617ebde8ecb58dfc2f1590"},
     {"path": "NavierStokes/R3FiniteEnergyComparison.lean", "blob_sha": "43dfeab5d087a92474b90c0ab9ee38d57ba25481"},
 ]
+EXPECTED_DAG_SHARED_MODULE_PATHS = {
+    "NavierStokes/ActualCandidateAssembly.lean",
+    "NavierStokes/CandidateConsequences.lean",
+    "NavierStokes/ComparatorR3Theorem.lean",
+    "NavierStokes/ComparatorTheorem.lean",
+    "NavierStokes/MaximalLifespan.lean",
+    "NavierStokes/R3ActualCandidate.lean",
+    "NavierStokes/R3CompactCandidate.lean",
+    "NavierStokes/R3FiniteEnergyComparison.lean",
+}
 EXPECTED_EDGES = [
     {"from": "NavierStokes.ComparatorBridge.navier_stokes_breakdown_R3", "to": "NavierStokes.R3CompactCandidate.selected_compact_candidate", "basis": "direct_body_reference_in_pinned_source"},
     {"from": "NavierStokes.ComparatorBridge.navier_stokes_breakdown_R3", "to": "NavierStokes.ComparatorBridge.option_C_of_compact_candidate", "basis": "direct_body_reference_in_pinned_source"},
@@ -108,6 +129,11 @@ def semantic_sha256(value: dict) -> str:
     return hashlib.sha256(raw).hexdigest()
 
 
+def git_blob_sha1(raw: bytes) -> str:
+    header = f"blob {len(raw)}\0".encode("ascii")
+    return hashlib.sha1(header + raw).hexdigest()
+
+
 def reject_schema(validator: Draft202012Validator, candidate: dict, label: str) -> None:
     try:
         validator.validate(candidate)
@@ -116,11 +142,174 @@ def reject_schema(validator: Draft202012Validator, candidate: dict, label: str) 
     raise SystemExit(f"formal-index schema regression: forbidden mutation accepted: {label}")
 
 
+def reject_cross(candidate_manifest: dict, nodes: list[dict], dag: dict, external: dict,
+                 correspondence: dict, label: str) -> None:
+    try:
+        validate_cross(candidate_manifest, nodes, dag, external, correspondence)
+    except SystemExit:
+        return
+    raise SystemExit(f"formal-index regression: forbidden cross-registry mutation accepted: {label}")
+
+
 def claim(external: dict, formulation_id: str) -> dict:
     matches = [item for item in external["claims"] if item["formulation_id"] == formulation_id]
     if len(matches) != 1:
         raise SystemExit(f"expected exactly one external claim for {formulation_id}")
     return matches[0]
+
+
+def validate_manifest_node_binding(entry: dict, node_data: dict) -> None:
+    if node_data["parent_node_id"] != entry["parent_node_id"]:
+        raise SystemExit(
+            f"formal-index manifest path/parent mismatch: {entry['path']} declares "
+            f"{node_data['parent_node_id']}, expected {entry['parent_node_id']}"
+        )
+    if semantic_sha256(node_data) != entry["semantic_sha256"]:
+        raise SystemExit(f"formal-index manifest path/semantic hash mismatch: {entry['path']}")
+
+
+@lru_cache(maxsize=None)
+def fetch_pinned_module(path: str, blob_sha: str) -> str:
+    url = RAW_SOURCE_BASE + quote(path, safe="/")
+    request = Request(url, headers={"User-Agent": "QSOL-NS-formal-index-validator/1.0"})
+    try:
+        with urlopen(request, timeout=30) as response:
+            raw = response.read()
+    except (HTTPError, URLError, TimeoutError) as exc:
+        raise SystemExit(f"unable to fetch pinned Lean module {path}: {exc}") from exc
+    actual = git_blob_sha1(raw)
+    if actual != blob_sha:
+        raise SystemExit(f"pinned Lean module blob mismatch for {path}: {actual} != {blob_sha}")
+    try:
+        return raw.decode("utf-8")
+    except UnicodeDecodeError as exc:
+        raise SystemExit(f"pinned Lean module is not UTF-8: {path}") from exc
+
+
+def strip_lean_comments(text: str) -> str:
+    """Remove nested block and line comments while preserving token separation."""
+    out: list[str] = []
+    i = 0
+    block_depth = 0
+    line_comment = False
+    while i < len(text):
+        if line_comment:
+            if text[i] == "\n":
+                line_comment = False
+                out.append("\n")
+            else:
+                out.append(" ")
+            i += 1
+            continue
+        if block_depth:
+            if text.startswith("/-", i):
+                block_depth += 1
+                out.extend("  ")
+                i += 2
+            elif text.startswith("-/", i):
+                block_depth -= 1
+                out.extend("  ")
+                i += 2
+            else:
+                out.append("\n" if text[i] == "\n" else " ")
+                i += 1
+            continue
+        if text.startswith("--", i):
+            line_comment = True
+            out.extend("  ")
+            i += 2
+        elif text.startswith("/-", i):
+            block_depth = 1
+            out.extend("  ")
+            i += 2
+        else:
+            out.append(text[i])
+            i += 1
+    return "".join(out)
+
+
+def declaration_source_record(source: str, fully_qualified_name: str, expected_kind: str) -> tuple[str, str]:
+    matches = list(DECLARATION_RE.finditer(source))
+    candidates: list[tuple[int, int, re.Match[str]]] = []
+    for index, match in enumerate(matches):
+        local_name = match.group("name")
+        if fully_qualified_name == local_name or fully_qualified_name.endswith("." + local_name):
+            candidates.append((len(local_name), index, match))
+    if not candidates:
+        raise SystemExit(f"indexed declaration absent from pinned Lean source: {fully_qualified_name}")
+    longest = max(item[0] for item in candidates)
+    best = [item for item in candidates if item[0] == longest]
+    if len(best) != 1:
+        raise SystemExit(f"ambiguous declaration match in pinned Lean source: {fully_qualified_name}")
+    _, index, match = best[0]
+    if match.group("kind") != expected_kind:
+        raise SystemExit(
+            f"declaration kind drift for {fully_qualified_name}: "
+            f"source={match.group('kind')} index={expected_kind}"
+        )
+    end = matches[index + 1].start() if index + 1 < len(matches) else len(source)
+    declaration_tail = source[match.end():end]
+    assign = declaration_tail.find(":=")
+    body = declaration_tail[assign + 2:] if assign >= 0 else ""
+    return match.group("name"), strip_lean_comments(body)
+
+
+def contains_lean_identifier(text: str, token: str) -> bool:
+    pattern = rf"(?<![A-Za-z0-9_']){re.escape(token)}(?![A-Za-z0-9_'])"
+    return re.search(pattern, text) is not None
+
+
+def validate_pinned_source_edges(manifest: dict, nodes: list[dict]) -> None:
+    pin_by_path = {item["path"]: item["blob_sha"] for item in manifest["source_pin"]["module_pins"]}
+    declarations: dict[str, dict] = {}
+    for node_data in nodes:
+        for declaration in node_data["declarations"]:
+            name = declaration["fully_qualified_name"]
+            identity = {"module": declaration["module"], "kind": declaration["kind"]}
+            if name in declarations and declarations[name] != identity:
+                raise SystemExit(f"conflicting indexed declaration identity: {name}")
+            declarations[name] = identity
+
+    source_records: dict[str, tuple[str, str]] = {}
+    for name, declaration in declarations.items():
+        module = declaration["module"]
+        if module not in pin_by_path:
+            raise SystemExit(f"declaration source module is not pinned: {name} -> {module}")
+        source = fetch_pinned_module(module, pin_by_path[module])
+        source_records[name] = declaration_source_record(source, name, declaration["kind"])
+
+    for edge in manifest["formal_edges"]:
+        if edge["basis"] != "direct_body_reference_in_pinned_source":
+            raise SystemExit(f"unsupported formal-edge basis: {edge}")
+        source_name = edge["from"]
+        target_name = edge["to"]
+        if source_name not in source_records or target_name not in source_records:
+            raise SystemExit(f"formal edge endpoint absent from source-backed declaration index: {edge}")
+        _, body = source_records[source_name]
+        target_local, _ = source_records[target_name]
+        reference_tokens = [target_local, target_local.rsplit(".", 1)[-1]]
+        if not any(contains_lean_identifier(body, token) for token in dict.fromkeys(reference_tokens)):
+            raise SystemExit(
+                f"direct formal edge not witnessed in pinned Lean declaration body: "
+                f"{source_name} -> {target_name}"
+            )
+
+
+def validate_dag_source_pin_alignment(manifest: dict, dag: dict) -> None:
+    manifest_lean = manifest["source_pin"]
+    dag_lean = dag["source_pins"]["lean"]
+    if dag_lean["repository"] != manifest_lean["repository"]:
+        raise SystemExit("Gate 2 DAG Lean repository diverges from formal index")
+    if dag_lean["commit"] != manifest_lean["commit"]:
+        raise SystemExit("Gate 2 DAG Lean commit diverges from formal index")
+    manifest_pins = {item["path"]: item["blob_sha"] for item in manifest_lean["module_pins"]}
+    dag_pins = {item["path"]: item["blob_sha"] for item in dag_lean["audited_files"]}
+    shared = set(manifest_pins) & set(dag_pins)
+    if shared != EXPECTED_DAG_SHARED_MODULE_PATHS:
+        raise SystemExit(f"Gate 2 DAG/formal-index shared module set drift: {sorted(shared)}")
+    for path in sorted(shared):
+        if dag_pins[path] != manifest_pins[path]:
+            raise SystemExit(f"Gate 2 DAG/formal-index blob pin divergence: {path}")
 
 
 def validate_cross(manifest: dict, nodes: list[dict], dag: dict, external: dict, correspondence: dict) -> None:
@@ -134,6 +323,8 @@ def validate_cross(manifest: dict, nodes: list[dict], dag: dict, external: dict,
         raise SystemExit("formal-index node-file lock drift")
     if manifest["formal_edges"] != EXPECTED_EDGES:
         raise SystemExit("formal-index direct-edge semantics drift")
+
+    validate_dag_source_pin_alignment(manifest, dag)
 
     if dag["gate_status"] != "analytical_dependency_graph_partial":
         raise SystemExit("Gate 2 DAG must remain partial during formal-index slice 1")
@@ -197,6 +388,8 @@ def validate_cross(manifest: dict, nodes: list[dict], dag: dict, external: dict,
         if edge["from"] == edge["to"]:
             raise SystemExit(f"self formal edge forbidden: {edge}")
 
+    validate_pinned_source_edges(manifest, nodes)
+
     if manifest["scope"]["transitive_formal_dependency_closure_complete"]:
         raise SystemExit("slice 1 cannot claim complete transitive formal closure")
     if manifest["scope"]["paper_lemma_proposition_mapping_complete"]:
@@ -212,6 +405,9 @@ def validate_cross(manifest: dict, nodes: list[dict], dag: dict, external: dict,
         raise SystemExit("Gate 1 correspondence prerequisite drift")
     if correspondence["formal_artifact_pin"]["commit"] != LEAN_COMMIT:
         raise SystemExit("Gate 1 Lean pin diverges from formal index")
+    external_lean = external["artifact_pins"]["OPENAI_NS_LEAN_2026"]
+    if external_lean["repository"] != LEAN_REPOSITORY or external_lean["commit"] != LEAN_COMMIT:
+        raise SystemExit("external-claim Lean pin diverges from formal index")
     for formulation_id in ("C", "D"):
         if claim(external, formulation_id)["qsol_status"] != "external_claim_pending_independent_verification":
             raise SystemExit(f"external {formulation_id} status promoted during Gate 2 indexing")
@@ -220,7 +416,8 @@ def validate_cross(manifest: dict, nodes: list[dict], dag: dict, external: dict,
             raise SystemExit(f"unforced formulation {formulation_id} was silently resolved")
 
 
-def run_negative_probes(manifest: dict, nodes: list[dict], manifest_validator: Draft202012Validator,
+def run_negative_probes(manifest: dict, nodes: list[dict], dag: dict, external: dict,
+                        correspondence: dict, manifest_validator: Draft202012Validator,
                         node_validator: Draft202012Validator) -> None:
     mutated = copy.deepcopy(manifest)
     mutated["as_of"] = "not-a-date"
@@ -241,20 +438,15 @@ def run_negative_probes(manifest: dict, nodes: list[dict], manifest_validator: D
 
     mutated = copy.deepcopy(manifest)
     mutated["source_pin"]["module_pins"][0]["blob_sha"] = "0" * 40
-    try:
-        if mutated["source_pin"]["module_pins"] == EXPECTED_MODULE_PINS:
-            raise AssertionError
-    except AssertionError:
-        raise SystemExit("module-pin hostile mutation failed to mutate")
+    reject_cross(mutated, nodes, dag, external, correspondence, "module blob pin rewritten")
 
-    mutated = copy.deepcopy(nodes[0])
-    mutated["declarations"][0]["audit_status"] = "verified"
-    reject_schema(node_validator, mutated, "formal declaration promoted to verified")
+    mutated_node = copy.deepcopy(nodes[0])
+    mutated_node["declarations"][0]["audit_status"] = "verified"
+    reject_schema(node_validator, mutated_node, "formal declaration promoted to verified")
 
-    mutated = copy.deepcopy(nodes[0])
-    mutated["declarations"][0]["fully_qualified_name"] = "NavierStokes.Fake.proved_everything"
-    if semantic_sha256(mutated) == EXPECTED_NODE_FILES[0]["semantic_sha256"]:
-        raise SystemExit("semantic hash failed to detect declaration-name mutation")
+    mutated_nodes = copy.deepcopy(nodes)
+    mutated_nodes[0]["declarations"][0]["fully_qualified_name"] = "NavierStokes.Fake.proved_everything"
+    reject_cross(manifest, mutated_nodes, dag, external, correspondence, "declaration name rewritten")
 
     mutated = copy.deepcopy(manifest)
     mutated["scope"]["parent_nodes_indexed_in_slice"].pop()
@@ -263,6 +455,34 @@ def run_negative_probes(manifest: dict, nodes: list[dict], manifest_validator: D
     mutated = copy.deepcopy(manifest)
     mutated["formal_edges"].append(copy.deepcopy(mutated["formal_edges"][0]))
     reject_schema(manifest_validator, mutated, "duplicate formal edge admitted")
+
+    try:
+        validate_manifest_node_binding(manifest["node_files"][0], nodes[1])
+    except SystemExit:
+        pass
+    else:
+        raise SystemExit("formal-index regression: swapped node file accepted for manifest parent/path binding")
+
+    mutated_dag = copy.deepcopy(dag)
+    mutated_dag["source_pins"]["lean"]["commit"] = "0" * 40
+    reject_cross(manifest, nodes, mutated_dag, external, correspondence, "DAG Lean commit repinned")
+
+    mutated_dag = copy.deepcopy(dag)
+    shared_path = sorted(EXPECTED_DAG_SHARED_MODULE_PATHS)[0]
+    for item in mutated_dag["source_pins"]["lean"]["audited_files"]:
+        if item["path"] == shared_path:
+            item["blob_sha"] = "0" * 40
+            break
+    reject_cross(manifest, nodes, mutated_dag, external, correspondence, "DAG shared module blob repinned")
+
+    mutated = copy.deepcopy(manifest)
+    mutated["formal_edges"][0]["to"] = "NavierStokes.CandidateConsequences.futureJet_decay"
+    try:
+        validate_pinned_source_edges(mutated, nodes)
+    except SystemExit:
+        pass
+    else:
+        raise SystemExit("formal-index regression: unwitnessed direct-body edge accepted by pinned-source audit")
 
 
 def main() -> None:
@@ -284,16 +504,18 @@ def main() -> None:
         path = ROOT / item["path"]
         node_data = load_json(path)
         node_validator.validate(node_data)
+        validate_manifest_node_binding(item, node_data)
         nodes.append(node_data)
 
     validate_cross(manifest, nodes, dag, external, correspondence)
-    run_negative_probes(manifest, nodes, manifest_validator, node_validator)
+    run_negative_probes(manifest, nodes, dag, external, correspondence, manifest_validator, node_validator)
 
     print(
         "OpenAI 2026 formal declaration index: PASS "
         f"(slice=1, parents={manifest['disposition']['programme_obligation_parent_nodes_indexed']}/12, "
         f"unique_declarations={manifest['disposition']['unique_formal_declarations_indexed']}, "
         f"direct_edges={manifest['disposition']['selected_direct_formal_edges_indexed']}, "
+        f"source_blobs={len(manifest['source_pin']['module_pins'])}, "
         f"Gate2={manifest['disposition']['gate_2_status']}, Lean={LEAN_COMMIT[:12]})"
     )
 
